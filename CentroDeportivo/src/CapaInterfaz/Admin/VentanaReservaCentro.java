@@ -6,17 +6,29 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.toedter.calendar.JDateChooser;
+
+import CapaNegocio.dao.Instalacion;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
@@ -25,113 +37,161 @@ public class VentanaReservaCentro extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField txHoraInicio;
-	private JTextField txHoraFin;
-	private JTextField txIdInstalacion;
-	private JTextField txIdActividad;
-	private JTextField txIdCurso;
+	private List<Instalacion> instalaciones;
+	private JComboBox<String> comboBoxInstalaciones;
+	private int horaInicio;
+	private int horaFin;
+	private JSpinner spinnerFin;
+	private JSpinner spinnerInicio;
+	private JDateChooser dateFin;
+	private JDateChooser dateInicio;
 
 	public VentanaReservaCentro() {
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
 		setAlwaysOnTop(true);
 		setResizable(false);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 786, 525);
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		getContentPane().setLayout(gridBagLayout);
 
-		JLabel lblHoraInicio = new JLabel("Hora inicio:");
+		JLabel lblInicio = new JLabel("Fecha inicio:");
+		lblInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblInicio = new GridBagConstraints();
+		gbc_lblInicio.insets = new Insets(25, 100, 5, 5);
+		gbc_lblInicio.gridx = 0;
+		gbc_lblInicio.gridy = 1;
+		getContentPane().add(lblInicio, gbc_lblInicio);
+		gbc_lblInicio.insets = new Insets(50, 0, 5, 5);
+		gbc_lblInicio.gridx = 1;
+		gbc_lblInicio.gridy = 1;
+
+		dateInicio = new JDateChooser(new Date(System.currentTimeMillis()));
+		dateInicio.setDateFormatString("dd/MM/yyyy");
+		GridBagConstraints gbc_dateInicio = new GridBagConstraints();
+		gbc_dateInicio.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateInicio.insets = new Insets(25, 0, 5, 5);
+		gbc_dateInicio.gridx = 1;
+		gbc_dateInicio.gridy = 1;
+		dateInicio.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateInicio.setDate(new Date(System.currentTimeMillis()));
+		getContentPane().add(dateInicio, gbc_dateInicio);
+
+		JLabel lblFin = new JLabel("Fecha fin:");
+		lblFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblFin = new GridBagConstraints();
+		gbc_lblFin.insets = new Insets(25, 100, 5, 5);
+		gbc_lblFin.gridx = 0;
+		gbc_lblFin.gridy = 2;
+		getContentPane().add(lblFin, gbc_lblFin);
+
+		dateFin = new JDateChooser(new Date(System.currentTimeMillis()));
+		dateFin.setDateFormatString("dd/MM/yyyy");
+		GridBagConstraints gbc_dateFin = new GridBagConstraints();
+		gbc_dateFin.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateFin.insets = new Insets(25, 0, 5, 5);
+		gbc_dateFin.gridx = 1;
+		gbc_dateFin.gridy = 2;
+		dateFin.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateFin.setDate(new Date(System.currentTimeMillis()));
+		getContentPane().add(dateFin, gbc_dateFin);
+
+		JLabel lblHoraInicio = new JLabel("Hora inicio: ");
 		lblHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblHoraInicio = new GridBagConstraints();
-		gbc_lblHoraInicio.anchor = GridBagConstraints.NORTHEAST;
-		gbc_lblHoraInicio.insets = new Insets(10, 100, 5, 5);
+		gbc_lblHoraInicio.insets = new Insets(25, 100, 5, 5);
 		gbc_lblHoraInicio.gridx = 0;
-		gbc_lblHoraInicio.gridy = 0;
+		gbc_lblHoraInicio.gridy = 4;
 		getContentPane().add(lblHoraInicio, gbc_lblHoraInicio);
 
-		txHoraInicio = new JTextField();
-		GridBagConstraints gbc_txHoraInicio = new GridBagConstraints();
-		gbc_txHoraInicio.insets = new Insets(10, 0, 5, 0);
-		gbc_txHoraInicio.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txHoraInicio.gridx = 1;
-		gbc_txHoraInicio.gridy = 0;
-		getContentPane().add(txHoraInicio, gbc_txHoraInicio);
-		txHoraInicio.setColumns(10);
+		spinnerInicio = new JSpinner();
+		spinnerInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerInicio.setModel(new SpinnerNumberModel(new Date(System.currentTimeMillis()).getHours(), 0, 24, 1));
+		GridBagConstraints gbc_spinnerInicio = new GridBagConstraints();
+		gbc_spinnerInicio.insets = new Insets(25, 0, 5, 0);
+		gbc_spinnerInicio.gridx = 1;
+		gbc_spinnerInicio.gridy = 4;
+		getContentPane().add(spinnerInicio, gbc_spinnerInicio);
 
 		JLabel lblHoraFin = new JLabel("Hora fin:");
 		lblHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblHoraFin = new GridBagConstraints();
-		gbc_lblHoraFin.anchor = GridBagConstraints.EAST;
-		gbc_lblHoraFin.insets = new Insets(10, 100, 5, 5);
+		gbc_lblHoraFin.insets = new Insets(25, 100, 5, 5);
 		gbc_lblHoraFin.gridx = 0;
-		gbc_lblHoraFin.gridy = 1;
+		gbc_lblHoraFin.gridy = 5;
 		getContentPane().add(lblHoraFin, gbc_lblHoraFin);
 
-		txHoraFin = new JTextField();
-		GridBagConstraints gbc_txHoraFin = new GridBagConstraints();
-		gbc_txHoraFin.insets = new Insets(10, 0, 5, 0);
-		gbc_txHoraFin.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txHoraFin.gridx = 1;
-		gbc_txHoraFin.gridy = 1;
-		getContentPane().add(txHoraFin, gbc_txHoraFin);
-		txHoraFin.setColumns(10);
+		spinnerFin = new JSpinner();
+		spinnerFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerFin.setModel(new SpinnerNumberModel(new Date(System.currentTimeMillis()).getHours() + 1, 0, 24, 1));
+		GridBagConstraints gbc_spinnerFin = new GridBagConstraints();
+		gbc_spinnerFin.insets = new Insets(25, 0, 5, 0);
+		gbc_spinnerFin.gridx = 1;
+		gbc_spinnerFin.gridy = 5;
+		getContentPane().add(spinnerFin, gbc_spinnerFin);
 
-		JLabel lblIdInstalacion = new JLabel("id instalación:");
-		lblIdInstalacion.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblIdInstalacion = new GridBagConstraints();
-		gbc_lblIdInstalacion.anchor = GridBagConstraints.EAST;
-		gbc_lblIdInstalacion.insets = new Insets(10, 100, 5, 5);
-		gbc_lblIdInstalacion.gridx = 0;
-		gbc_lblIdInstalacion.gridy = 2;
-		getContentPane().add(lblIdInstalacion, gbc_lblIdInstalacion);
+		JCheckBox chckbxTodoElDa = new JCheckBox("Todo el d\u00EDa");
+		chckbxTodoElDa.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				if (chckbxTodoElDa.isSelected()) {
+					horaInicio = 0;
+					horaFin = 0;
+					spinnerInicio.setValue(horaInicio);
+					spinnerFin.setValue(horaFin);
+					spinnerInicio.setEnabled(false);
+					spinnerFin.setEnabled(false);
+					lblHoraInicio.setEnabled(false);
+					lblHoraFin.setEnabled(false);
+					DateTime dtOrg = new DateTime(System.currentTimeMillis());
+					DateTime dtPlusOne = dtOrg.plusDays(1);
+					dateFin.setDate(new Date(dtPlusOne.getMillis()));
+				} else {
+					horaInicio = new Date(System.currentTimeMillis()).getHours();
+					horaFin = new Date(System.currentTimeMillis()).getHours() + 1;
+					spinnerInicio.setValue(horaInicio);
+					spinnerFin.setValue(horaFin);
+					spinnerInicio.setEnabled(true);
+					spinnerFin.setEnabled(true);
+					lblHoraInicio.setEnabled(true);
+					lblHoraFin.setEnabled(true);
+					dateFin.setDate(new Date(System.currentTimeMillis()));
+				}
+			}
+		});
+		chckbxTodoElDa.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_chckbxTodoElDa = new GridBagConstraints();
+		gbc_chckbxTodoElDa.insets = new Insets(25, 0, 5, 5);
+		gbc_chckbxTodoElDa.gridx = 2;
+		gbc_chckbxTodoElDa.gridy = 4;
+		getContentPane().add(chckbxTodoElDa, gbc_chckbxTodoElDa);
 
-		txIdInstalacion = new JTextField();
-		GridBagConstraints gbc_txIdInstalacion = new GridBagConstraints();
-		gbc_txIdInstalacion.insets = new Insets(10, 0, 5, 0);
-		gbc_txIdInstalacion.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txIdInstalacion.gridx = 1;
-		gbc_txIdInstalacion.gridy = 2;
-		getContentPane().add(txIdInstalacion, gbc_txIdInstalacion);
-		txIdInstalacion.setColumns(10);
+		JLabel lblInstalacion = new JLabel("Instalaci\u00F3n:");
+		lblInstalacion.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblInstalacion = new GridBagConstraints();
+		gbc_lblInstalacion.anchor = GridBagConstraints.EAST;
+		gbc_lblInstalacion.insets = new Insets(25, 100, 5, 5);
+		gbc_lblInstalacion.gridx = 0;
+		gbc_lblInstalacion.gridy = 6;
+		getContentPane().add(lblInstalacion, gbc_lblInstalacion);
 
-		JLabel lblIdActividad = new JLabel("id actividad:");
-		lblIdActividad.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblIdActividad = new GridBagConstraints();
-		gbc_lblIdActividad.anchor = GridBagConstraints.EAST;
-		gbc_lblIdActividad.insets = new Insets(10, 100, 5, 5);
-		gbc_lblIdActividad.gridx = 0;
-		gbc_lblIdActividad.gridy = 3;
-		getContentPane().add(lblIdActividad, gbc_lblIdActividad);
-
-		txIdActividad = new JTextField();
-		GridBagConstraints gbc_txIdActividad = new GridBagConstraints();
-		gbc_txIdActividad.insets = new Insets(10, 0, 5, 0);
-		gbc_txIdActividad.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txIdActividad.gridx = 1;
-		gbc_txIdActividad.gridy = 3;
-		getContentPane().add(txIdActividad, gbc_txIdActividad);
-		txIdActividad.setColumns(10);
-
-		JLabel lblIdCurso = new JLabel("id curso:");
-		lblIdCurso.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblIdCurso = new GridBagConstraints();
-		gbc_lblIdCurso.anchor = GridBagConstraints.EAST;
-		gbc_lblIdCurso.insets = new Insets(10, 100, 5, 5);
-		gbc_lblIdCurso.gridx = 0;
-		gbc_lblIdCurso.gridy = 4;
-		getContentPane().add(lblIdCurso, gbc_lblIdCurso);
-
-		txIdCurso = new JTextField();
-		GridBagConstraints gbc_txIdCurso = new GridBagConstraints();
-		gbc_txIdCurso.insets = new Insets(10, 0, 5, 0);
-		gbc_txIdCurso.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txIdCurso.gridx = 1;
-		gbc_txIdCurso.gridy = 4;
-		getContentPane().add(txIdCurso, gbc_txIdCurso);
-		txIdCurso.setColumns(10);
+		instalaciones = ManagerAdmin.verInstalaciones();
+		String[] instalacionesStrings = new String[instalaciones.size()];
+		int aux = 0;
+		for (Instalacion instalacion : instalaciones) {
+			instalacionesStrings[aux] = instalacion.getCodigo();
+			aux++;
+		}
+		comboBoxInstalaciones = new JComboBox(instalacionesStrings);
+		comboBoxInstalaciones.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_comboBoxInstalacion = new GridBagConstraints();
+		gbc_comboBoxInstalacion.insets = new Insets(25, 0, 5, 5);
+		gbc_comboBoxInstalacion.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBoxInstalacion.gridx = 1;
+		gbc_comboBoxInstalacion.gridy = 6;
+		getContentPane().add(comboBoxInstalaciones, gbc_comboBoxInstalacion);
 
 		JButton btnCrearReserva = new JButton("Crear reserva");
 		btnCrearReserva.addActionListener(new ActionListener() {
@@ -141,38 +201,37 @@ public class VentanaReservaCentro extends JDialog {
 		});
 		btnCrearReserva.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_btnCrearReserva = new GridBagConstraints();
-		gbc_btnCrearReserva.insets = new Insets(20, 0, 0, 0);
+		gbc_btnCrearReserva.insets = new Insets(20, 0, 5, 5);
 		gbc_btnCrearReserva.gridx = 1;
-		gbc_btnCrearReserva.gridy = 5;
+		gbc_btnCrearReserva.gridy = 8;
 		getContentPane().add(btnCrearReserva, gbc_btnCrearReserva);
 	}
 
 	public void insertarDatosReserva() {
-		String horaInicio = txHoraInicio.getText();
-		String horaFin = txHoraFin.getText();
-		String idInst = txIdInstalacion.getText();
-		String idAct = txIdActividad.getText();
-		String idCurso = txIdCurso.getText();
-
+		String horaInicio = String.valueOf(spinnerInicio.getValue());
+		horaInicio += ":00:00";
+		String horaFin = String.valueOf(spinnerFin.getValue());
+		horaFin += ":00:00";
+		Long idInst = instalaciones.get(comboBoxInstalaciones.getSelectedIndex())
+				.getIdInst();
+			
+		DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+        String fechaInicio = fmt.format(dateInicio.getDate());
+        String fechaFin = fmt.format(dateFin.getDate());
+        
+        String stringInicio = fechaInicio + " " + horaInicio;
+        String stringFin = fechaFin + " " + horaFin;
+		
+		
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-		DateTime dateTimeInicio = formatter.parseDateTime(horaInicio);
-		DateTime dateTimeFin = formatter.parseDateTime(horaFin);
-		Long longAct = idAct.isEmpty() ? null : Long.parseLong(idAct);
-		Long longCurso = idCurso.isEmpty() ? null : Long.parseLong(idCurso);
+		DateTime dateTimeInicio = formatter.parseDateTime(stringInicio);
+		DateTime dateTimeFin = formatter.parseDateTime(stringFin);
+		// Long longAct = idAct.isEmpty() ? null : Long.parseLong(idAct);
+		// Long longCurso = idCurso.isEmpty() ? null : Long.parseLong(idCurso);
 
 		try {
-			if (longCurso == null && longAct != null) {
-				ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin, Long.parseLong(idInst),
-						Long.parseLong(idAct), null);
-				JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
-			} else if (longCurso != null && longAct == null) {
-				ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin, Long.parseLong(idInst), null,
-						Long.parseLong(idCurso));
-				JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
-
-			} else {
-				JOptionPane.showMessageDialog(this, "Has de introducir id de actividad o curso");
-			}
+			ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin, idInst, null, null);
+			JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
 		} catch (ExcepcionReserva e) {

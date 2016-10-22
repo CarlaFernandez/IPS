@@ -118,27 +118,24 @@ public class ReservaDatos {
 		// TODO cambiar esta condicion si comprobamos que este disponible
 		// tambien en el caso de reserva de centro
 
-		// if (InstalacionDatos.estaDisponibleEnHoras(reserva.getIdInst(),
-		// reserva.getInicio(), reserva.getFin())) {
-		if (reservaEnHoraEnPunto(reserva.getInicio())) {
-			long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
-			long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-			long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+		if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
+			if (reservaEnHoraEnPunto(reserva.getInicio())) {
+				long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
+				long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+				long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
 
-			if (daysDiff > ReservaDao.DIAS_ANTELACION_RESERVA_MAXIMO) {
-				throw new ExcepcionReserva("Es demasiado pronto para realizar esta reserva");
-			} else if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_ADMIN) {
-				throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
-			} 
-		}
-		else {
-			throw new ExcepcionReserva("La reserva ha de comenzar en la hora en punto");
-		}
+				if (daysDiff > ReservaDao.DIAS_ANTELACION_RESERVA_MAXIMO) {
+					throw new ExcepcionReserva("Es demasiado pronto para realizar esta reserva");
+				} else if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_ADMIN) {
+					throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
+				}
+			} else {
+				throw new ExcepcionReserva("La reserva ha de comenzar en la hora en punto");
+			}
 
-		// } else {
-		// throw new ExcepcionReserva("Esta instalacion ya esta reservada para
-		// esas fechas");
-		// }
+		} else {
+			throw new ExcepcionReserva("Esta instalacion ya esta reservada para esas fechas");
+		}
 	}
 
 	private static boolean reservaEnHoraEnPunto(DateTime inicio) {
@@ -284,7 +281,7 @@ public class ReservaDatos {
 		return null;
 
 	}
-	
+
 	public static List<ReservaDao> obtenerReservasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
 		DateTime fecha1 = new DateTime(inicio);
 		DateTime fecha2 = new DateTime(fin);
@@ -360,8 +357,9 @@ public class ReservaDatos {
 
 				reservas.add(reserva);
 			}
-//			System.out.println("Solicitud de reservas para instalacionID:" + instalacion + " y usuarioID:" + usuario
-//					+ ">>" + reservas);
+			// System.out.println("Solicitud de reservas para instalacionID:" +
+			// instalacion + " y usuarioID:" + usuario
+			// + ">>" + reservas);
 			con.close();
 			return reservas;
 		} catch (SQLException e) {
@@ -379,10 +377,10 @@ public class ReservaDatos {
 			StringBuilder sb = new StringBuilder();
 			sb.append("SELECT * FROM reserva,pago where pago.id=reserva.pago_id and pago.estado=?");
 			sb.append("and usuario_id = ? and reserva.estado='ACTIVA'");
-			
+
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setString(1, EstadoPago.PENDIENTE.name());
-			ps.setLong(2, usuario);			
+			ps.setLong(2, usuario);
 			ResultSet rs = ps.executeQuery();
 			List<ReservaDao> reservas = new ArrayList<>();
 			while (rs.next()) {
@@ -401,7 +399,8 @@ public class ReservaDatos {
 
 				reservas.add(reserva);
 			}
-//			System.out.println("Solicitud de reservas sin pagar para usuarioID:" + usuario + ">>" + reservas);
+			// System.out.println("Solicitud de reservas sin pagar para
+			// usuarioID:" + usuario + ">>" + reservas);
 			con.close();
 			return reservas;
 		} catch (SQLException e) {
@@ -495,7 +494,8 @@ public class ReservaDatos {
 
 				reservas.add(reserva);
 			}
-//			System.out.println("Solicitud de reservas de la instalacion:" + instalacion + ">>" + reservas);
+			// System.out.println("Solicitud de reservas de la instalacion:" +
+			// instalacion + ">>" + reservas);
 			con.close();
 			return reservas;
 		} catch (SQLException e) {
