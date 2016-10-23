@@ -43,10 +43,11 @@ public class VentanaReservaCentro extends JDialog {
 	private int horaFin;
 	private JSpinner spinnerFin;
 	private JSpinner spinnerInicio;
-	private JDateChooser dateFin;
 	private JDateChooser dateInicio;
+	private JCheckBox chckbxTodoElDia;
 
 	public VentanaReservaCentro() {
+		setTitle("Admin -> Reserva Centro");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
 		setAlwaysOnTop(true);
 		setResizable(false);
@@ -80,25 +81,6 @@ public class VentanaReservaCentro extends JDialog {
 		dateInicio.setDate(new Date(System.currentTimeMillis()));
 		getContentPane().add(dateInicio, gbc_dateInicio);
 
-		JLabel lblFin = new JLabel("Fecha fin:");
-		lblFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblFin = new GridBagConstraints();
-		gbc_lblFin.insets = new Insets(25, 100, 5, 5);
-		gbc_lblFin.gridx = 0;
-		gbc_lblFin.gridy = 2;
-		getContentPane().add(lblFin, gbc_lblFin);
-
-		dateFin = new JDateChooser(new Date(System.currentTimeMillis()));
-		dateFin.setDateFormatString("dd/MM/yyyy");
-		GridBagConstraints gbc_dateFin = new GridBagConstraints();
-		gbc_dateFin.fill = GridBagConstraints.HORIZONTAL;
-		gbc_dateFin.insets = new Insets(25, 0, 5, 5);
-		gbc_dateFin.gridx = 1;
-		gbc_dateFin.gridy = 2;
-		dateFin.setMinSelectableDate(new Date(System.currentTimeMillis()));
-		dateFin.setDate(new Date(System.currentTimeMillis()));
-		getContentPane().add(dateFin, gbc_dateFin);
-
 		JLabel lblHoraInicio = new JLabel("Hora inicio: ");
 		lblHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblHoraInicio = new GridBagConstraints();
@@ -109,7 +91,7 @@ public class VentanaReservaCentro extends JDialog {
 
 		spinnerInicio = new JSpinner();
 		spinnerInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		spinnerInicio.setModel(new SpinnerNumberModel(new Date(System.currentTimeMillis()).getHours(), 0, 24, 1));
+		spinnerInicio.setModel(new SpinnerNumberModel(19, 0, 23, 1));
 		GridBagConstraints gbc_spinnerInicio = new GridBagConstraints();
 		gbc_spinnerInicio.insets = new Insets(25, 0, 5, 0);
 		gbc_spinnerInicio.gridx = 1;
@@ -126,17 +108,17 @@ public class VentanaReservaCentro extends JDialog {
 
 		spinnerFin = new JSpinner();
 		spinnerFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		spinnerFin.setModel(new SpinnerNumberModel(new Date(System.currentTimeMillis()).getHours() + 1, 0, 24, 1));
+		spinnerFin.setModel(new SpinnerNumberModel(20, 0, 23, 1));
 		GridBagConstraints gbc_spinnerFin = new GridBagConstraints();
 		gbc_spinnerFin.insets = new Insets(25, 0, 5, 0);
 		gbc_spinnerFin.gridx = 1;
 		gbc_spinnerFin.gridy = 5;
 		getContentPane().add(spinnerFin, gbc_spinnerFin);
 
-		JCheckBox chckbxTodoElDa = new JCheckBox("Todo el d\u00EDa");
-		chckbxTodoElDa.addChangeListener(new ChangeListener() {
+		chckbxTodoElDia = new JCheckBox("Todo el d\u00EDa");
+		chckbxTodoElDia.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				if (chckbxTodoElDa.isSelected()) {
+				if (chckbxTodoElDia.isSelected()) {
 					horaInicio = 0;
 					horaFin = 0;
 					spinnerInicio.setValue(horaInicio);
@@ -145,9 +127,6 @@ public class VentanaReservaCentro extends JDialog {
 					spinnerFin.setEnabled(false);
 					lblHoraInicio.setEnabled(false);
 					lblHoraFin.setEnabled(false);
-					DateTime dtOrg = new DateTime(System.currentTimeMillis());
-					DateTime dtPlusOne = dtOrg.plusDays(1);
-					dateFin.setDate(new Date(dtPlusOne.getMillis()));
 				} else {
 					horaInicio = new Date(System.currentTimeMillis()).getHours();
 					horaFin = new Date(System.currentTimeMillis()).getHours() + 1;
@@ -157,16 +136,15 @@ public class VentanaReservaCentro extends JDialog {
 					spinnerFin.setEnabled(true);
 					lblHoraInicio.setEnabled(true);
 					lblHoraFin.setEnabled(true);
-					dateFin.setDate(new Date(System.currentTimeMillis()));
 				}
 			}
 		});
-		chckbxTodoElDa.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		chckbxTodoElDia.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_chckbxTodoElDa = new GridBagConstraints();
 		gbc_chckbxTodoElDa.insets = new Insets(25, 0, 5, 5);
 		gbc_chckbxTodoElDa.gridx = 2;
 		gbc_chckbxTodoElDa.gridy = 4;
-		getContentPane().add(chckbxTodoElDa, gbc_chckbxTodoElDa);
+		getContentPane().add(chckbxTodoElDia, gbc_chckbxTodoElDa);
 
 		JLabel lblInstalacion = new JLabel("Instalaci\u00F3n:");
 		lblInstalacion.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -212,20 +190,25 @@ public class VentanaReservaCentro extends JDialog {
 		horaInicio += ":00:00";
 		String horaFin = String.valueOf(spinnerFin.getValue());
 		horaFin += ":00:00";
-		Long idInst = instalaciones.get(comboBoxInstalaciones.getSelectedIndex())
-				.getIdInst();
-			
+		Long idInst = instalaciones.get(comboBoxInstalaciones.getSelectedIndex()).getIdInst();
+
 		DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaInicio = fmt.format(dateInicio.getDate());
-        String fechaFin = fmt.format(dateFin.getDate());
-        
-        String stringInicio = fechaInicio + " " + horaInicio;
-        String stringFin = fechaFin + " " + horaFin;
-		
-		
+		String fechaInicio = fmt.format(dateInicio.getDate());
+		String fechaFin = "";
+		// si es de todo el día o la reserva es por ej. de 23 a 1...
+		if (chckbxTodoElDia.isSelected() || (int) spinnerFin.getValue() < (int) spinnerInicio.getValue()) {
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+			DateTime dateTimeInicio = new DateTime(formatter.parseDateTime(fechaInicio).getMillis());
+			DateTime dtPlusOne = dateTimeInicio.plusDays(1);
+			fechaFin = fmt.format(new Date(dtPlusOne.getMillis()));
+
+		} else {
+			fechaFin = fechaInicio;
+		}
+
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-		DateTime dateTimeInicio = formatter.parseDateTime(stringInicio);
-		DateTime dateTimeFin = formatter.parseDateTime(stringFin);
+		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);
+		DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
 		// Long longAct = idAct.isEmpty() ? null : Long.parseLong(idAct);
 		// Long longCurso = idCurso.isEmpty() ? null : Long.parseLong(idCurso);
 
