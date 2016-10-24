@@ -50,6 +50,7 @@ public class VentanaReservaSocio extends JDialog {
 	private JComboBox<String> comboBoxUsuarios;
 	private List<Usuario> usuarios;
 	private JLabel lblUsuario;
+	private JLabel lblReservaDeSocio;
 
 	@SuppressWarnings("unchecked")
 	public VentanaReservaSocio() {
@@ -60,9 +61,9 @@ public class VentanaReservaSocio extends JDialog {
 		setBounds(100, 100, 786, 525);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				Double.MIN_VALUE };
 		getContentPane().setLayout(gridBagLayout);
 
@@ -83,35 +84,44 @@ public class VentanaReservaSocio extends JDialog {
 			usuariosStrings[i] = usuario.getIdUsu().toString();
 			i++;
 		}
+										
+										lblReservaDeSocio = new JLabel("Realizar reserva de socio");
+										lblReservaDeSocio.setFont(new Font("Arial Black", Font.BOLD, 25));
+										GridBagConstraints gbc_lblReservaDeSocio = new GridBagConstraints();
+										gbc_lblReservaDeSocio.gridwidth = 2;
+										gbc_lblReservaDeSocio.insets = new Insets(0, -50, 5, 5);
+										gbc_lblReservaDeSocio.gridx = 1;
+										gbc_lblReservaDeSocio.gridy = 6;
+										getContentPane().add(lblReservaDeSocio, gbc_lblReservaDeSocio);
 								
 										JLabel lblInicio = new JLabel("Fecha inicio:");
 										lblInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
 										GridBagConstraints gbc_lblInicio = new GridBagConstraints();
 										gbc_lblInicio.insets = new Insets(25, 100, 5, 5);
 										gbc_lblInicio.gridx = 0;
-										gbc_lblInicio.gridy = 4;
+										gbc_lblInicio.gridy = 7;
 										getContentPane().add(lblInicio, gbc_lblInicio);
 										gbc_lblInicio.insets = new Insets(50, 0, 5, 5);
 										gbc_lblInicio.gridx = 1;
 										gbc_lblInicio.gridy = 1;
-						
-								dateInicio = new JDateChooser(new Date(System.currentTimeMillis()));
-								dateInicio.setDateFormatString("dd/MM/yyyy");
-								GridBagConstraints gbc_dateInicio = new GridBagConstraints();
-								gbc_dateInicio.fill = GridBagConstraints.HORIZONTAL;
-								gbc_dateInicio.insets = new Insets(25, 0, 5, 5);
-								gbc_dateInicio.gridx = 1;
-								gbc_dateInicio.gridy = 4;
-								dateInicio.setMinSelectableDate(new Date(System.currentTimeMillis()));
-								dateInicio.setDate(new Date(System.currentTimeMillis()));
-								getContentPane().add(dateInicio, gbc_dateInicio);
+								
+										dateInicio = new JDateChooser(new Date(System.currentTimeMillis()));
+										dateInicio.setDateFormatString("dd/MM/yyyy");
+										GridBagConstraints gbc_dateInicio = new GridBagConstraints();
+										gbc_dateInicio.fill = GridBagConstraints.HORIZONTAL;
+										gbc_dateInicio.insets = new Insets(25, 0, 5, 5);
+										gbc_dateInicio.gridx = 1;
+										gbc_dateInicio.gridy = 7;
+										dateInicio.setMinSelectableDate(new Date(System.currentTimeMillis()));
+										dateInicio.setDate(new Date(System.currentTimeMillis()));
+										getContentPane().add(dateInicio, gbc_dateInicio);
 						
 								JLabel lblHoraInicio = new JLabel("Hora inicio: ");
 								lblHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
 								GridBagConstraints gbc_lblHoraInicio = new GridBagConstraints();
 								gbc_lblHoraInicio.insets = new Insets(25, 0, 5, 5);
 								gbc_lblHoraInicio.gridx = 0;
-								gbc_lblHoraInicio.gridy = 7;
+								gbc_lblHoraInicio.gridy = 8;
 								getContentPane().add(lblHoraInicio, gbc_lblHoraInicio);
 				
 						spinnerInicio = new JSpinner();
@@ -120,7 +130,7 @@ public class VentanaReservaSocio extends JDialog {
 						GridBagConstraints gbc_spinnerInicio = new GridBagConstraints();
 						gbc_spinnerInicio.insets = new Insets(25, 0, 5, 5);
 						gbc_spinnerInicio.gridx = 1;
-						gbc_spinnerInicio.gridy = 7;
+						gbc_spinnerInicio.gridy = 8;
 						getContentPane().add(spinnerInicio, gbc_spinnerInicio);
 				
 						JLabel lblHoraFin = new JLabel("Hora fin:");
@@ -128,7 +138,7 @@ public class VentanaReservaSocio extends JDialog {
 						GridBagConstraints gbc_lblHoraFin = new GridBagConstraints();
 						gbc_lblHoraFin.insets = new Insets(25, 0, 5, 5);
 						gbc_lblHoraFin.gridx = 0;
-						gbc_lblHoraFin.gridy = 8;
+						gbc_lblHoraFin.gridy = 9;
 						getContentPane().add(lblHoraFin, gbc_lblHoraFin);
 		
 				spinnerFin = new JSpinner();
@@ -137,7 +147,7 @@ public class VentanaReservaSocio extends JDialog {
 				GridBagConstraints gbc_spinnerFin = new GridBagConstraints();
 				gbc_spinnerFin.insets = new Insets(25, 0, 5, 5);
 				gbc_spinnerFin.gridx = 1;
-				gbc_spinnerFin.gridy = 8;
+				gbc_spinnerFin.gridy = 9;
 				getContentPane().add(spinnerFin, gbc_spinnerFin);
 		
 		lblUsuario = new JLabel("Usuario: ");
@@ -145,7 +155,7 @@ public class VentanaReservaSocio extends JDialog {
 		GridBagConstraints gbc_lblUsuario = new GridBagConstraints();
 		gbc_lblUsuario.insets = new Insets(25, 0, 5, 5);
 		gbc_lblUsuario.gridx = 0;
-		gbc_lblUsuario.gridy = 9;
+		gbc_lblUsuario.gridy = 10;
 		getContentPane().add(lblUsuario, gbc_lblUsuario);
 		comboBoxUsuarios = new JComboBox(usuariosStrings);
 		comboBoxUsuarios.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -153,7 +163,7 @@ public class VentanaReservaSocio extends JDialog {
 		gbc_comboBoxUsuarios.insets = new Insets(25, 0, 5, 5);
 		gbc_comboBoxUsuarios.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBoxUsuarios.gridx = 1;
-		gbc_comboBoxUsuarios.gridy = 9;
+		gbc_comboBoxUsuarios.gridy = 10;
 		getContentPane().add(comboBoxUsuarios, gbc_comboBoxUsuarios);
 		
 				JLabel lblInstalacion = new JLabel("Instalaci\u00F3n:");
@@ -161,7 +171,7 @@ public class VentanaReservaSocio extends JDialog {
 				GridBagConstraints gbc_lblInstalacion = new GridBagConstraints();
 				gbc_lblInstalacion.insets = new Insets(25, 0, 5, 5);
 				gbc_lblInstalacion.gridx = 0;
-				gbc_lblInstalacion.gridy = 10;
+				gbc_lblInstalacion.gridy = 11;
 				getContentPane().add(lblInstalacion, gbc_lblInstalacion);
 		comboBoxInstalaciones = new JComboBox(instalacionesStrings);
 		comboBoxInstalaciones.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -169,7 +179,7 @@ public class VentanaReservaSocio extends JDialog {
 		gbc_comboBoxInstalacion.insets = new Insets(25, 0, 5, 5);
 		gbc_comboBoxInstalacion.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBoxInstalacion.gridx = 1;
-		gbc_comboBoxInstalacion.gridy = 10;
+		gbc_comboBoxInstalacion.gridy = 11;
 		getContentPane().add(comboBoxInstalaciones, gbc_comboBoxInstalacion);
 
 		lblTipoPago = new JLabel("Tipo pago:");
@@ -178,7 +188,7 @@ public class VentanaReservaSocio extends JDialog {
 		gbc_lblTipoPago.anchor = GridBagConstraints.EAST;
 		gbc_lblTipoPago.insets = new Insets(25, 0, 5, 5);
 		gbc_lblTipoPago.gridx = 0;
-		gbc_lblTipoPago.gridy = 12;
+		gbc_lblTipoPago.gridy = 13;
 		getContentPane().add(lblTipoPago, gbc_lblTipoPago);
 
 		rdbtnEfectivo = new JRadioButton("Efectivo");
@@ -186,7 +196,7 @@ public class VentanaReservaSocio extends JDialog {
 		GridBagConstraints gbc_rdbtnEfectivo = new GridBagConstraints();
 		gbc_rdbtnEfectivo.insets = new Insets(25, 0, 5, 5);
 		gbc_rdbtnEfectivo.gridx = 1;
-		gbc_rdbtnEfectivo.gridy = 12;
+		gbc_rdbtnEfectivo.gridy = 13;
 		getContentPane().add(rdbtnEfectivo, gbc_rdbtnEfectivo);
 		radioButtons.add(rdbtnEfectivo);
 
@@ -195,7 +205,7 @@ public class VentanaReservaSocio extends JDialog {
 		GridBagConstraints gbc_rdbtnMensual = new GridBagConstraints();
 		gbc_rdbtnMensual.insets = new Insets(25, 0, 5, 5);
 		gbc_rdbtnMensual.gridx = 2;
-		gbc_rdbtnMensual.gridy = 12;
+		gbc_rdbtnMensual.gridy = 13;
 		getContentPane().add(rdbtnMensual, gbc_rdbtnMensual);
 		radioButtons.add(rdbtnMensual);
 				
@@ -209,7 +219,7 @@ public class VentanaReservaSocio extends JDialog {
 						GridBagConstraints gbc_btnCrearReserva = new GridBagConstraints();
 						gbc_btnCrearReserva.insets = new Insets(20, 0, 5, 5);
 						gbc_btnCrearReserva.gridx = 1;
-						gbc_btnCrearReserva.gridy = 14;
+						gbc_btnCrearReserva.gridy = 15;
 						getContentPane().add(btnCrearReserva, gbc_btnCrearReserva);
 	}
 

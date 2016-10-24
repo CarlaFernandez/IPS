@@ -34,6 +34,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import java.util.Date;
 import java.util.Calendar;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 @SuppressWarnings("rawtypes")
 public class VentanaSocioReservasPorInstalacion extends JFrame {
@@ -70,17 +72,15 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				if (0 == column)
-					return false;
-				return super.isCellEditable(row, column);
+				return false;
 			}
 		};
 
 		// Titulos para la cabecera superior. El primero es vacio,
 		// puesto que corresponde
-		tm.setColumnIdentifiers(new String[] { "", DiasSemana.values()[0].name(), DiasSemana.values()[1].name(),
-				DiasSemana.values()[2].name(), DiasSemana.values()[3].name(), DiasSemana.values()[4].name(),
-				DiasSemana.values()[5].name(), DiasSemana.values()[6].name() });
+		tm.setColumnIdentifiers(new String[] { "", DiasSemana.values()[1].name(), DiasSemana.values()[2].name(),
+				DiasSemana.values()[3].name(), DiasSemana.values()[4].name(), DiasSemana.values()[5].name(),
+				DiasSemana.values()[6].name(), DiasSemana.values()[0].name() });
 
 		// Valores para la primera columna, que es la cabecera lateral.
 		for (int i = 0; i < tm.getRowCount(); i++)
@@ -103,6 +103,15 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 					super.changeSelection(rowIndex, columnIndex, toggle, extend);
 			}
 		};
+		t.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int clicks = e.getClickCount();
+				if (clicks >= 2){
+					verDetalles(t);
+				}
+			}
+		});
 
 		// Se pone a la primera columna el render del JTableHeader
 		// superior.
@@ -173,6 +182,19 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		lblMias.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		lblMias.setBackground(new Color(185, 255, 185));
 		panelPie.add(lblMias);
+		
+		JButton btnVerDetalles = new JButton("Ver detalles");
+		btnVerDetalles.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verDetalles(t);
+			}
+		});
+		panelPie.add(btnVerDetalles);
+	}
+	
+	private void verDetalles(JTable t) {
+		ReservaDao reserva =  tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
+		new VentanaDetallesReserva(reserva.getIdRes()).show();
 	}
 
 	public void obtenerReservasPorInstalacion() {
