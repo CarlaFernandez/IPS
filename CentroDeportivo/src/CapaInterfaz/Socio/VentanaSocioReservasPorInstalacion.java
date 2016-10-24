@@ -13,15 +13,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
-import CapaDatos.PagoDatos;
-import CapaInterfaz.ModeloNoEditable;
+import org.joda.time.DateTime;
+
 import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
-import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.Usuario;
+import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerUsuario;
 
 import javax.swing.JComboBox;
@@ -29,6 +30,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.FlowLayout;
 import javax.swing.border.BevelBorder;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import java.util.Date;
+import java.util.Calendar;
 
 @SuppressWarnings("rawtypes")
 public class VentanaSocioReservasPorInstalacion extends JFrame {
@@ -57,16 +62,66 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.CENTER);
-		modeloTabla = new ModeloNoEditable(new String[] { "Dia", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado" },
-				0);
-		table = new JTable();
-		table.setDefaultRenderer(Object.class, new TableCellRendererColorSocio());
-		table.setModel(modeloTabla);
-		table.setBackground(Color.WHITE);
-		spTabla.setViewportView(table);
+		tm = new DefaultTableModel(24, 7) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				if (0 == column)
+					return false;
+				return super.isCellEditable(row, column);
+			}
+		};
+
+		// Titulos para la cabecera superior. El primero es vacio,
+		// puesto que corresponde
+		tm.setColumnIdentifiers(new String[] { "", DiasSemana.values()[0].name(), DiasSemana.values()[1].name(),
+				DiasSemana.values()[2].name(), DiasSemana.values()[3].name(), DiasSemana.values()[4].name(),
+				DiasSemana.values()[5].name(), DiasSemana.values()[6].name() });
+
+		// Valores para la primera columna, que es la cabecera lateral.
+		for (int i = 0; i < tm.getRowCount(); i++)
+			tm.setValueAt(i + ":00", i, 0);
+
+		// JTable al que se le pasa el modelo recien creado y se
+		// sobreescribe el metodo changeSelection para que no permita
+		// seleccionar la primera columna.
+		JTable t = new JTable(tm) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+				if (columnIndex == 0)
+					super.changeSelection(rowIndex, columnIndex + 1, toggle, extend);
+				else
+					super.changeSelection(rowIndex, columnIndex, toggle, extend);
+			}
+		};
+
+		// Se pone a la primera columna el render del JTableHeader
+		// superior.
+		t.getColumnModel().getColumn(0).setCellRenderer(t.getTableHeader().getDefaultRenderer());
+		t.setDefaultRenderer(Object.class, new TableCellRendererColorInstalacion());
+		spTabla.setViewportView(t);
 
 		JPanel panelCabecera = new JPanel();
 		panel.add(panelCabecera, BorderLayout.NORTH);
+
+		JLabel lblSemanaDelDia = new JLabel("Semana del dia:");
+		panelCabecera.add(lblSemanaDelDia);
+
+		spinnerInicio = new JSpinner();
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		panelCabecera.add(spinnerInicio);
+		Calendar date = Calendar.getInstance();
+		date.setTime((Date) spinnerInicio.getValue());
+		date.add(Calendar.DATE, 7);
 
 		JLabel lblNewLabel = new JLabel("Instalacion");
 		panelCabecera.add(lblNewLabel);
@@ -101,65 +156,67 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		panel.add(panelPie, BorderLayout.SOUTH);
 		panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		JButton btnNewButton_1 = new JButton("Detalles");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
-			public void actionPerformed(ActionEvent arg0) {
-				if (table.getSelectedRow() != -1) {
-					new VentanaDetallesReserva((Long) modeloTabla.getValueAt(table.getSelectedRow(), 1)).show();
-				}
-			}
-		});
+		JLabel lblOtras = new JLabel("Otras");
+		lblOtras.setOpaque(true);
+		lblOtras.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		lblOtras.setBackground(new Color(255, 185, 185));
+		panelPie.add(lblOtras);
 
-		JLabel label = new JLabel("Fecha Anterior");
-		label.setOpaque(true);
-		label.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		label.setBackground(new Color(185, 185, 255));
-		panelPie.add(label);
-
-		JLabel label_1 = new JLabel("Cancelada");
-		label_1.setOpaque(true);
-		label_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		label_1.setBackground(new Color(255, 185, 185));
-		panelPie.add(label_1);
-
-		JLabel lblNewLabel_4 = new JLabel("Anulada");
+		JLabel lblNewLabel_4 = new JLabel("Libre");
 		lblNewLabel_4.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		lblNewLabel_4.setOpaque(true);
-		lblNewLabel_4.setBackground(new Color(255, 255, 185));
+		lblNewLabel_4.setBackground(Color.WHITE);
 		panelPie.add(lblNewLabel_4);
 
-		JLabel label_2 = new JLabel("Fecha Futura");
-		label_2.setOpaque(true);
-		label_2.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		label_2.setBackground(new Color(185, 255, 185));
-		panelPie.add(label_2);
-		panelPie.add(btnNewButton_1);
+		JLabel lblMias = new JLabel("Mias");
+		lblMias.setOpaque(true);
+		lblMias.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		lblMias.setBackground(new Color(185, 255, 185));
+		panelPie.add(lblMias);
 	}
 
 	public void obtenerReservasPorInstalacion() {
 
 		Long instalacion = instalaciones.get(comboBoxInstalaaciones.getSelectedIndex()).getIdInst();
+		Date valorSpin = (Date) spinnerInicio.getValue();
+
+		Calendar dateInicio = Calendar.getInstance();
+		dateInicio.setTime((Date) spinnerInicio.getValue());
+		dateInicio.add(Calendar.DATE, -new DateTime(valorSpin.getTime()).getDayOfWeek());
+
+		Calendar dateF = Calendar.getInstance();
+		dateF.setTime(dateInicio.getTime());
+		dateF.add(Calendar.DATE, 7);
+		Date fin = dateF.getTime();
+
+		System.out.println(dateInicio.getTime());
+		System.out.println(dateF.getTime());
 
 		// "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado"
-		List<ReservaDao> reservas = ManagerUsuario.verReservasInstalacion(instalacion, this.user);
-		Object[] line = new Object[6];
-		int tam = modeloTabla.getRowCount();
-		for (int i = 0; i < tam; i++) {
-			modeloTabla.removeRow(0);
+		// List<ReservaDao> reservas =
+		// ManagerUsuario.verReservasInstalacion(instalacion);
+		List<ReservaDao> reservas = ManagerAdmin.verReservasPorFechaEInstalacion(dateInicio.getTime(), fin,
+				instalacion);
+
+		for (int i = 0; i < tm.getRowCount(); i++) {
+			for (int j = 0; j < tm.getColumnCount() - 1; j++) {
+				tm.setValueAt("", i, j + 1);
+			}
 		}
+
+		tablaReservas = new ReservaDao[7][24];
 		for (int i = 0; i < reservas.size(); i++) {
-			line[0] = DiasSemana.values()[reservas.get(i).getInicio().getDayOfWeek()];
-			line[1] = reservas.get(i).getIdRes();
-			line[2] = reservas.get(i).getInicio();
-			line[3] = reservas.get(i).getFin();
-			Pago pago = PagoDatos.obtenerPago(reservas.get(i).getIdPago());
-			line[4] = pago.getEstado();
-			line[5] = reservas.get(i).getEstado();
-
-			modeloTabla.addRow(line);
+			int dia = reservas.get(i).getInicio().getDayOfWeek();
+			int hora = reservas.get(i).getInicio().getHourOfDay();
+			if (reservas.get(i).getIdUsu().equals(user)) {
+				tm.setValueAt("Mi reserva", hora, dia);
+				tablaReservas[dia][hora] = reservas.get(i);
+			}
+			if (!reservas.get(i).getIdUsu().equals(user)) {
+				tm.setValueAt("Reserva ajena", hora, dia);
+				tablaReservas[dia][hora] = reservas.get(i);
+			}
 		}
-
 	}
 
 	/**
@@ -168,8 +225,10 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private List<Instalacion> instalaciones;
 	private List<Usuario> usuarios;
-	private JTable table;
-	private ModeloNoEditable modeloTabla;
+	private JTable t;
+	private DefaultTableModel tm;
+	JSpinner spinnerInicio;
+	ReservaDao tablaReservas[][];
 
 	private JComboBox comboBoxInstalaaciones;
 

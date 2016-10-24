@@ -327,18 +327,16 @@ public class ReservaDatos {
 
 	}
 
-	public static List<ReservaDao> obtenerReservasPorUsuarioEInstalacion(long instalacion, long usuario) {
+	public static List<ReservaDao> obtenerReservasPorInstalacion(long instalacion) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append("select * from reserva ");
 			sb.append("where instalacion_id = ? ");
-			sb.append("and usuario_id = ?");
 
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, instalacion);
-			ps.setLong(2, usuario);
 			ResultSet rs = ps.executeQuery();
 			List<ReservaDao> reservas = new ArrayList<>();
 			while (rs.next()) {

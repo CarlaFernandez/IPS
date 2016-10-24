@@ -19,8 +19,8 @@ public class ManagerUsuario {
 		return ReservaDatos.obtenerReservasPorFechaYUsuario(inicio,fin, idUser);
 	}
 
-	public static List<ReservaDao> verReservasInstalacion(long instalacion, long usuario) {
-		return ReservaDatos.obtenerReservasPorUsuarioEInstalacion(instalacion, usuario);
+	public static List<ReservaDao> verReservasInstalacion(long instalacion) {
+		return ReservaDatos.obtenerReservasPorInstalacion(instalacion);
 	}
 
 	public static List<Instalacion> verInstalaciones() {
