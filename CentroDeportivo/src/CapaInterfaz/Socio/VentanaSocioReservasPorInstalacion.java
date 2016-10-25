@@ -36,6 +36,9 @@ import java.util.Date;
 import java.util.Calendar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.GridLayout;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 @SuppressWarnings("rawtypes")
 public class VentanaSocioReservasPorInstalacion extends JFrame {
@@ -122,15 +125,40 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		JPanel panelCabecera = new JPanel();
 		panel.add(panelCabecera, BorderLayout.NORTH);
 
+		JPanel panel_1 = new JPanel();
+		panelCabecera.add(panel_1);
+		panel_1.setLayout(new GridLayout(0, 2, 0, 0));
+
 		JLabel lblSemanaDelDia = new JLabel("Semana del dia:");
-		panelCabecera.add(lblSemanaDelDia);
+		panel_1.add(lblSemanaDelDia);
 
 		spinnerInicio = new JSpinner();
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
-		panelCabecera.add(spinnerInicio);
+
+		spinnerInicio.setToolTipText("Se mostrara la semana a la que pertenece el dia seleccionado");
+		Calendar ahora = Calendar.getInstance();
+		ahora.set(Calendar.MILLISECOND, 0);
+		ahora.set(Calendar.SECOND, 0);
+		ahora.set(Calendar.MINUTE, 0);
+		ahora.set(Calendar.HOUR, 0);
+		spinnerInicio.setModel(new SpinnerDateModel(ahora.getTime(), null, null, Calendar.DAY_OF_YEAR));
+		panel_1.add(spinnerInicio);
+
+		JLabel lblElDiaQue = new JLabel("Dia Seleccionado:   ");
+		panel_1.add(lblElDiaQue);
+
+		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek()].name();
+		JLabel lblDiaSemana = new JLabel(DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name());
+		panel_1.add(lblDiaSemana);
 		Calendar date = Calendar.getInstance();
 		date.setTime((Date) spinnerInicio.getValue());
 		date.add(Calendar.DATE, 7);
+
+		spinnerInicio.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				lblDiaSemana.setText(DiasSemana
+						.values()[new DateTime(((Date) spinnerInicio.getValue()).getTime()).getDayOfWeek() - 1].name());
+			}
+		});
 
 		JLabel lblNewLabel = new JLabel("Instalacion");
 		panelCabecera.add(lblNewLabel);
@@ -195,9 +223,10 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 
 	@SuppressWarnings("deprecation")
 	private void verDetalles(JTable t) {
-		ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
+
 		boolean mia = tm.getValueAt(t.getSelectedRow(), t.getSelectedColumn()).equals("Mi reserva");
-		if (t.getSelectedRow() != -1 && reserva != null && mia) {
+		if (t.getSelectedRow() != -1 && tablaReservas[t.getSelectedColumn()][t.getSelectedRow()] != null && mia) {
+			ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
 			new VentanaDetallesReserva(reserva.getIdRes()).show();
 		}
 	}
@@ -240,7 +269,7 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
 			int nhoras = reservas.get(i).getFin().getHourOfDay() - reservas.get(i).getInicio().getHourOfDay();
-//			System.out.println("nhoras" + nhoras);
+			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
 				if (reservas.get(i).getIdUsu().equals(user)) {
 					tm.setValueAt("Mi reserva", hora + j, dia);

@@ -242,12 +242,12 @@ public class VentanaAdminReservasPorInstalacion extends JFrame {
 			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
 				if (reservas.get(i).getTipoRes().equals(TipoReserva.CENTRO.name())) {
-					tm.setValueAt(TipoReserva.CENTRO.name(), hora, dia);
-					tablaReservas[dia][hora] = reservas.get(i);
+					tm.setValueAt(TipoReserva.CENTRO.name(), hora+j, dia);
+					tablaReservas[dia][hora+j] = reservas.get(i);
 				}
 				if (reservas.get(i).getTipoRes().equals(TipoReserva.SOCIO.name())) {
-					tm.setValueAt(TipoReserva.SOCIO.name(), hora, dia);
-					tablaReservas[dia][hora] = reservas.get(i);
+					tm.setValueAt(TipoReserva.SOCIO.name(), hora+j, dia);
+					tablaReservas[dia][hora+j] = reservas.get(i);
 				}
 			}
 		}
