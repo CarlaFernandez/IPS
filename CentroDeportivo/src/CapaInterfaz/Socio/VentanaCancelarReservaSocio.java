@@ -1,4 +1,4 @@
-package CapaInterfaz.Admin;
+package CapaInterfaz.Socio;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -38,10 +38,12 @@ import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerFechas;
+import CapaNegocio.managers.ManagerUsuario;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class VentanaCancelarReservaCentro extends JFrame {
+public class VentanaCancelarReservaSocio extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JSpinner spinnerInicio, spinnerFin;
 	private JTable table;
@@ -50,9 +52,11 @@ public class VentanaCancelarReservaCentro extends JFrame {
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
 	private int selectedRow;
+	private long user;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public VentanaCancelarReservaCentro() {
+	public VentanaCancelarReservaSocio(long user) {
+		this.user = user;
 		instalaciones = ManagerAdmin.verInstalaciones();
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
@@ -72,8 +76,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.CENTER);
-		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado",
-				"Reservante"}, 0);
+		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado"}, 0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -81,7 +84,6 @@ public class VentanaCancelarReservaCentro extends JFrame {
 				selectedRow = table.getSelectedRow();
 			}
 		});
-		table.setDefaultRenderer(Object.class, new TableCellRendererColorAdmin());
 		table.setModel(modeloTabla);
 		table.setBackground(Color.WHITE);
 		spTabla.setViewportView(table);
@@ -113,19 +115,6 @@ public class VentanaCancelarReservaCentro extends JFrame {
 		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerFin);
 
-		JLabel lblInstalacion = new JLabel("Instalaci\u00F3n");
-		panelCabecera.add(lblInstalacion);
-
-		instalaciones = ManagerAdmin.verInstalaciones();
-		String[] instalacionesStrings = new String[instalaciones.size()];
-		int aux = 0;
-		for (Instalacion instalacion : instalaciones) {
-			instalacionesStrings[aux] = instalacion.getCodigo();
-			aux++;
-		}
-		comboBoxInstalaciones = new JComboBox(instalacionesStrings);
-		panelCabecera.add(comboBoxInstalaciones);
-
 		btnBuscar = new JButton("Ver reservas");
 		btnBuscar.setEnabled(false);
 		btnBuscar.addActionListener(new ActionListener() {
@@ -138,18 +127,6 @@ public class VentanaCancelarReservaCentro extends JFrame {
 		JPanel panelPie = new JPanel();
 		panel.add(panelPie, BorderLayout.SOUTH);
 		panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-		JLabel lblCentro = new JLabel("CENTRO");
-		lblCentro.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		lblCentro.setOpaque(true);
-		lblCentro.setBackground(new Color(255, 185, 185));
-		panelPie.add(lblCentro);
-
-		JLabel lblSocio = new JLabel("SOCIO");
-		lblSocio.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		lblSocio.setOpaque(true);
-		lblSocio.setBackground(new Color(185, 255, 185));
-		panelPie.add(lblSocio);
 
 		JButton button = new JButton("Cancelar Reserva");
 		button.addActionListener(new ActionListener() {
@@ -179,7 +156,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 		Date inicio = (Date) spinnerInicio.getValue();
 		Date fin = (Date) spinnerFin.getValue();
 
-		List<ReservaDao> reservas = ManagerAdmin.verReservasPorFechaEInstalacion(inicio, fin, obtenerIDInstalacion());
+		List<ReservaDao> reservas = ManagerUsuario.verReservasPorFecha(inicio, fin, user);
 		Object[] line = new Object[9];
 		int tam = modeloTabla.getRowCount();
 		for (int i = 0; i < tam; i++) {
@@ -195,7 +172,6 @@ public class VentanaCancelarReservaCentro extends JFrame {
 			Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
 			line[4] = pago.getEstado();
 			line[5] = reserva.getEstado();
-			line[6] = reserva.getTipoRes().equals(TipoReserva.SOCIO.name()) ? reserva.getIdUsu() : TipoReserva.CENTRO;
 			modeloTabla.addRow(line);
 		}
 	}
@@ -206,43 +182,62 @@ public class VentanaCancelarReservaCentro extends JFrame {
 
 }
 
-/*
- * package CapaInterfaz.Admin;
- * 
- * import javax.swing.JLabel; import javax.swing.JOptionPane;
- * 
- * import javax.swing.JTextField;
- * 
- * import CapaDatos.ReservaDatos; import CapaNegocio.dao.ReservaDao; import
- * CapaNegocio.excepciones.ExcepcionReserva;
- * 
- * import javax.swing.JButton; import javax.swing.JDialog;
- * 
- * import java.awt.event.ActionListener; import java.awt.event.ActionEvent;
- * 
- * public class VentanaCancelarReservaCentro extends JDialog {
- * 
- * private static final long serialVersionUID = 1L; private JTextField
- * textField; public VentanaCancelarReservaCentro() {
- * getContentPane().setLayout(null); setResizable(false); setBounds(100, 100,
- * 450, 300); JLabel lblIdreserva = new JLabel("idReserva:");
- * lblIdreserva.setBounds(107, 63, 67, 22); getContentPane().add(lblIdreserva);
- * 
- * textField = new JTextField(); lblIdreserva.setLabelFor(textField);
- * textField.setBounds(184, 64, 86, 20); getContentPane().add(textField);
- * textField.setColumns(10);
- * 
- * JButton btnCancelarReserva = new JButton(" Cancelar Reserva");
- * btnCancelarReserva.addActionListener(new ActionListener() { public void
- * actionPerformed(ActionEvent e) { cancelarReserva(); } });
- * btnCancelarReserva.setBounds(147, 135, 123, 23);
- * getContentPane().add(btnCancelarReserva); }
- * 
- * private void cancelarReserva() { ReservaDao reserva =
- * ReservaDatos.getReserva(Long.parseLong(textField.getText())); try {
- * ReservaDatos.cancelarReservaComoAdmin(reserva); } catch (ExcepcionReserva e1)
- * { JOptionPane.showMessageDialog(this, "El formato es incorrecto"); } catch
- * (NumberFormatException e2){ JOptionPane.showMessageDialog(this,
- * "Formato del id incorrecto"); } } }
- * 
- */
+
+/*package CapaInterfaz.Socio;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import CapaDatos.ReservaDatos;
+import CapaNegocio.dao.ReservaDao;
+import CapaNegocio.excepciones.ExcepcionReserva;
+
+public class VentanaCancelarReservaSocio extends JDialog {
+	
+	
+	private static final long serialVersionUID = 1L;
+	private JTextField textField;
+	public VentanaCancelarReservaSocio() {
+		setResizable(false);
+		setBounds(100, 100, 450, 300);
+		getContentPane().setLayout(null);
+		
+		JLabel lblIdreserva = new JLabel("idReserva:");
+		lblIdreserva.setBounds(107, 63, 67, 22);
+		getContentPane().add(lblIdreserva);
+		
+		textField = new JTextField();
+		lblIdreserva.setLabelFor(textField);
+		textField.setBounds(184, 64, 86, 20);
+		getContentPane().add(textField);
+		textField.setColumns(10);
+		
+		JButton btnCancelarReserva = new JButton(" Cancelar Reserva");
+		btnCancelarReserva.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelarReserva();
+			}
+		});
+		btnCancelarReserva.setBounds(147, 135, 123, 23);
+		getContentPane().add(btnCancelarReserva);
+	}
+	
+	private void cancelarReserva() {
+		ReservaDao reserva = ReservaDatos.getReserva(Long.parseLong(textField.getText()));
+		try {
+			ReservaDatos.cancelarReservaComoSocio(reserva);
+		} catch (ExcepcionReserva e1) {
+			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
+		} catch (NumberFormatException e2){
+			JOptionPane.showMessageDialog(this, "Formato del id incorrecto");
+		}
+	}
+	
+}
+*/

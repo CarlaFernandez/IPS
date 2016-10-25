@@ -41,7 +41,7 @@ import CapaNegocio.managers.ManagerFechas;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class VentanaCancelarReservaCentro extends JFrame {
+public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JSpinner spinnerInicio, spinnerFin;
 	private JTable table;
@@ -52,7 +52,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 	private int selectedRow;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public VentanaCancelarReservaCentro() {
+	public VentanaSocioUtilizandoInstalacion() {
 		instalaciones = ManagerAdmin.verInstalaciones();
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
@@ -73,7 +73,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.CENTER);
 		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado",
-				"Reservante"}, 0);
+				"Reservante", "Hora Entrada", "Hora Salida" }, 0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -156,9 +156,11 @@ public class VentanaCancelarReservaCentro extends JFrame {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				int fila = table.getSelectedRow();
+				System.out.println(fila);
 				int botonDialogo = JOptionPane.YES_NO_OPTION;
 				if (fila != -1) {
 					long id = (long) modeloTabla.getValueAt(fila, 1);
+					System.out.println(id);
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
 					botonDialogo = JOptionPane.showConfirmDialog(null, "Está seguro de que quiere cancelar la reserva?",
 							"Confirmar Cancelacion", botonDialogo);
@@ -196,6 +198,8 @@ public class VentanaCancelarReservaCentro extends JFrame {
 			line[4] = pago.getEstado();
 			line[5] = reserva.getEstado();
 			line[6] = reserva.getTipoRes().equals(TipoReserva.SOCIO.name()) ? reserva.getIdUsu() : TipoReserva.CENTRO;
+			// line[7] = ManagerFechas.getHora(reserva.getHoraEntrada());
+			// line[8] = ManagerFechas.getHora(reserva.getHoraSalida());
 			modeloTabla.addRow(line);
 		}
 	}

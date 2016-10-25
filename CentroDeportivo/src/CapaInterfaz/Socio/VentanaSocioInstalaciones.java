@@ -48,8 +48,14 @@ public class VentanaSocioInstalaciones extends JFrame{
 		btnNewButton_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_1);
 		
-		JButton btnNewButton = new JButton("");
-		btnNewButton.setFont(new Font("Wide Latin", Font.PLAIN, 12));
+		JButton btnNewButton = new JButton("Cancelar reserva");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				VentanaCancelarReservaSocio vcrs = new VentanaCancelarReservaSocio(user);
+				vcrs.show();
+			}
+		});
+		btnNewButton.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNewButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton);
 		

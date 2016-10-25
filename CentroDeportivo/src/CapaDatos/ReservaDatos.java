@@ -212,6 +212,13 @@ public class ReservaDatos {
 			} catch (SQLException e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -226,6 +233,13 @@ public class ReservaDatos {
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -435,11 +449,18 @@ public class ReservaDatos {
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
 			}
-			con.close();
+			
 			return reserva;
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
+		}finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

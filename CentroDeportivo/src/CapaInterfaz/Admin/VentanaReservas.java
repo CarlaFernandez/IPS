@@ -74,7 +74,7 @@ public class VentanaReservas extends JFrame {
 
 
 		
-		JButton btnCancelarCentro = new JButton("Cancelar Reserva Centro");
+		JButton btnCancelarCentro = new JButton("Cancelar reserva");
 		btnCancelarCentro.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnCancelarCentro.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
@@ -85,17 +85,6 @@ public class VentanaReservas extends JFrame {
 		});
 		btnCancelarCentro.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnCancelarCentro);
-		
-		JButton btnCancelarSocio = new JButton("Cancelar Reserva Socio");
-		btnCancelarSocio.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnCancelarSocio.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
-			public void actionPerformed(ActionEvent e) {
-				VentanaCancelarReservaSocio vcrs = new VentanaCancelarReservaSocio();
-				vcrs.show();
-			}
-		});
-		panel.add(btnCancelarSocio);
 		
 
 		JLabel lblTituloAdmin = new JLabel("Ventana Reservas");
