@@ -78,9 +78,9 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 
 		// Titulos para la cabecera superior. El primero es vacio,
 		// puesto que corresponde
-		tm.setColumnIdentifiers(new String[] { "", DiasSemana.values()[1].name(), DiasSemana.values()[2].name(),
-				DiasSemana.values()[3].name(), DiasSemana.values()[4].name(), DiasSemana.values()[5].name(),
-				DiasSemana.values()[6].name(), DiasSemana.values()[0].name() });
+		tm.setColumnIdentifiers(new String[] { "", DiasSemana.values()[0].name(), DiasSemana.values()[1].name(),
+				DiasSemana.values()[2].name(), DiasSemana.values()[3].name(), DiasSemana.values()[4].name(),
+				DiasSemana.values()[5].name(), DiasSemana.values()[6].name() });
 
 		// Valores para la primera columna, que es la cabecera lateral.
 		for (int i = 0; i < tm.getRowCount(); i++)
@@ -89,7 +89,7 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		// JTable al que se le pasa el modelo recien creado y se
 		// sobreescribe el metodo changeSelection para que no permita
 		// seleccionar la primera columna.
-		JTable t = new JTable(tm) {
+		t = new JTable(tm) {
 			/**
 			 * 
 			 */
@@ -107,7 +107,7 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int clicks = e.getClickCount();
-				if (clicks >= 2){
+				if (clicks >= 2) {
 					verDetalles(t);
 				}
 			}
@@ -182,7 +182,7 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		lblMias.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		lblMias.setBackground(new Color(185, 255, 185));
 		panelPie.add(lblMias);
-		
+
 		JButton btnVerDetalles = new JButton("Ver detalles");
 		btnVerDetalles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -190,11 +190,16 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 			}
 		});
 		panelPie.add(btnVerDetalles);
+		obtenerReservasPorInstalacion();
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	private void verDetalles(JTable t) {
-		ReservaDao reserva =  tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
-		new VentanaDetallesReserva(reserva.getIdRes()).show();
+		ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
+		boolean mia = tm.getValueAt(t.getSelectedRow(), t.getSelectedColumn()).equals("Mi reserva");
+		if (t.getSelectedRow() != -1 && reserva != null && mia) {
+			new VentanaDetallesReserva(reserva.getIdRes()).show();
+		}
 	}
 
 	public void obtenerReservasPorInstalacion() {
@@ -205,10 +210,14 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		Calendar dateInicio = Calendar.getInstance();
 		dateInicio.setTime((Date) spinnerInicio.getValue());
 		dateInicio.add(Calendar.DATE, -new DateTime(valorSpin.getTime()).getDayOfWeek());
+		dateInicio.set(Calendar.MILLISECOND, 0);
+		dateInicio.set(Calendar.SECOND, 0);
+		dateInicio.set(Calendar.MINUTE, 0);
+		dateInicio.set(Calendar.HOUR, 0);
 
 		Calendar dateF = Calendar.getInstance();
 		dateF.setTime(dateInicio.getTime());
-		dateF.add(Calendar.DATE, 7);
+		dateF.add(Calendar.DATE, 8);
 		Date fin = dateF.getTime();
 
 		System.out.println(dateInicio.getTime());
@@ -226,7 +235,7 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 			}
 		}
 
-		tablaReservas = new ReservaDao[7][24];
+		tablaReservas = new ReservaDao[8][24];
 		for (int i = 0; i < reservas.size(); i++) {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
