@@ -239,13 +239,17 @@ public class VentanaSocioReservasPorInstalacion extends JFrame {
 		for (int i = 0; i < reservas.size(); i++) {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
-			if (reservas.get(i).getIdUsu().equals(user)) {
-				tm.setValueAt("Mi reserva", hora, dia);
-				tablaReservas[dia][hora] = reservas.get(i);
-			}
-			if (!reservas.get(i).getIdUsu().equals(user)) {
-				tm.setValueAt("Reserva ajena", hora, dia);
-				tablaReservas[dia][hora] = reservas.get(i);
+			int nhoras = reservas.get(i).getFin().getHourOfDay() - reservas.get(i).getInicio().getHourOfDay();
+//			System.out.println("nhoras" + nhoras);
+			for (int j = 0; j < nhoras; j++) {
+				if (reservas.get(i).getIdUsu().equals(user)) {
+					tm.setValueAt("Mi reserva", hora + j, dia);
+					tablaReservas[dia][hora + j] = reservas.get(i);
+				}
+				if (!reservas.get(i).getIdUsu().equals(user)) {
+					tm.setValueAt("Reserva ajena", hora + j, dia);
+					tablaReservas[dia][hora + j] = reservas.get(i);
+				}
 			}
 		}
 	}
