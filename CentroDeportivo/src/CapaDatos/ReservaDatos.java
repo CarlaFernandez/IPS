@@ -449,12 +449,12 @@ public class ReservaDatos {
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
 			}
-			
+
 			return reserva;
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				con.close();
 			} catch (SQLException e) {
@@ -523,5 +523,70 @@ public class ReservaDatos {
 		}
 		return null;
 
+	}
+
+	public void registrarEntradaSocio(Long idReserva, Timestamp hora) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		ResultSet rs = null;
+		try {
+			PreparedStatement ps = con.prepareStatement("UPDATE RESERVA SET HORA_ENTRADA = ? WHERE ID = ?");
+			ps.setTimestamp(1, hora);
+			ps.setLong(2, idReserva);
+			rs = ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println(e.getSQLState());
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void registrarSalidaSocio(Long idReserva, Timestamp hora) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		ResultSet rs = null;
+		try {
+			PreparedStatement ps = con.prepareStatement("UPDATE RESERVA SET HORA_SALIDA = ? WHERE ID = ?");
+			ps.setTimestamp(1, hora);
+			ps.setLong(2, idReserva);
+			rs = ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println(e.getSQLState());
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void actualizarHoraEntradaSalida(ReservaDao reserva) throws ExcepcionReserva {
+		Timestamp horaEntrada = null;
+		Timestamp horasalida = null;
+		if (reserva.getHoraEntrada() != null)
+			horaEntrada = ManagerFechas.convertirATimestampSql(reserva.getHoraEntrada());
+		if (reserva.getHoraSalida() != null)
+			horasalida = ManagerFechas.convertirATimestampSql(reserva.getHoraEntrada());
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			PreparedStatement ps = con
+					.prepareStatement("update reserva set hora_entrada = ?, hora_salida = ? where id = ? ");
+			ps.setTimestamp(1, horaEntrada);
+			ps.setTimestamp(2, horasalida);
+			ps.setLong(3, reserva.getIdRes());
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState());
+			e.printStackTrace();
+		}
 	}
 }

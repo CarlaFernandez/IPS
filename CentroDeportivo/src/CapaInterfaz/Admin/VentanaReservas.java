@@ -86,6 +86,16 @@ public class VentanaReservas extends JFrame {
 		btnCancelarCentro.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnCancelarCentro);
 		
+		JButton btnIndicarUtilizacion = new JButton("Registrar utilizacion de la instalacion");
+		btnIndicarUtilizacion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				VentanaSocioUtilizandoInstalacion vsui = new VentanaSocioUtilizandoInstalacion();
+				vsui.show();
+			}
+		});
+		btnIndicarUtilizacion.setFont(new Font("Arial", Font.PLAIN, 14));
+		panel.add(btnIndicarUtilizacion);
+		
 
 		JLabel lblTituloAdmin = new JLabel("Ventana Reservas");
 		lblTituloAdmin.setHorizontalAlignment(SwingConstants.CENTER);
