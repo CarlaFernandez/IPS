@@ -93,7 +93,9 @@ public class ReservaDatos {
 	}
 
 	private static void comprobarReservaValidaUsuario(ReservaDao reserva) throws ExcepcionReserva {
+		// reservas simultaneas
 		if (!UsuarioDatos.usuarioTieneReservaEnHoras(reserva.getIdUsu(), reserva.getInicio(), reserva.getFin())) {
+			// instalacion esta libre
 			if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
 
 				long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();

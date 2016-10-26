@@ -22,6 +22,8 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.joda.time.DateTime;
@@ -37,6 +39,7 @@ import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerUsuario;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.GridLayout;
 
 public class VentanaAdminReservasPorInstalacion extends JFrame {
 
@@ -134,18 +137,41 @@ public class VentanaAdminReservasPorInstalacion extends JFrame {
 		JPanel panelCabecera = new JPanel();
 		panel.add(panelCabecera, BorderLayout.NORTH);
 
-		JLabel lblSemanaDelDia = new JLabel("Semana del dia:");
-		panelCabecera.add(lblSemanaDelDia);
+		JPanel panelDiaSemana = new JPanel();
+		panelCabecera.add(panelDiaSemana);
+		panelDiaSemana.setLayout(new GridLayout(0, 2, 0, 0));
+
+		JLabel lblSemanaDelDia = new JLabel("Semana del día:");
+		panelDiaSemana.add(lblSemanaDelDia);
 
 		spinnerInicio = new JSpinner();
 		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
-		panelCabecera.add(spinnerInicio);
 		Calendar date = Calendar.getInstance();
 		date.setTime((Date) spinnerInicio.getValue());
 		date.add(Calendar.DATE, 7);
+		panelDiaSemana.add(spinnerInicio);
 
-		JLabel lblNewLabel = new JLabel("Instalacion");
-		panelCabecera.add(lblNewLabel);
+		JLabel lblElDiaQue = new JLabel("Día seleccionado");
+		panelDiaSemana.add(lblElDiaQue);
+
+		Calendar ahora = Calendar.getInstance();
+		ahora.set(Calendar.MILLISECOND, 0);
+		ahora.set(Calendar.SECOND, 0);
+		ahora.set(Calendar.MINUTE, 0);
+		ahora.set(Calendar.HOUR, 0);
+		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek()].name();
+		JLabel lblDiaSemana = new JLabel(DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name());
+		panelDiaSemana.add(lblDiaSemana);
+
+		spinnerInicio.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				lblDiaSemana.setText(DiasSemana.values()
+						[new DateTime(((Date) spinnerInicio.getValue()).getTime()).getDayOfWeek() - 1].name());
+			}
+		});
+
+		JLabel lblInstalacion = new JLabel("Instalación");
+		panelCabecera.add(lblInstalacion);
 
 		instalaciones = ManagerUsuario.verInstalaciones();
 		String[] instalacionesStrings = new String[instalaciones.size()];
@@ -242,12 +268,12 @@ public class VentanaAdminReservasPorInstalacion extends JFrame {
 			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
 				if (reservas.get(i).getTipoRes().equals(TipoReserva.CENTRO.name())) {
-					tm.setValueAt(TipoReserva.CENTRO.name(), hora+j, dia);
-					tablaReservas[dia][hora+j] = reservas.get(i);
+					tm.setValueAt(TipoReserva.CENTRO.name(), hora + j, dia);
+					tablaReservas[dia][hora + j] = reservas.get(i);
 				}
 				if (reservas.get(i).getTipoRes().equals(TipoReserva.SOCIO.name())) {
-					tm.setValueAt(TipoReserva.SOCIO.name(), hora+j, dia);
-					tablaReservas[dia][hora+j] = reservas.get(i);
+					tm.setValueAt(TipoReserva.SOCIO.name(), hora + j, dia);
+					tablaReservas[dia][hora + j] = reservas.get(i);
 				}
 			}
 		}

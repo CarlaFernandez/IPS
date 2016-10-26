@@ -33,6 +33,17 @@ public class VentanaSocioInstalaciones extends JFrame{
 				vsir.show();
 			}
 		});
+		
+		JButton btnRealizarReserva = new JButton("Realizar reserva");
+		btnRealizarReserva.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaSocioReservaInstalacion vs = new VentanaSocioReservaInstalacion(user);
+				vs.show();
+			}
+		});
+		btnRealizarReserva.setFont(new Font("Arial", Font.PLAIN, 14));
+		btnRealizarReserva.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		panel.add(btnRealizarReserva);
 		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
 		
@@ -58,11 +69,6 @@ public class VentanaSocioInstalaciones extends JFrame{
 		btnNewButton.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNewButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton);
-		
-		JButton btnNewButton_2 = new JButton("");
-		btnNewButton_2.setFont(new Font("Wide Latin", Font.PLAIN, 12));
-		btnNewButton_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panel.add(btnNewButton_2);
 		
 		JLabel lblTituloSocio = new JLabel("Ventana Socios>Instalaciones");
 		lblTituloSocio.setHorizontalAlignment(SwingConstants.CENTER);
