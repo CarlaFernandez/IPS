@@ -44,4 +44,9 @@ public class ManagerFechas {
 			
 			return sb.toString();
 		}
+		
+		public static boolean fechasEstanEnMismoMes(DateTime date1, DateTime date2){
+			return date1.getMonthOfYear() == date2.getMonthOfYear()
+					&& date1.getYear() == date2.getYear();
+		}
 }

@@ -93,27 +93,38 @@ public class ReservaDatos {
 	}
 
 	private static void comprobarReservaValidaUsuario(ReservaDao reserva) throws ExcepcionReserva {
-		// reservas simultaneas
-		if (!UsuarioDatos.usuarioTieneReservaEnHoras(reserva.getIdUsu(), reserva.getInicio(), reserva.getFin())) {
-			// instalacion esta libre
-			if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
 
-				long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
-				long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-				long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+		// usuario de baja
+		if (comprobarUsuarioBaja(reserva.getIdUsu(), reserva.getInicio())) {
+			// reservas simultaneas
+			if (!UsuarioDatos.usuarioTieneReservaEnHoras(reserva.getIdUsu(), reserva.getInicio(), reserva.getFin())) {
+				// instalacion esta libre
+				if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
 
-				if (daysDiff > ReservaDao.DIAS_ANTELACION_RESERVA_MAXIMO) {
-					throw new ExcepcionReserva("Es demasiado pronto para realizar esta reserva");
-				} else if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_SOCIO) {
-					throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
+					long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
+					long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+					long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+
+					if (daysDiff > ReservaDao.DIAS_ANTELACION_RESERVA_MAXIMO) {
+						throw new ExcepcionReserva("Es demasiado pronto para realizar esta reserva");
+					} else if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_SOCIO) {
+						throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
+					}
+
+				} else {
+					throw new ExcepcionReserva("Esta instalacion ya esta reservada para esas fechas");
 				}
-
 			} else {
-				throw new ExcepcionReserva("Esta instalacion ya esta reservada para esas fechas");
+				throw new ExcepcionReserva("El usuario tiene otra actividad simultanea");
 			}
 		} else {
-			throw new ExcepcionReserva("El usuario tiene otra actividad simultanea");
+			throw new ExcepcionReserva("El usuario no puede reservar porque está dado de baja");
 		}
+	}
+
+	private static boolean comprobarUsuarioBaja(Long idUsu, DateTime inicio) {
+		Date baja = UsuarioDatos.ObtenerUsuario(idUsu).getBaja();
+		return baja == null || new DateTime(baja).isAfter(inicio);
 	}
 
 	private static void comprobarReservaValidaAdmin(ReservaDao reserva) throws ExcepcionReserva {
@@ -451,12 +462,12 @@ public class ReservaDatos {
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
 			}
-			
+
 			return reserva;
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				con.close();
 			} catch (SQLException e) {

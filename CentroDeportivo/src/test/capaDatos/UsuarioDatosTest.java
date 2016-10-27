@@ -14,7 +14,7 @@ public class UsuarioDatosTest {
     @Before
     public void setUp() throws Exception {
         usuario = new Usuario(true, "carla", "fernandez", new Long(12345), 
-				"746756B","calle bla", "blabla@bla.com", "oviedo", "1384879342798", false);
+				"746756B","calle bla", "blabla@bla.com", "oviedo", "1384879342798", null);
 
     }
 

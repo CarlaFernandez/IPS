@@ -1,5 +1,7 @@
 package CapaNegocio.dao;
 
+import java.util.Date;
+
 /**
  * Created by Carla on 08/10/2016.
  */
@@ -13,10 +15,10 @@ public class Usuario {
 	private String cuentaBancaria;
 	private String email;
 	private String ciudad;
-	private boolean baja;
+	private Date baja;
 
 	public Usuario(boolean socio, String nombre, String apellidos, Long idUsu, String DNI, String direccion,
-			String email, String ciudad, String cuentaBancaria, boolean baja) {
+			String email, String ciudad, String cuentaBancaria, Date baja) {
 		this.socio = socio;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -26,7 +28,7 @@ public class Usuario {
 		this.email = email;
 		this.ciudad = ciudad;
 		this.cuentaBancaria = cuentaBancaria;
-		this.baja = false;
+		this.baja = baja;
 	}
 
 	public Usuario() {
@@ -104,11 +106,11 @@ public class Usuario {
 		this.ciudad = ciudad;
 	}
 
-	public boolean isBaja() {
+	public Date getBaja() {
 		return baja;
 	}
 
-	public void setBaja(boolean baja) {
+	public void setBaja(Date baja) {
 		this.baja = baja;
 	}
 
