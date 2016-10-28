@@ -59,32 +59,31 @@ public class ReservaDatos {
 			comprobarReservaValidaAdmin(reserva);
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into reserva ");
-			sb.append("(id, hora_inicio, hora_fin, instalacion_id, pago_id, ");
+			sb.append("(hora_inicio, hora_fin, instalacion_id, pago_id, ");
 			sb.append("estado, tipo, usuario_id, actividad_id, curso_id) ");
-			sb.append("values (?,?,?,?,?,?,?,?,?,?)");
+			sb.append("values (?,?,?,?,?,?,?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setLong(1, reserva.getIdRes());
-			ps.setTimestamp(2, ManagerFechas.convertirATimestampSql(reserva.getInicio()));
-			ps.setTimestamp(3, ManagerFechas.convertirATimestampSql(reserva.getFin()));
-			ps.setLong(4, reserva.getIdInst());
+			ps.setTimestamp(1, ManagerFechas.convertirATimestampSql(reserva.getInicio()));
+			ps.setTimestamp(2, ManagerFechas.convertirATimestampSql(reserva.getFin()));
+			ps.setLong(3, reserva.getIdInst());
 			if (reserva.getIdPago() != null)
-				ps.setLong(5, reserva.getIdPago());
+				ps.setLong(4, reserva.getIdPago());
 			else
-				ps.setNull(5, java.sql.Types.BIGINT);
-			ps.setString(6, reserva.getEstado());
-			ps.setString(7, reserva.getTipoRes());
+				ps.setNull(4, java.sql.Types.BIGINT);
+			ps.setString(5, reserva.getEstado());
+			ps.setString(6, reserva.getTipoRes());
 			if (reserva.getIdUsu() != null)
+				ps.setLong(7, reserva.getIdAct());
+			else
+				ps.setNull(7, java.sql.Types.BIGINT);
+			if (reserva.getIdAct() != null)
 				ps.setLong(8, reserva.getIdAct());
 			else
 				ps.setNull(8, java.sql.Types.BIGINT);
-			if (reserva.getIdAct() != null)
-				ps.setLong(9, reserva.getIdAct());
+			if (reserva.getIdCurso() != null)
+				ps.setLong(9, reserva.getIdCurso());
 			else
 				ps.setNull(9, java.sql.Types.BIGINT);
-			if (reserva.getIdCurso() != null)
-				ps.setLong(10, reserva.getIdCurso());
-			else
-				ps.setNull(10, java.sql.Types.BIGINT);
 			ps.execute();
 			con.close();
 		} catch (SQLException e) {

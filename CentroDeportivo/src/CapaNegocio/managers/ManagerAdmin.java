@@ -24,7 +24,7 @@ public class ManagerAdmin {
 
 	public static void crearReservaCentro(DateTime inicio, DateTime fin, Long idInst, Long idAct, Long idCurso)
 			throws ExcepcionReserva {
-		ReservaDao reserva = new ReservaDao(ReservaDatos.obtenerNuevoIDReserva(), TipoReserva.CENTRO, inicio, fin,
+		ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, inicio, fin,
 				idInst, null, null, idAct, idCurso);
 		ReservaDatos.insertarReservaAdmin(reserva);
 	}
