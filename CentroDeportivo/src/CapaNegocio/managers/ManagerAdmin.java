@@ -67,4 +67,8 @@ public class ManagerAdmin {
 		PagoDatos.CobrarPago(pago.getId());
 		System.out.println("Imprimiendo recibo....");
 	}
+
+	public static void AnularReserva(Long idResConflict) {
+		ReservaDatos.anularReserva(idResConflict);
+	}
 }

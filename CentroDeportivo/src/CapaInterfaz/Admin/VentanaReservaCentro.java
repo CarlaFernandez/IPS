@@ -28,7 +28,12 @@ import org.joda.time.format.DateTimeFormatter;
 
 import com.toedter.calendar.JDateChooser;
 
+import CapaDatos.UsuarioDatos;
+import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.Instalacion;
+import CapaNegocio.dao.ReservaDao;
+import CapaNegocio.dao.TipoReserva;
+import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
@@ -49,47 +54,47 @@ public class VentanaReservaCentro extends JDialog {
 	public VentanaReservaCentro() {
 		setTitle("Admin -> Reserva Centro");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
-		setAlwaysOnTop(true);
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+				Double.MIN_VALUE };
 		getContentPane().setLayout(gridBagLayout);
-						
-						JLabel lblRealizarReservaDe = new JLabel("Realizar reserva de centro");
-						lblRealizarReservaDe.setFont(new Font("Arial Black", Font.BOLD, 25));
-						GridBagConstraints gbc_lblRealizarReservaDe = new GridBagConstraints();
-						gbc_lblRealizarReservaDe.gridwidth = 2;
-						gbc_lblRealizarReservaDe.fill = GridBagConstraints.HORIZONTAL;
-						gbc_lblRealizarReservaDe.insets = new Insets(0, 0, 5, 5);
-						gbc_lblRealizarReservaDe.gridx = 1;
-						gbc_lblRealizarReservaDe.gridy = 1;
-						getContentPane().add(lblRealizarReservaDe, gbc_lblRealizarReservaDe);
-				
-						JLabel lblInicio = new JLabel("Fecha inicio:");
-						lblInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
-						GridBagConstraints gbc_lblInicio = new GridBagConstraints();
-						gbc_lblInicio.insets = new Insets(25, 100, 5, 5);
-						gbc_lblInicio.gridx = 0;
-						gbc_lblInicio.gridy = 3;
-						getContentPane().add(lblInicio, gbc_lblInicio);
-						gbc_lblInicio.insets = new Insets(50, 0, 5, 5);
-						gbc_lblInicio.gridx = 1;
-						gbc_lblInicio.gridy = 1;
-		
-				dateInicio = new JDateChooser(new Date(System.currentTimeMillis()));
-				dateInicio.setDateFormatString("dd/MM/yyyy");
-				GridBagConstraints gbc_dateInicio = new GridBagConstraints();
-				gbc_dateInicio.fill = GridBagConstraints.HORIZONTAL;
-				gbc_dateInicio.insets = new Insets(25, 0, 5, 5);
-				gbc_dateInicio.gridx = 1;
-				gbc_dateInicio.gridy = 3;
-				dateInicio.setMinSelectableDate(new Date(System.currentTimeMillis()));
-				dateInicio.setDate(new Date(System.currentTimeMillis()));
-				getContentPane().add(dateInicio, gbc_dateInicio);
+
+		JLabel lblRealizarReservaDe = new JLabel("Realizar reserva de centro");
+		lblRealizarReservaDe.setFont(new Font("Arial Black", Font.BOLD, 25));
+		GridBagConstraints gbc_lblRealizarReservaDe = new GridBagConstraints();
+		gbc_lblRealizarReservaDe.gridwidth = 2;
+		gbc_lblRealizarReservaDe.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblRealizarReservaDe.insets = new Insets(0, 0, 5, 5);
+		gbc_lblRealizarReservaDe.gridx = 1;
+		gbc_lblRealizarReservaDe.gridy = 1;
+		getContentPane().add(lblRealizarReservaDe, gbc_lblRealizarReservaDe);
+
+		JLabel lblInicio = new JLabel("Fecha inicio:");
+		lblInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblInicio = new GridBagConstraints();
+		gbc_lblInicio.insets = new Insets(25, 100, 5, 5);
+		gbc_lblInicio.gridx = 0;
+		gbc_lblInicio.gridy = 3;
+		getContentPane().add(lblInicio, gbc_lblInicio);
+		gbc_lblInicio.insets = new Insets(50, 0, 5, 5);
+		gbc_lblInicio.gridx = 1;
+		gbc_lblInicio.gridy = 1;
+
+		dateInicio = new JDateChooser(new Date(System.currentTimeMillis()));
+		dateInicio.setDateFormatString("dd/MM/yyyy");
+		GridBagConstraints gbc_dateInicio = new GridBagConstraints();
+		gbc_dateInicio.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateInicio.insets = new Insets(25, 0, 5, 5);
+		gbc_dateInicio.gridx = 1;
+		gbc_dateInicio.gridy = 3;
+		dateInicio.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateInicio.setDate(new Date(System.currentTimeMillis()));
+		getContentPane().add(dateInicio, gbc_dateInicio);
 
 		JLabel lblHoraInicio = new JLabel("Hora inicio: ");
 		lblHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -229,7 +234,41 @@ public class VentanaReservaCentro extends JDialog {
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
 		} catch (ExcepcionReserva e) {
-			JOptionPane.showMessageDialog(this, e.getMessage());
+			// JOptionPane.showMessageDialog(this, e.getMessage());
+			int seleccion = JOptionPane.showOptionDialog(null, e.getMessage(), "Conflicto horas",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, // null
+																					// para
+																					// icono
+																					// por
+																					// defecto.
+					new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
+
+			// Seleccion ==0 => cancelar
+			if (seleccion == 1) {// Anular
+				// Anular previa insertar esta y aviso a usuario
+				List<ReservaDao> reservaConflicto = ManagerAdmin
+						.verReservasPorFechaEInstalacion(dateTimeInicio.toDate(), dateTimeFin.toDate(), idInst);
+				for (ReservaDao r : reservaConflicto) {
+					if (r.getEstado().equals(EstadoReserva.ACTIVA.name())) {
+						if (r.getTipoRes().equals(TipoReserva.CENTRO.name())) {
+							System.out.println("La reserva del centro: " + r.toString() + "\n HA SIDO ANULADA");
+						} else {
+							System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
+							Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
+							System.out.println("El usuario: " + usuario.getNombre() + " " + usuario.getApellidos());
+							System.out.println("La reserva: " + r.toString() + "\n HA SIDO ANULADA");
+						}
+						ManagerAdmin.AnularReserva(r.getIdRes());
+					}
+				}
+				try {
+					ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin, idInst, null, null);
+				} catch (ExcepcionReserva e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
+			}
 		}
 
 	}

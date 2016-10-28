@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
 import CapaNegocio.EstadoPago;
+import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerFechas;
@@ -536,5 +537,26 @@ public class ReservaDatos {
 		}
 		return null;
 
+	}
+
+	public static void anularReserva(Long idResConflict) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			PreparedStatement ps = con
+					.prepareStatement("update reserva set ESTADO='" + EstadoReserva.ANULADA + "' where id = ?");
+			ps.setLong(1, idResConflict);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
