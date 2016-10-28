@@ -28,6 +28,7 @@ public class InstalacionDatos {
 			sb.append("where hora_inicio < ?");
 			sb.append("and ? < hora_fin ");
 			sb.append("and instalacion_id = ? ");
+			sb.append("and estado = 'ACTIVA'");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setTimestamp(1, ManagerFechas.convertirATimestampSql(fin));
 			ps.setTimestamp(2, ManagerFechas.convertirATimestampSql(inicio));

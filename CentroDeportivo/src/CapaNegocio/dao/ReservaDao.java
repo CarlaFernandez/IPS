@@ -70,6 +70,25 @@ public class ReservaDao {
 	public ReservaDao() {
 	}
 
+	public ReservaDao(TipoReserva socio, DateTime inicio, DateTime fin, Long idInst, Long idPago, Long idUsu,
+			Long idAct, Long idCurso) throws ExcepcionReserva {
+		this.tipoRes = socio.name();
+		this.inicio = inicio;
+		this.fin = fin;
+		this.idInst = idInst;
+		this.idPago = idPago;
+		this.idUsu = idUsu;
+		this.idAct = idAct;
+		this.idCurso = idCurso;
+		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio, fin);
+		this.estado = EstadoReserva.ACTIVA.name();
+
+		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO && socio != TipoReserva.CENTRO) {
+			throw new ExcepcionReserva("Esta reserva dura demasiado");
+		}
+		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
+	}
+
 	public Long getIdPago() {
 		return idPago;
 	}

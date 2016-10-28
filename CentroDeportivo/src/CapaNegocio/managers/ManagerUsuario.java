@@ -38,4 +38,12 @@ public class ManagerUsuario {
 	public static List<ReservaDao> verReservasPorInstalacion(Long instalacion) {
 		return ReservaDatos.obtenerReservaPorInstalacion(instalacion);
 	}
+	
+	public static boolean esBajaParaEsteMes(Long idUsuario){
+		return UsuarioDatos.esBajaParaEsteMes(idUsuario);
+	}
+	
+	public static boolean esBajaParaElMesQueViene(Long idUsuario){
+		return UsuarioDatos.esBajaParaElMesQueViene(idUsuario);
+	}
 }
