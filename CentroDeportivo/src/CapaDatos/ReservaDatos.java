@@ -93,7 +93,9 @@ public class ReservaDatos {
 	}
 
 	private static void comprobarReservaValidaUsuario(ReservaDao reserva) throws ExcepcionReserva {
+		// reservas simultaneas
 		if (!UsuarioDatos.usuarioTieneReservaEnHoras(reserva.getIdUsu(), reserva.getInicio(), reserva.getFin())) {
+			// instalacion esta libre
 			if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
 
 				long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
@@ -569,21 +571,34 @@ public class ReservaDatos {
 		}
 	}
 
-	public static void actualizarHoraEntradaSalida(ReservaDao reserva) throws ExcepcionReserva {
+	public static void actualizarHoraEntrada(ReservaDao reserva) throws ExcepcionReserva {
 		Timestamp horaEntrada = null;
-		Timestamp horasalida = null;
 		if (reserva.getHoraEntrada() != null)
-			horaEntrada = ManagerFechas.convertirATimestampSql(reserva.getHoraEntrada());
-		if (reserva.getHoraSalida() != null)
-			horasalida = ManagerFechas.convertirATimestampSql(reserva.getHoraEntrada());
+			horaEntrada = new Timestamp(reserva.getHoraEntrada().getMillis());
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			PreparedStatement ps = con
-					.prepareStatement("update reserva set hora_entrada = ?, hora_salida = ? where id = ? ");
+					.prepareStatement("update reserva set hora_entrada = ? where id = ? ");
 			ps.setTimestamp(1, horaEntrada);
-			ps.setTimestamp(2, horasalida);
-			ps.setLong(3, reserva.getIdRes());
+			ps.setLong(2, reserva.getIdRes());
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState());
+			e.printStackTrace();
+		}
+	}
+	
+	public static void actualizarHoraSalida(ReservaDao reserva) throws ExcepcionReserva {
+		Timestamp horaSalida = null;
+		if (reserva.getHoraSalida() != null)
+			horaSalida = new Timestamp(reserva.getHoraSalida().getMillis());
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			PreparedStatement ps = con
+					.prepareStatement("update reserva set hora_salida = ? where id = ? ");
+			ps.setTimestamp(1, horaSalida);
+			ps.setLong(2, reserva.getIdRes());
 		} catch (SQLException e) {
 			System.err.println(e.getSQLState());
 			e.printStackTrace();

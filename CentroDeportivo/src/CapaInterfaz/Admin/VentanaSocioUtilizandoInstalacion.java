@@ -47,16 +47,23 @@ import CapaNegocio.managers.ManagerFechas;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.JTextField;
+import java.awt.GridLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JSpinner spinnerInicio, spinnerFin;
 	private JTable table;
-	private ModeloConColumnasEditables modeloTabla;
+	private ModeloNoEditable modeloTabla;
 	private JButton btnBuscar;
 	private List<Usuario> usuarios;
 	private JComboBox<String> comboBoxInstalaciones;
 	private int selectedRow;
+	private JTextField textFieldHoraSalida;
+	private JTextField textFieldHoraEntrada;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public VentanaSocioUtilizandoInstalacion() {
@@ -79,8 +86,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.NORTH);
-		modeloTabla = new ModeloConColumnasEditables(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago",
-				"Estado", "Hora Entrada", "Hora Salida" }, 0);
+		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado",
+				"Hora Entrada", "Hora Salida" }, 0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -148,51 +155,88 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		JButton btnModificarHoraEntradasalida = new JButton("Modificar hora entrada/salida");
 		btnModificarHoraEntradasalida.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-
 				int fila = table.getSelectedRow();
-				System.out.println(fila);
 				int botonDialogo = JOptionPane.YES_NO_OPTION;
 				if (fila != -1) {
 					long id = (long) modeloTabla.getValueAt(fila, 1);
-					String horaEntrada = "";
-					String horaSalida = "";
-					Long reservaId = new Long(0);
-					List<ReservaDao> reservas = new ArrayList<>();
-					for (int i = 0; i < modeloTabla.getDataVector().size(); i++) {
-						horaEntrada = (String) modeloTabla.getValueAt(fila, 6);
-						horaSalida = (String) modeloTabla.getValueAt(fila, 7);
-						reservaId = (Long) modeloTabla.getValueAt(fila, 1);
-						ReservaDao reserva = null;
-						if (horaEntrada != "" | horaSalida != "") {
-							reserva = ReservaDatos.obtenerReservaPorId(reservaId);
-							try {
-								reserva.setHoraEntrada(ManagerFechas.getDateTimeDeString(horaEntrada));
-								reserva.setHoraSalida(ManagerFechas.getDateTimeDeString(horaSalida));
-							} catch (NumberFormatException e1) {
-								JOptionPane.showMessageDialog(null, "Formato de fecha de la reserva "
-										+ reserva.getIdRes() + "es incorrecto!\n Vuelve a intentarlo.");
-							}
-							reservas.add(reserva);
-						}
-					}
-
 					botonDialogo = JOptionPane.showConfirmDialog(null,
 							"Está seguro de que quiere modificar los datos de entrada/salida del socio?",
 							"Confirmar Cancelacion", botonDialogo);
-					if (botonDialogo == JOptionPane.YES_OPTION)
-						try {
-							for (ReservaDao reserva : reservas)
-								ReservaDatos.actualizarHoraEntradaSalida(reserva);
-							obtenerReservasSemanal();
-						} catch (ExcepcionReserva e1) {
-							e1.printStackTrace();
-						}
+					if (botonDialogo == JOptionPane.YES_OPTION) {
+					}
 				}
 			}
 		});
 		panelPie.add(btnModificarHoraEntradasalida);
+
+		JPanel panelHoras = new JPanel();
+		panel.add(panelHoras, BorderLayout.EAST);
+		panelHoras.setLayout(new BorderLayout(0, 0));
+
+		JPanel panelHora2 = new JPanel();
+		panelHoras.add(panelHora2, BorderLayout.CENTER);
+		panelHora2.setLayout(new BorderLayout(0, 0));
+
+		JPanel panelHoraSalida = new JPanel();
+		panelHora2.add(panelHoraSalida, BorderLayout.NORTH);
+
+		JLabel lblHoraSalida = new JLabel("Hora salida:");
+		panelHoraSalida.add(lblHoraSalida);
+
+		textFieldHoraSalida = new JTextField();
+		textFieldHoraSalida.setText("hh:mm");
+		textFieldHoraSalida.selectAll();
+		panelHoraSalida.add(textFieldHoraSalida);
+		textFieldHoraSalida.setColumns(10);
+
+		JPanel botonModificarHora = new JPanel();
+		panelHora2.add(botonModificarHora, BorderLayout.CENTER);
+		botonModificarHora.setLayout(new BorderLayout(0, 0));
+
+		JButton btnModificarHora = new JButton("Modificar hora");
+		btnModificarHora.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int fila = table.getSelectedRow();
+				int botonDialogo = 0;
+				if (fila != -1) {
+					long id = (long) modeloTabla.getValueAt(fila, 1);
+					DateTime horaEntrada = obtenerHora(textFieldHoraEntrada.getText());
+					DateTime horaSalida = obtenerHora(textFieldHoraSalida.getText());
+					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+					reserva.setHoraEntrada(horaEntrada);
+					reserva.setHoraSalida(horaSalida);
+					botonDialogo = JOptionPane.showConfirmDialog(null,
+							"Está seguro de que quiere modificar los datos de entrada/salida del socio?",
+							"Confirmar Cancelacion", botonDialogo);
+					if (botonDialogo == JOptionPane.YES_OPTION) {
+						try {
+							ReservaDatos.actualizarHoraEntrada(reserva);
+							ReservaDatos.actualizarHoraSalida(reserva);
+							obtenerReservasSemanal();
+						} catch (ExcepcionReserva e) {
+							System.err.println(e.getMessage());
+							e.printStackTrace();
+						}
+					}
+					
+				}
+			}
+		});
+		botonModificarHora.add(btnModificarHora, BorderLayout.NORTH);
+
+		JPanel panelHoraEntrada = new JPanel();
+		panelHoras.add(panelHoraEntrada, BorderLayout.NORTH);
+		panelHoraEntrada.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		JLabel lblHoraEntrada = new JLabel("Hora entrada:");
+		panelHoraEntrada.add(lblHoraEntrada);
+
+		textFieldHoraEntrada = new JTextField();
+		textFieldHoraEntrada.setText("hh:mm");
+		textFieldHoraEntrada.selectAll();
+		panelHoraEntrada.add(textFieldHoraEntrada);
+		textFieldHoraEntrada.setColumns(10);
 	}
 
 	public void obtenerReservasSemanal() {
@@ -233,6 +277,17 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 	private Long obtenerIDUsuario() {
 		return usuarios.get(comboBoxInstalaciones.getSelectedIndex()).getIdUsu();
+	}
+
+	private DateTime obtenerHora(String hora) {
+		DateTime time = null;
+		if (hora != "" && hora != null) {
+			String[] partes = hora.split(":");
+			time = new DateTime();
+			time.withHourOfDay(Integer.parseInt(partes[0]));
+			time.withMinuteOfHour(Integer.parseInt(partes[1]));
+		}
+		return time;
 	}
 
 }

@@ -48,15 +48,4 @@ public class ManagerFechas {
 	public static String getStringDeDateTime(DateTime horaEntrada) {
 		return horaEntrada.getHourOfDay() + ":" + horaEntrada.getMinuteOfHour() + ":" + horaEntrada.getSecondOfMinute();
 	}
-
-	public static DateTime getDateTimeDeString(String hora) {
-		if (hora == "" || hora == null)
-			return null;
-		DateTime fecha = DateTime.now();
-		String[] partes = hora.split(":");
-		fecha.withHourOfDay(Integer.parseInt(partes[0]));
-		fecha.withMinuteOfHour(Integer.parseInt(partes[1]));
-		fecha.withSecondOfMinute(Integer.parseInt(partes[2]));
-		return fecha;
-	}
 }

@@ -13,10 +13,10 @@ public class Usuario {
 	private String cuentaBancaria;
 	private String email;
 	private String ciudad;
+	private boolean baja;
 
-	public Usuario(boolean socio, String nombre, String apellidos, Long idUsu,
-			String DNI, String direccion, String email, String ciudad,
-			String cuentaBancaria) {
+	public Usuario(boolean socio, String nombre, String apellidos, Long idUsu, String DNI, String direccion,
+			String email, String ciudad, String cuentaBancaria, boolean baja) {
 		this.socio = socio;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -26,6 +26,7 @@ public class Usuario {
 		this.email = email;
 		this.ciudad = ciudad;
 		this.cuentaBancaria = cuentaBancaria;
+		this.baja = false;
 	}
 
 	public Usuario() {
@@ -103,13 +104,19 @@ public class Usuario {
 		this.ciudad = ciudad;
 	}
 
+	public boolean isBaja() {
+		return baja;
+	}
+
+	public void setBaja(boolean baja) {
+		this.baja = baja;
+	}
+
 	@Override
 	public String toString() {
-		return "USUARIO\n\n Socio=" + socio + "\n Nombre=" + nombre
-				+ "\n Apellidos=" + apellidos + "\n idUsu=" + idUsu + "\n DNI="
-				+ DNI + "\n Direccion=" + direccion + "\n CuentaBancaria="
-				+ cuentaBancaria + "\n Email=" + email + "\n Ciudad=" + ciudad
-				+ "]";
+		return "USUARIO\n\n Socio=" + socio + "\n Nombre=" + nombre + "\n Apellidos=" + apellidos + "\n idUsu=" + idUsu
+				+ "\n DNI=" + DNI + "\n Direccion=" + direccion + "\n CuentaBancaria=" + cuentaBancaria + "\n Email="
+				+ email + "\n Ciudad=" + ciudad + "baja= " + baja + "]";
 	}
 
 }

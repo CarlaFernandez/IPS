@@ -17,35 +17,6 @@ import CapaNegocio.managers.ManagerFechas;
  */
 public class InstalacionDatos {
 
-	/*
-	 * public static void obtenerOcupacionSemanal(Long idInst) { DateTime now =
-	 * new DateTime(System.currentTimeMillis()); DateTime[] lunesYDomingo =
-	 * ManagerFechas.obtenerLunesYDomingoDeSemana(now); CreadorConexionBBDD
-	 * creador = new CreadorConexionBBDD(); Connection con =
-	 * creador.crearConexion(); try { StringBuilder sb = new StringBuilder();
-	 * sb.append("select * from reserva "); sb.append("where hora_inicio >= ? "
-	 * ); sb.append("and hora_fin <= ?"); sb.append("and instalacion_id = ?");
-	 * 
-	 * PreparedStatement ps = con.prepareStatement(sb.toString());
-	 * ps.setTimestamp(1, new Timestamp(lunesYDomingo[0].getMillis()));
-	 * ps.setTimestamp(2, new Timestamp(lunesYDomingo[1].getMillis()));
-	 * ps.setLong(3, idInst); ResultSet rs = ps.executeQuery(); List<String>
-	 * reservas = new ArrayList<>(); while (rs.next()) { StringBuilder sb2 = new
-	 * StringBuilder(); sb2.append(rs.getLong("id")).append("|");
-	 * sb2.append(rs.getTimestamp("hora_inicio")).append("|");
-	 * sb2.append(rs.getTimestamp("hora_fin")).append("|");
-	 * sb2.append(rs.getLong("instalacion_id")).append("|");
-	 * sb2.append(rs.getLong("usuario_id")).append("|");
-	 * sb2.append(rs.getLong("actividad_id")).append("|");
-	 * sb2.append(rs.getLong("curso_id")).append("|");
-	 * reservas.add(sb2.toString()); } for (int i = 0; i < reservas.size(); i++)
-	 * { System.out.println(reservas.get(i)); } con.close(); } catch
-	 * (SQLException e) { System.err.println(e.getMessage());
-	 * e.printStackTrace(); }
-	 * 
-	 * }
-	 */
-
 	public static boolean estaLibreEnHoras(Long idInst, DateTime inicio, DateTime fin) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();

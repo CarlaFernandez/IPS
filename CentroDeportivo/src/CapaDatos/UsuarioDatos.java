@@ -22,7 +22,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			sb.append("insert into usuario ");
 			sb.append("(id, dni, nombre, apellidos, direccion, ");
 			sb.append("email, ciudad, cuenta_bancaria, socio) ");
-			sb.append("values (?,?,?,?,?,?,?,?,?)");
+			sb.append("values (?,?,?,?,?,?,?,?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, usuario.getIdUsu());
 			ps.setString(2, usuario.getDNI());
@@ -33,6 +33,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setString(7, usuario.getCiudad());
 			ps.setString(8, usuario.getCuentaBancaria());
 			ps.setBoolean(9, usuario.isSocio());
+			ps.setBoolean(10, usuario.isBaja());
 			ps.execute();
 			con.close();
 		} catch (SQLException e) {
@@ -80,29 +81,6 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		}
 
 	}
-
-	// public static Usuario obtenerUsuarioAPartirDeID(Long idUsu) {
-	// CreadorConexionBBDD creador = new CreadorConexionBBDD();
-	// Connection con = creador.crearConexion();
-	// Usuario usuario = null;
-	// try {
-	// PreparedStatement ps = con.prepareStatement("select * from usuario where
-	// idUsu = ? and socio = TRUE");
-	// ps.setLong(1, idUsu);
-	// ResultSet rs = ps.executeQuery();
-	// usuario = new Usuario(rs.getBoolean("socio"), rs.getString("nombre"),
-	// rs.getString("apellidos"), idUsu,
-	// rs.getString("dni"), rs.getString("direccion"), rs.getString("email"),
-	// rs.getString("ciudad"),
-	// rs.getString("cuenta_bancaria"));
-	// con.close();
-	// return usuario;
-	// } catch (SQLException e) {
-	// System.err.println(e.getMessage());
-	// e.printStackTrace();
-	// return null;
-	// }
-	// }
 
 	public static Long obtenerNuevoIDUsuario() {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -180,6 +158,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 				usuario.setCiudad(rs.getString("CIUDAD"));
 				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
 				usuario.setSocio(rs.getBoolean("SOCIO"));
+				usuario.setBaja(rs.getBoolean("BAJA"));
 
 				usuarios.add(usuario);
 			}
@@ -212,6 +191,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 				usuario.setCiudad(rs.getString("CIUDAD"));
 				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
 				usuario.setSocio(rs.getBoolean("SOCIO"));
+				usuario.setSocio(rs.getBoolean("BAJA"));
 			}
 			con.close();
 
