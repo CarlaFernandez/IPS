@@ -1,4 +1,4 @@
-package CapaInterfaz.Monitor;
+package CapaInterfaz.Socio;
 
 import java.awt.Color;
 import java.awt.Component;

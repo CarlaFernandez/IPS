@@ -33,7 +33,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setString(7, usuario.getCiudad());
 			ps.setString(8, usuario.getCuentaBancaria());
 			ps.setBoolean(9, usuario.isSocio());
-			ps.setBoolean(10, usuario.isBaja());
+			ps.setDate(10, usuario.getBaja());
 			ps.execute();
 			con.close();
 		} catch (SQLException e) {
@@ -158,7 +158,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 				usuario.setCiudad(rs.getString("CIUDAD"));
 				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
 				usuario.setSocio(rs.getBoolean("SOCIO"));
-				usuario.setBaja(rs.getBoolean("BAJA"));
+				usuario.setBaja(rs.getDate("FECHA_BAJA"));
 
 				usuarios.add(usuario);
 			}
@@ -200,6 +200,26 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public static void usuarioNoPresentadoActividad(Long idUsu, Long idActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE apuntado_actividad "
+					+ "set asistido = ? "
+					+ "where usuario_id=? and actividad_id=?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setBoolean(1, false);
+			ps.setLong(2, idUsu);
+			ps.setLong(3, idActividad);
+			ps.execute();
+			con.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
