@@ -46,7 +46,7 @@ public class ManagerFechas {
 	}
 
 	public static String getStringDeDateTime(DateTime horaEntrada) {
-		return horaEntrada.getHourOfDay() + ":" + horaEntrada.getMinuteOfHour() + ":" + horaEntrada.getSecondOfMinute();
+		return String.format("%02d:%02d",horaEntrada.getHourOfDay(), horaEntrada.getMinuteOfHour());
 	}
 
 	public static boolean fechasEstanEnMismoMes(DateTime date1, DateTime date2) {

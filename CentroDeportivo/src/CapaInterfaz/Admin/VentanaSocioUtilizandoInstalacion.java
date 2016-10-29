@@ -116,7 +116,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				btnBuscar.setEnabled(true);
 			}
 		});
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.WEEK_OF_YEAR));
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerInicio);
 
 		JLabel lblFin = new JLabel("Fin");
@@ -153,23 +153,6 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		panel.add(panelPie, BorderLayout.SOUTH);
 		panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		JButton btnModificarHoraEntradasalida = new JButton("Modificar hora entrada/salida");
-		btnModificarHoraEntradasalida.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int fila = table.getSelectedRow();
-				int botonDialogo = JOptionPane.YES_NO_OPTION;
-				if (fila != -1) {
-					long id = (long) modeloTabla.getValueAt(fila, 1);
-					botonDialogo = JOptionPane.showConfirmDialog(null,
-							"Está seguro de que quiere modificar los datos de entrada/salida del socio?",
-							"Confirmar Cancelacion", botonDialogo);
-					if (botonDialogo == JOptionPane.YES_OPTION) {
-					}
-				}
-			}
-		});
-		panelPie.add(btnModificarHoraEntradasalida);
-
 		JPanel panelHoras = new JPanel();
 		panel.add(panelHoras, BorderLayout.EAST);
 		panelHoras.setLayout(new BorderLayout(0, 0));
@@ -185,7 +168,6 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		panelHoraSalida.add(lblHoraSalida);
 
 		textFieldHoraSalida = new JTextField();
-		textFieldHoraSalida.setText("hh:mm");
 		textFieldHoraSalida.selectAll();
 		panelHoraSalida.add(textFieldHoraSalida);
 		textFieldHoraSalida.setColumns(10);
@@ -197,17 +179,29 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		JButton btnModificarHora = new JButton("Modificar hora");
 		btnModificarHora.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int fila = table.getSelectedRow();
 				int botonDialogo = 0;
-				if (fila != -1) {
-					long id = (long) modeloTabla.getValueAt(fila, 1);
-					DateTime horaEntrada = obtenerHora(textFieldHoraEntrada.getText());
-					DateTime horaSalida = obtenerHora(textFieldHoraSalida.getText());
+				String textoEntrada = textFieldHoraEntrada.getText();
+				String textoSalida = textFieldHoraSalida.getText();
+				DateTime horaEntrada = null;
+				DateTime horaSalida = null;
+				if (selectedRow != -1) {
+					long id = (long) modeloTabla.getValueAt(selectedRow, 1);
+					try {
+						horaEntrada = obtenerHora(textoEntrada);
+						horaSalida = obtenerHora(textoSalida);
+					} catch (NumberFormatException e1) {
+						JOptionPane.showMessageDialog(null,
+								"Formato de hora introducido incorrecto.\n Revise la hora introducida.");
+						return;
+					}
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
-					reserva.setHoraEntrada(horaEntrada);
-					reserva.setHoraSalida(horaSalida);
+					if (horaEntrada != null)
+						reserva.setHoraEntrada(horaEntrada);
+					if (horaSalida != null)
+						reserva.setHoraSalida(horaSalida);
 					botonDialogo = JOptionPane.showConfirmDialog(null,
-							"Está seguro de que quiere modificar los datos de entrada/salida del socio?",
+							"Está seguro de que quiere modificar los datos de entrada/salida del socio con id: "
+									+ obtenerIDUsuario(),
 							"Confirmar Cancelacion", botonDialogo);
 					if (botonDialogo == JOptionPane.YES_OPTION) {
 						try {
@@ -219,7 +213,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 							e.printStackTrace();
 						}
 					}
-					
+
 				}
 			}
 		});
@@ -233,7 +227,6 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		panelHoraEntrada.add(lblHoraEntrada);
 
 		textFieldHoraEntrada = new JTextField();
-		textFieldHoraEntrada.setText("hh:mm");
 		textFieldHoraEntrada.selectAll();
 		panelHoraEntrada.add(textFieldHoraEntrada);
 		textFieldHoraEntrada.setColumns(10);
@@ -252,7 +245,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		for (int i = 0; i < reservas.size(); i++) {
 			ReservaDao reserva = reservas.get(i);
-			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()];
+			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek() - 1];
 			line[1] = reserva.getIdRes();
 			line[2] = reserva.getInicio();
 			line[3] = reserva.getFin();
@@ -281,11 +274,15 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 	private DateTime obtenerHora(String hora) {
 		DateTime time = null;
-		if (hora != "" && hora != null) {
+		if (!hora.equals("") && hora != null) {
 			String[] partes = hora.split(":");
+			if (partes.length != 2)
+				throw new NumberFormatException();
+			if (partes[0].length() < 1 && partes[0].length() > 2 && partes[1].length() < 1 && partes[1].length() > 2)
+				throw new NumberFormatException();
 			time = new DateTime();
-			time.withHourOfDay(Integer.parseInt(partes[0]));
-			time.withMinuteOfHour(Integer.parseInt(partes[1]));
+			time = time.withHourOfDay(Integer.parseInt(partes[0]));
+			time = time.withMinuteOfHour(Integer.parseInt(partes[1]));
 		}
 		return time;
 	}

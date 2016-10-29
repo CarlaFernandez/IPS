@@ -296,7 +296,12 @@ public class ReservaDatos {
 				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
-
+				Timestamp horaEntrada = rs.getTimestamp("HORA_ENTRADA");
+				Timestamp horaSalida = rs.getTimestamp("HORA_SALIDA");
+				if (horaEntrada != null)
+					reserva.setHoraEntrada(new DateTime(horaEntrada.getTime()));
+				if (horaSalida != null)
+					reserva.setHoraSalida(new DateTime(horaSalida.getTime()));
 				reservas.add(reserva);
 			}
 			con.close();
@@ -601,15 +606,27 @@ public class ReservaDatos {
 		Timestamp horaEntrada = null;
 		if (reserva.getHoraEntrada() != null)
 			horaEntrada = new Timestamp(reserva.getHoraEntrada().getMillis());
+		else
+			return;
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
 		try {
-			PreparedStatement ps = con.prepareStatement("update reserva set hora_entrada = ? where id = ? ");
+			ps = con.prepareStatement("update reserva set hora_entrada = ? where id = ? ");
 			ps.setTimestamp(1, horaEntrada);
 			ps.setLong(2, reserva.getIdRes());
+			ps.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println(e.getSQLState());
+			System.err.println(e.getSQLState() + " " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -617,15 +634,27 @@ public class ReservaDatos {
 		Timestamp horaSalida = null;
 		if (reserva.getHoraSalida() != null)
 			horaSalida = new Timestamp(reserva.getHoraSalida().getMillis());
+		else
+			return;
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
 		try {
-			PreparedStatement ps = con.prepareStatement("update reserva set hora_salida = ? where id = ? ");
+			ps = con.prepareStatement("update reserva set hora_salida = ? where id = ? ");
 			ps.setTimestamp(1, horaSalida);
 			ps.setLong(2, reserva.getIdRes());
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			System.err.println(e.getSQLState());
 			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 
