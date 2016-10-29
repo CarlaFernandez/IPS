@@ -29,9 +29,8 @@ public class ReservaDao {
 	private Long idCurso;
 	private Long idPago;
 
-	public ReservaDao(Long idRes, TipoReserva socio, DateTime inicio,
-			DateTime fin, Long idInst, Long idPago, Long idUsu, Long idAct,
-			Long idCurso) throws ExcepcionReserva {
+	public ReservaDao(Long idRes, TipoReserva socio, DateTime inicio, DateTime fin, Long idInst, Long idPago,
+			Long idUsu, Long idAct, Long idCurso) throws ExcepcionReserva {
 		this.idRes = idRes;
 		this.tipoRes = socio.name();
 		this.inicio = inicio;
@@ -41,18 +40,35 @@ public class ReservaDao {
 		this.idUsu = idUsu;
 		this.idAct = idAct;
 		this.idCurso = idCurso;
-		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio,
-				fin);
+		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio, fin);
 		this.estado = EstadoReserva.ACTIVA.name();
 
-		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO
-				&& socio != TipoReserva.CENTRO) {
+		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO && socio != TipoReserva.CENTRO) {
 			throw new ExcepcionReserva("Esta reserva dura demasiado");
 		}
 		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
 	}
 
 	public ReservaDao() {
+	}
+
+	public ReservaDao(TipoReserva socio, DateTime inicio, DateTime fin, Long idInst, Long idPago, Long idUsu,
+			Long idAct, Long idCurso) throws ExcepcionReserva {
+		this.tipoRes = socio.name();
+		this.inicio = inicio;
+		this.fin = fin;
+		this.idInst = idInst;
+		this.idPago = idPago;
+		this.idUsu = idUsu;
+		this.idAct = idAct;
+		this.idCurso = idCurso;
+		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio, fin);
+		this.estado = EstadoReserva.ACTIVA.name();
+
+		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO && socio != TipoReserva.CENTRO) {
+			throw new ExcepcionReserva("Esta reserva dura demasiado");
+		}
+		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
 	}
 
 	public Long getIdPago() {
@@ -72,8 +88,7 @@ public class ReservaDao {
 	}
 
 	public double calcularImporteReserva() {
-		return InstalacionDatos.obtenerPrecioInstalacion(idInst)
-				* duracionEnMinutos;
+		return InstalacionDatos.obtenerPrecioInstalacion(idInst) * duracionEnMinutos;
 	}
 
 	public Long getIdRes() {
@@ -154,9 +169,8 @@ public class ReservaDao {
 
 	@Override
 	public String toString() {
-		return "RESERVA\n\n TipoRes=" + tipoRes + "\n Inicio=" + inicio
-				+ "\n Fin=" + fin + "\n DuracionEnMinutos=" + duracionEnMinutos
-				+ "\n Estado=" + estado;
+		return "RESERVA\n\n TipoRes=" + tipoRes + "\n Inicio=" + inicio + "\n Fin=" + fin + "\n DuracionEnMinutos="
+				+ duracionEnMinutos + "\n Estado=" + estado;
 	}
 
 }

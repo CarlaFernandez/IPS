@@ -32,6 +32,7 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
+import CapaNegocio.managers.ManagerFechas;
 import CapaNegocio.managers.ManagerUsuario;
 
 public class VentanaSocioReservaInstalacion extends JDialog {
@@ -51,10 +52,14 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 	private List<Usuario> usuarios;
 	private JLabel lblReservaDeSocio;
 	private Long user;
+	private boolean bajaEsteMes;
+	private boolean bajaProximoMes;
 
 	@SuppressWarnings("unchecked")
 	public VentanaSocioReservaInstalacion(Long user) {
 		this.user = user;
+		this.bajaProximoMes = ManagerUsuario.esBajaParaElMesQueViene(user);
+		this.bajaEsteMes = ManagerUsuario.esBajaParaEsteMes(user);
 		setTitle("Admin -> Reserva Socio");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
 		setAlwaysOnTop(true);
@@ -236,16 +241,26 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);
 		DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
+		DateTime hoy = new DateTime(System.currentTimeMillis());
 
-		try {
-			ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, user, tipoPago);
-			JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
-		} catch (ExcepcionReserva e) {
-			JOptionPane.showMessageDialog(this, e.getMessage());
+		// si es baja para el mes que viene y selecciona una reserva de ese mes
+		if (bajaProximoMes && ManagerFechas.fechasEstanEnMismoMes(dateTimeInicio, hoy.plusMonths(1))) {
+			JOptionPane.showMessageDialog(this,
+					"Está dado de baja para el próximo mes." + "Por favor, seleccione una fecha de este mes.");
 		}
-
+		// si es baja para este mes y selecciona pagar por banco
+		else if (bajaEsteMes && tipoPago.equals(TipoPago.CUOTA)) {
+			JOptionPane.showMessageDialog(this, "Está dado de baja para este mes." + "Ha de pagar en efectivo.");
+		} else {
+			try {
+				ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, user, tipoPago);
+				JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "El formato es incorrecto");
+			} catch (ExcepcionReserva e) {
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			}
+		}
 	}
 
 }

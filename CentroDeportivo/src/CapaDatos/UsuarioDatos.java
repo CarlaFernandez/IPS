@@ -33,7 +33,11 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setString(7, usuario.getCiudad());
 			ps.setString(8, usuario.getCuentaBancaria());
 			ps.setBoolean(9, usuario.isSocio());
+<<<<<<< HEAD
 			ps.setDate(10, usuario.getBaja());
+=======
+			ps.setDate(10, new java.sql.Date(usuario.getBaja().getTime()));
+>>>>>>> 5ad14882dcad96ea1f67533cc0801df814ffd62e
 			ps.execute();
 			con.close();
 		} catch (SQLException e) {
@@ -191,7 +195,11 @@ public class UsuarioDatos extends GeneradorIDRandom {
 				usuario.setCiudad(rs.getString("CIUDAD"));
 				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
 				usuario.setSocio(rs.getBoolean("SOCIO"));
-				usuario.setSocio(rs.getBoolean("BAJA"));
+				if (rs.getDate("FECHA_BAJA") != null) {
+					usuario.setBaja(rs.getDate("FECHA_BAJA"));
+				} else {
+					usuario.setBaja(null);
+				}
 			}
 			con.close();
 
@@ -202,6 +210,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
+<<<<<<< HEAD
 	
 	public static void usuarioNoPresentadoActividad(Long idUsu, Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -216,10 +225,71 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setLong(2, idUsu);
 			ps.setLong(3, idActividad);
 			ps.execute();
+=======
+
+	public static boolean esBajaParaEsteMes(Long idUsuario) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		DateTime fechaBaja = null;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select fecha_baja from usuario where id = ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idUsuario);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				if (rs.getDate("FECHA_BAJA") != null) {
+					fechaBaja = new DateTime(rs.getDate("FECHA_BAJA"));
+				}
+			}
+>>>>>>> 5ad14882dcad96ea1f67533cc0801df814ffd62e
 			con.close();
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
+<<<<<<< HEAD
 		}
+=======
+			return false;
+		}
+		if (fechaBaja != null) {
+			DateTime today = new DateTime(System.currentTimeMillis());
+
+			return ManagerFechas.fechasEstanEnMismoMes(fechaBaja, today);
+		} else
+			return false;
+
+	}
+
+	public static boolean esBajaParaElMesQueViene(Long idUsuario) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		DateTime fechaBaja = null;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select fecha_baja from usuario where id = ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idUsuario);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				if (rs.getDate("FECHA_BAJA") != null) {
+					fechaBaja = new DateTime(rs.getDate("FECHA_BAJA"));
+				}
+			}
+			con.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+		if (fechaBaja != null) {
+			DateTime today = new DateTime(System.currentTimeMillis());
+
+			// no se comprueba el año, se sobreentiende que una baja se da
+			// con poca antelacion
+			return fechaBaja.getMonthOfYear() == today.plusMonths(1).getMonthOfYear();
+		} else
+			return false;
+>>>>>>> 5ad14882dcad96ea1f67533cc0801df814ffd62e
 	}
 }
