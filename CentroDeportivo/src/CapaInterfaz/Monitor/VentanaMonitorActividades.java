@@ -42,6 +42,7 @@ import java.awt.GridLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.border.TitledBorder;
+import javax.swing.ListSelectionModel;
 
 @SuppressWarnings("rawtypes")
 public class VentanaMonitorActividades extends JFrame {
@@ -49,10 +50,10 @@ public class VentanaMonitorActividades extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private List<Actividad> actividadesMonitor;
 	private JTable t;
-	private DefaultTableModel tm;
+	private DefaultTableModel modeloTabla;
 	ReservaDao tablaReservas[][];
 	private Usuario usuarioSelec=null;
-
+	public List<Usuario> altas;
 	
 	
 	private JLabel lblTituloMonitor;
@@ -73,6 +74,8 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel panel;
 	private JScrollPane sclDescripcion;
 	private JTextArea txtAreaDescripcion;
+	private JLabel lblNumUsarios;
+	private JButton btnRegistro;
 	
 	
 	@SuppressWarnings("unchecked")
@@ -85,91 +88,39 @@ public class VentanaMonitorActividades extends JFrame {
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		getContentPane().add(getLblTituloMonitor(), BorderLayout.NORTH);
 		getContentPane().add(getPanel(), BorderLayout.CENTER);
-		inicializarTableModel();
 		asignarDescripcion();
-		rellenarTabla();
-	}
-	
-	private void inicializarTableModel(){
-		tm = new DefaultTableModel(24, 7) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
-
-		// Titulos para la cabecera superior. El primero es vacio,
-		// puesto que corresponde
-		tm.setColumnIdentifiers(new String[] {"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"});
-
-		// Valores para la primera columna, que es la cabecera lateral.
-		//for (int i = 0; i < tm.getRowCount(); i++)
-		//	tm.setValueAt(i, i, 0);
-
-		// JTable al que se le pasa el modelo recien creado y se
-		// sobreescribe el metodo changeSelection para que no permita
-		// seleccionar la primera columna.
-		
 	}
 
 	
 	private JTable getT(){
 		if(t==null){
-			inicializarTableModel();
-			t = new JTable(tm) {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-	
-				@Override
-				public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
-					if (columnIndex == 0)
-						super.changeSelection(rowIndex, columnIndex + 1, toggle, extend);
-					else
-						super.changeSelection(rowIndex, columnIndex, toggle, extend);
-				}
-			};
-			t.addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent arg0) {
-					usuarioSelec=null;
-				}
-			});
+			String[] nombresColumnas = {"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"};
+			modeloTabla = new ModeloNoEditable(nombresColumnas,0);//creado a mano
+			t = new JTable(modeloTabla);
+			t.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			
 			t.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					int clicks = e.getClickCount();
 					if (clicks == 1) {
-						if(tm.getValueAt(t.getSelectedRow(),0)!=null){//si la fila no esta vacia
+//						if(t.getValueAt(t.getSelectedRow(),0)!=null){//si la fila no esta vacia
 							//"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"
-							usuarioSelec = new Usuario();
-							usuarioSelec.setIdUsu((Long) tm.getValueAt(t.getSelectedRow(),0));
-							usuarioSelec.setDNI((String) tm.getValueAt(t.getSelectedRow(),1));
-							usuarioSelec.setNombre((String) tm.getValueAt(t.getSelectedRow(),2));
-							usuarioSelec.setApellidos((String) tm.getValueAt(t.getSelectedRow(),3));
-							usuarioSelec.setDireccion((String) tm.getValueAt(t.getSelectedRow(),4));
-							usuarioSelec.setEmail((String) tm.getValueAt(t.getSelectedRow(),5));
-							usuarioSelec.setCiudad((String) tm.getValueAt(t.getSelectedRow(),6));
-							usuarioSelec.setSocio((boolean) tm.getValueAt(t.getSelectedRow(),7));
-						}
+							Usuario us = new Usuario();
+							us.setIdUsu((Long) t.getValueAt(t.getSelectedRow(),0));
+							us.setDNI((String) t.getValueAt(t.getSelectedRow(),1));
+							us.setNombre((String) t.getValueAt(t.getSelectedRow(),2));
+							us.setApellidos((String) t.getValueAt(t.getSelectedRow(),3));
+							us.setDireccion((String) t.getValueAt(t.getSelectedRow(),4));
+							us.setEmail((String) t.getValueAt(t.getSelectedRow(),5));
+							us.setCiudad((String) t.getValueAt(t.getSelectedRow(),6));
+							usuarioSelec = us;
+//						}
 					}
 				}
 			});
 			
-			
-			// Se pone a la primera columna el render del JTableHeader
-			// superior.
-			//t.getColumnModel().getColumn(0).setCellRenderer(t.getTableHeader().getDefaultRenderer());
-			//t.setDefaultRenderer(Object.class, new TableCellRendererColorInstalacion());
-			
-
-			
+			rellenarTabla();		
 		}
 		return t;
 	}
@@ -181,8 +132,8 @@ public class VentanaMonitorActividades extends JFrame {
 			panel.setLayout(new BorderLayout(0, 0));
 			panel.add(getPanelPie(), BorderLayout.SOUTH);
 			panel.add(getPnlBotonesAcciones(), BorderLayout.EAST);
-			panel.add(getPanelCentro(), BorderLayout.CENTER);
 			panel.add(getPnlBuscarActividad(), BorderLayout.NORTH);
+			panel.add(getPanelCentro(), BorderLayout.CENTER);
 		}
 		return panel;
 	}
@@ -236,6 +187,7 @@ public class VentanaMonitorActividades extends JFrame {
 			pnlBuscarActividad.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 			pnlBuscarActividad.add(getLblActividad());
 			pnlBuscarActividad.add(getCbActividad());
+			pnlBuscarActividad.add(getLblNumUsarios());
 		}
 		return pnlBuscarActividad;
 	}
@@ -276,9 +228,10 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel getPnlAnadirSocio(){
 		if(pnlAnadirSocio==null){
 			pnlAnadirSocio = new JPanel();
-			pnlAnadirSocio.setLayout(new GridLayout(2, 1, 30, 50));
+			pnlAnadirSocio.setLayout(new GridLayout(3, 1, 30, 25));
 			pnlAnadirSocio.add(getBtnEliminarDeActividad());
 			pnlAnadirSocio.add(getBtnAadirNuevoSocio());
+			pnlAnadirSocio.add(getBtnRegistro());
 		}
 		return pnlAnadirSocio;
 	}
@@ -352,13 +305,26 @@ public class VentanaMonitorActividades extends JFrame {
 	private JButton getBtnAadirNuevoSocio(){
 		if(btnAadirNuevoSocio==null){
 			btnAadirNuevoSocio = new JButton("A\u00F1adir nuevo socio");
+			btnAadirNuevoSocio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
+					if(getT().getRowCount()>=maximo)
+						JOptionPane.showMessageDialog(null, "La actividad tiene el máximo de usuario posible");
+					else{
+						mostrarVentanaAnadirUsuarioActividad();
+					}
+				}
+			});
 			btnAadirNuevoSocio.setAlignmentY(Component.TOP_ALIGNMENT);
 			btnAadirNuevoSocio.setAlignmentX(Component.CENTER_ALIGNMENT);
 		}
 		return btnAadirNuevoSocio;
 	}
 	
-	
+	private void mostrarVentanaAnadirUsuarioActividad(){
+		VentanaAnadirUsuarioActividad v = new VentanaAnadirUsuarioActividad(this, valorCbActividad());
+		v.show();
+	}
 	
 	private JLabel getLblTituloMonitor(){
 		if(lblTituloMonitor==null){
@@ -375,7 +341,7 @@ public class VentanaMonitorActividades extends JFrame {
 	@SuppressWarnings("deprecation")
 	private void verDetalles(JTable t) {
 
-		boolean mia = tm.getValueAt(t.getSelectedRow(), t.getSelectedColumn()).equals("Mi reserva");
+		boolean mia = modeloTabla.getValueAt(t.getSelectedRow(), t.getSelectedColumn()).equals("Mi reserva");
 		if (t.getSelectedRow() != -1 && tablaReservas[t.getSelectedColumn()][t.getSelectedRow()] != null && mia) {
 			ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
 			new VentanaDetallesReserva(reserva.getIdRes()).show();
@@ -429,9 +395,9 @@ public class VentanaMonitorActividades extends JFrame {
 	}
 	
 	
-	private void rellenarTabla(){
+	public void rellenarTabla(){
 		//"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"
-		tm.getDataVector().clear();
+		modeloTabla.getDataVector().clear();
 		Object[] nuevaFila = new Object[8];//4 columnas
 		Long idActividad = valorCbActividad();
 		List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad);
@@ -444,14 +410,42 @@ public class VentanaMonitorActividades extends JFrame {
 					nuevaFila[1] =usuariosAct.get(i).getDNI();			
 					nuevaFila[2] =usuariosAct.get(i).getNombre();
 					nuevaFila[3] =usuariosAct.get(i).getApellidos();
-					nuevaFila[0] =usuariosAct.get(i).getDireccion();
-					nuevaFila[1] =usuariosAct.get(i).getEmail();			
-					nuevaFila[2] =usuariosAct.get(i).getCiudad();
-					nuevaFila[3] =usuariosAct.get(i).isSocio();
-					tm.addRow(nuevaFila);
+					nuevaFila[4] =usuariosAct.get(i).getDireccion();
+					nuevaFila[5] =usuariosAct.get(i).getEmail();			
+					nuevaFila[6] =usuariosAct.get(i).getCiudad();
+					nuevaFila[7] =usuariosAct.get(i).isSocio();
+					modeloTabla.addRow(nuevaFila);
 				}
 			}
+			modeloTabla.fireTableDataChanged();
+			revisarNumeroUsuarios();
 		}
-		tm.fireTableDataChanged();
+	}
+	
+	private JLabel getLblNumUsarios() {
+		if (lblNumUsarios == null) {
+			lblNumUsarios = new JLabel("                   Personas en clase:");
+			lblNumUsarios.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lblNumUsarios;
+	}
+	
+	private void revisarNumeroUsuarios(){
+		int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
+		String s ="                   Personas en clase: "+modeloTabla.getRowCount()+"/"+maximo;
+		getLblNumUsarios().setText(s);
+	}
+	private JButton getBtnRegistro() {
+		if (btnRegistro == null) {
+			btnRegistro = new JButton("Ver registro altas y bajas");
+			btnRegistro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					List<Usuario> bajas = UsuarioDatos.bajasEnActividad(valorCbActividad());
+					VentanaAltasBajasActividad vaba = new VentanaAltasBajasActividad(bajas,altas);
+					vaba.show();
+				}
+			});
+		}
+		return btnRegistro;
 	}
 }

@@ -9,7 +9,6 @@ import CapaDatos.InstalacionDatos;
 import CapaDatos.PagoDatos;
 import CapaInterfaz.ModeloNoEditable;
 import CapaInterfaz.VentanaDetallesReserva;
-import CapaInterfaz.Monitor.TableCellRendererColorSocio;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Pago;

@@ -1,15 +1,11 @@
-package CapaInterfaz.Monitor;
+package CapaInterfaz.Admin;
 
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.joda.time.DateTime;
-
-import CapaNegocio.EstadoReserva;
-
-public class TableCellRendererColorSocio extends DefaultTableCellRenderer {
+public class TableCellRendererColorInstalacion extends DefaultTableCellRenderer {
 
 	/**
 	 * 
@@ -21,16 +17,14 @@ public class TableCellRendererColorSocio extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object arg1, boolean arg2, boolean arg3, int row,
 			int col) {
 		componente = super.getTableCellRendererComponent(table, arg1, arg2, arg3, row, col);
-
-		componente.setBackground(new Color(185, 185, 255));// azul
-		if (((DateTime) table.getModel().getValueAt(row, 2)).isAfterNow()) {
+		componente.setBackground(Color.white);
+		if (table.getModel().getValueAt(row, col) == null)
+			return componente;
+		if (table.getModel().getValueAt(row, col).equals("Mi reserva")) {
 			componente.setBackground(new Color(185, 255, 185));// verde
 		}
-		if (table.getModel().getValueAt(row, 5).toString().equals(EstadoReserva.CANCELADA.name())) {
+		if (table.getModel().getValueAt(row, col).equals("Reserva ajena")) {
 			componente.setBackground(new Color(255, 185, 185));// rojo
-		}
-		if (table.getModel().getValueAt(row, 5).toString().equals(EstadoReserva.ANULADA.name())) {
-			componente.setBackground(new Color(255, 255, 185));// rojo
 		}
 		return componente;
 	}

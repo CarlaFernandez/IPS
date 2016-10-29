@@ -29,7 +29,6 @@ import javax.swing.table.DefaultTableModel;
 import org.joda.time.DateTime;
 
 import CapaInterfaz.VentanaDetallesReserva;
-import CapaInterfaz.Monitor.TableCellRendererColorInstalacion;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.ReservaDao;

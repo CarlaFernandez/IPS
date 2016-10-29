@@ -1,6 +1,7 @@
 package CapaDatos;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into monitor ");
-			sb.append("(id, nombre, apellidos");
+			sb.append("(id, nombre, apellidos) ");
 			sb.append("values (?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, monitor.getIdMonitor());
@@ -255,10 +256,11 @@ public class MonitorDatos extends GeneradorIDRandom {
 					+ "ON usuario.ID = APUNTADO_ACTIVIDAD.USUARIO_ID "
 					+ "inner join ACTIVIDAD "
 					+ "ON ACTIVIDAD.ID = APUNTADO_ACTIVIDAD.ACTIVIDAD_ID "
-					+ "where ACTIVIDAD.MONITOR_ID=? and ACTIVIDAD.ID=?");
+					+ "where ACTIVIDAD.MONITOR_ID=? and ACTIVIDAD.ID=? and APUNTADO_ACTIVIDAD.ASISTIDO=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idMonitor);
 			ps.setLong(2, idActividad);
+			ps.setBoolean(3, true);
 			ResultSet rs = ps.executeQuery();
 			List<Usuario> usuarios = new ArrayList<>();
 			while (rs.next()) {
@@ -266,12 +268,17 @@ public class MonitorDatos extends GeneradorIDRandom {
 				usuario.setIdUsu(rs.getLong("ID"));
 				usuario.setNombre(rs.getString("NOMBRE"));
 				usuario.setApellidos(rs.getString("APELLIDOS"));
+				usuario.setDNI(rs.getString("DNI"));
 				usuario.setDireccion(rs.getString("DIRECCION"));
 				usuario.setEmail(rs.getString("EMAIL"));
 				usuario.setCiudad(rs.getString("CIUDAD"));
 				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
 				usuario.setSocio(rs.getBoolean("SOCIO"));
-				usuario.setSocio(rs.getBoolean("SOCIO"));
+				if (rs.getDate("FECHA_BAJA") != null) {
+					usuario.setBaja(rs.getDate("FECHA_BAJA"));
+				} else {
+					usuario.setBaja(null);
+				}
 
 				usuarios.add(usuario);
 			}
@@ -309,6 +316,31 @@ public class MonitorDatos extends GeneradorIDRandom {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public static int maxPlazasActividad(Long idMonitor, Long idActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select PLAZAS_TOTALES from "
+					+ "actividad where id= ? and monitor_id=?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ps.setLong(2, idMonitor);
+			ResultSet rs = ps.executeQuery();
+			int max = -1;
+			while (rs.next()) {
+				max=rs.getInt("PLAZAS_TOTALES");
+			}
+			con.close();
+
+			return max;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return -1;
 		}
 	}
 }
