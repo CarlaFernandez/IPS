@@ -1,4 +1,4 @@
-package CapaInterfaz.Socio;
+package CapaInterfaz.Socio.Instalaciones;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -24,18 +24,19 @@ public class VentanaSocioInstalaciones extends JFrame{
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		JButton btnReservas = new JButton("Mis Reservas Por Fecha");
+		JButton btnReservas = new JButton("Mis Reservas");
 		btnReservas.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnReservas.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				VentanaSocioInstalacionReservasFecha vsir = new VentanaSocioInstalacionReservasFecha(user);
+				VentanaSocioVerMisReservas vsir = new VentanaSocioVerMisReservas(user);
 				vsir.show();
 			}
 		});
 		
 		JButton btnRealizarReserva = new JButton("Realizar reserva");
 		btnRealizarReserva.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				VentanaSocioReservaInstalacion vs = new VentanaSocioReservaInstalacion(user);
 				vs.show();
@@ -47,12 +48,12 @@ public class VentanaSocioInstalaciones extends JFrame{
 		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
 		
-		JButton btnNewButton_1 = new JButton("Mis Reservas Por Instalacion");
+		JButton btnNewButton_1 = new JButton("Reservas De Una Instalacion");
 		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNewButton_1.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				VentanaSocioReservasPorInstalacion vsri = new VentanaSocioReservasPorInstalacion(user);
+				VentanaSocioVerReservasPorInstalacion vsri = new VentanaSocioVerReservasPorInstalacion(user);
 				vsri.show();
 			}
 		});
@@ -61,8 +62,9 @@ public class VentanaSocioInstalaciones extends JFrame{
 		
 		JButton btnNewButton = new JButton("Cancelar reserva");
 		btnNewButton.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				VentanaCancelarReservaSocio vcrs = new VentanaCancelarReservaSocio(user);
+				VentanaSocioCancelarReserva vcrs = new VentanaSocioCancelarReserva(user);
 				vcrs.show();
 			}
 		});

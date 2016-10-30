@@ -24,9 +24,8 @@ import CapaDatos.InstalacionDatos;
 import CapaDatos.PagoDatos;
 import CapaInterfaz.ModeloNoEditable;
 import CapaInterfaz.VentanaDetallesReserva;
-import CapaInterfaz.Socio.TableCellRendererColorSocio;
+import CapaInterfaz.Socio.TableCellRendererColorEstadoReserva;
 import CapaNegocio.DiasSemana;
-import CapaNegocio.EstadoPago;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
@@ -63,7 +62,7 @@ public class VentanaReservasPagar extends JFrame {
 		modeloTabla = new ModeloNoEditable(
 				new String[] { "Dia", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado", "Instalacion" }, 0);
 		table = new JTable();
-		table.setDefaultRenderer(Object.class, new TableCellRendererColorSocio());
+		table.setDefaultRenderer(Object.class, new TableCellRendererColorEstadoReserva());
 		table.setModel(modeloTabla);
 		table.setBackground(Color.WHITE);
 		spTabla.setViewportView(table);
@@ -136,6 +135,7 @@ public class VentanaReservasPagar extends JFrame {
 
 		JButton button = new JButton("Detalles");
 		button.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				if (table.getSelectedRow() != -1) {
 					new VentanaDetallesReserva((Long) modeloTabla.getValueAt(table.getSelectedRow(), 1)).show();

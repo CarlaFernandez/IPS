@@ -1,4 +1,4 @@
-package CapaInterfaz.Socio;
+package CapaInterfaz.Socio.Instalaciones;
 
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -55,7 +55,7 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 	private boolean bajaEsteMes;
 	private boolean bajaProximoMes;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public VentanaSocioReservaInstalacion(Long user) {
 		this.user = user;
 		this.bajaProximoMes = ManagerUsuario.esBajaParaElMesQueViene(user);

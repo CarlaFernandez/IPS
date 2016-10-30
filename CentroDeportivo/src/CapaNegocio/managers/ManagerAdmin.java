@@ -24,20 +24,18 @@ public class ManagerAdmin {
 
 	public static void crearReservaCentro(DateTime inicio, DateTime fin, Long idInst, Long idAct, Long idCurso)
 			throws ExcepcionReserva {
-		ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, inicio, fin,
-				idInst, null, null, idAct, idCurso);
+		ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, inicio, fin, idInst, null, null, idAct, idCurso);
 		ReservaDatos.insertarReservaAdmin(reserva);
 	}
 
 	public static void crearReservaSocio(DateTime inicio, DateTime fin, Long idInst, Long idUsu, TipoPago tipoPago)
 			throws ExcepcionReserva {
 		double duracionReserva = ReservaDatos.calcularDuracionEnMinutos(inicio, fin);
-		Long idPago = PagoDatos.obtenerNuevoIDPago();	
-		Pago pago = new Pago(idPago, "Reserva instalacion",
-				new Date(System.currentTimeMillis()), ReservaDatos.calcularImporteReserva(idInst, duracionReserva), 
-				EstadoPago.PENDIENTE, tipoPago);
+		Long idPago = PagoDatos.obtenerNuevoIDPago();
+		Pago pago = new Pago(idPago, "Reserva instalacion", new Date(System.currentTimeMillis()),
+				ReservaDatos.calcularImporteReserva(idInst, duracionReserva), EstadoPago.PENDIENTE, tipoPago);
 		PagoDatos.insertarPago(pago);
-		
+
 		ReservaDao reserva = new ReservaDao(ReservaDatos.obtenerNuevoIDReserva(), TipoReserva.SOCIO, inicio, fin,
 				idInst, idPago, idUsu, null, null);
 
@@ -47,15 +45,14 @@ public class ManagerAdmin {
 	public static List<ReservaDao> verReservasInstalacion(Long idInst) {
 		return ReservaDatos.obtenerReservaPorInstalacion(idInst);
 	}
-	
+
 	public static List<Instalacion> verInstalaciones() {
 		return InstalacionDatos.ObtenerInstalaciones();
 	}
-	
-	public static List<ReservaDao> verReservasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
-		return ReservaDatos.obtenerReservasPorFechaEInstalacion(inicio,fin, idInst);
-	}
 
+	public static List<ReservaDao> verReservasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
+		return ReservaDatos.obtenerReservasPorFechaEInstalacion(inicio, fin, idInst);
+	}
 
 	public static void crearPagoEfectivo(Long idReserva) {
 		ReservaDao reserva = ReservaDatos.obtenerReservaPorId(idReserva);
@@ -70,5 +67,13 @@ public class ManagerAdmin {
 
 	public static void AnularReserva(Long idResConflict) {
 		ReservaDatos.anularReserva(idResConflict);
+	}
+
+	public static List<ReservaDao> verReservasActivasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
+		return ReservaDatos.obtenerReservasActivasPorFechaEInstalacion(inicio, fin, idInst);
+	}
+
+	public static List<ReservaDao> verMisReservasPorFecha(Date inicio, Date fin, Long user) {
+		return ReservaDatos.obtenerMisReservasPorFecha(inicio, fin, user);
 	}
 }
