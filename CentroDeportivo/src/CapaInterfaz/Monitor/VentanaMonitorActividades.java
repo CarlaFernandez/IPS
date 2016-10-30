@@ -61,12 +61,10 @@ public class VentanaMonitorActividades extends JFrame {
 	private JButton btnEliminarDeActividad;
 	private JLabel lblActividad;
 	private JButton btnVerDetalles;
-	private JLabel lblMias;
 	private JLabel lblNewLabel_4;
 	private JPanel pnlAnadirSocio;
 	private JPanel pnlBotonesAcciones;
 	private JPanel pnlBuscarActividad;
-	private JLabel lblOtras;
 	private JPanel panelPie;
 	private JComboBox cbActividad;
 	private JPanel panelCentro;
@@ -192,24 +190,11 @@ public class VentanaMonitorActividades extends JFrame {
 		return pnlBuscarActividad;
 	}
 	
-	private JLabel getLblOtras(){
-		if(lblOtras==null){
-			lblOtras = new JLabel("Otras");
-			lblOtras.setOpaque(true);
-			lblOtras.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-			lblOtras.setBackground(new Color(255, 185, 185));
-			
-		}
-		return lblOtras;
-	}
-	
 	private JPanel getPanelPie(){
 		if(panelPie==null){
 			panelPie = new JPanel();
 			panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-			panelPie.add(getLblOtras());
 			panelPie.add(getLblNewLabel_4());
-			panelPie.add(getLblMias());
 			panelPie.add(getBtnVerDetalles());
 		}
 		return panelPie;
@@ -238,7 +223,7 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private JLabel getLblNewLabel_4(){
 		if(lblNewLabel_4==null){
-			lblNewLabel_4 = new JLabel("Libre");
+			lblNewLabel_4 = new JLabel("Usuarios en la actividad");
 			lblNewLabel_4.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 			lblNewLabel_4.setOpaque(true);
 			lblNewLabel_4.setBackground(Color.WHITE);
@@ -246,23 +231,24 @@ public class VentanaMonitorActividades extends JFrame {
 		return lblNewLabel_4;
 	}
 	
-	
-	private JLabel getLblMias(){
-		if(lblMias==null){
-			lblMias = new JLabel("Mias");
-			lblMias.setOpaque(true);
-			lblMias.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-			lblMias.setBackground(new Color(185, 255, 185));
-		}
-		return lblMias;
-	}
-	
 	private JButton getBtnVerDetalles(){
 		if(btnVerDetalles==null){
 			btnVerDetalles = new JButton("Ver detalles");
 			btnVerDetalles.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					verDetalles(t);
+					String s ="Para seleccionar la actividad: \n"
+							+ "     abra el comboBox y elija, se le mostrará un pequeña\n"
+							+ "     descripción de la misma\n"
+							+ "Para eliminar un usuario porque no se presentó:\n"
+							+ "     pulse 'Eliminar de actividad' habiendo seleccionado\n"
+							+ "     la fila correspondiente al usuario en la tabla. \n"
+							+ "     (NOTA: si se elimina de la actividad, no podrá \n"
+							+ "     deshacerse el cambio\n"
+							+ "Para añadir un usuario a la actividad: \n"
+							+ "     pulse 'Añadir nuevo socio' y busque al cliente \n"
+							+ "     que desee')";
+					
+					JOptionPane.showMessageDialog(null, s);
 				}
 			});
 		}
@@ -400,25 +386,27 @@ public class VentanaMonitorActividades extends JFrame {
 		modeloTabla.getDataVector().clear();
 		Object[] nuevaFila = new Object[8];//4 columnas
 		Long idActividad = valorCbActividad();
-		List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad);
-		if(usuariosAct==null)
-			JOptionPane.showMessageDialog(null, "La actividad no tiene asignado ningun usuario");
-		else{
-			for(int i=0;i< usuariosAct.size();i++){
-				if(usuariosAct.get(i).getBaja()==null){
-					nuevaFila[0] =usuariosAct.get(i).getIdUsu();
-					nuevaFila[1] =usuariosAct.get(i).getDNI();			
-					nuevaFila[2] =usuariosAct.get(i).getNombre();
-					nuevaFila[3] =usuariosAct.get(i).getApellidos();
-					nuevaFila[4] =usuariosAct.get(i).getDireccion();
-					nuevaFila[5] =usuariosAct.get(i).getEmail();			
-					nuevaFila[6] =usuariosAct.get(i).getCiudad();
-					nuevaFila[7] =usuariosAct.get(i).isSocio();
-					modeloTabla.addRow(nuevaFila);
+		if(idActividad!=null){
+			List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad);
+			if(usuariosAct==null)
+				JOptionPane.showMessageDialog(null, "La actividad no tiene asignado ningun usuario");
+			else{
+				for(int i=0;i< usuariosAct.size();i++){
+					if(usuariosAct.get(i).getBaja()==null){
+						nuevaFila[0] =usuariosAct.get(i).getIdUsu();
+						nuevaFila[1] =usuariosAct.get(i).getDNI();			
+						nuevaFila[2] =usuariosAct.get(i).getNombre();
+						nuevaFila[3] =usuariosAct.get(i).getApellidos();
+						nuevaFila[4] =usuariosAct.get(i).getDireccion();
+						nuevaFila[5] =usuariosAct.get(i).getEmail();			
+						nuevaFila[6] =usuariosAct.get(i).getCiudad();
+						nuevaFila[7] =usuariosAct.get(i).isSocio();
+						modeloTabla.addRow(nuevaFila);
+					}
 				}
+				modeloTabla.fireTableDataChanged();
+				revisarNumeroUsuarios();
 			}
-			modeloTabla.fireTableDataChanged();
-			revisarNumeroUsuarios();
 		}
 	}
 	
