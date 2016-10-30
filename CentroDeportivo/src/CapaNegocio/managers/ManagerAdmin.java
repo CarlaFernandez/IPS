@@ -1,14 +1,16 @@
 package CapaNegocio.managers;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
-import java.util.Date;
-import java.util.List;
 
 import CapaDatos.InstalacionDatos;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
+import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoPago;
 import CapaNegocio.TipoPago;
 import CapaNegocio.dao.Instalacion;
@@ -75,5 +77,10 @@ public class ManagerAdmin {
 
 	public static List<ReservaDao> verMisReservasPorFecha(Date inicio, Date fin, Long user) {
 		return ReservaDatos.obtenerMisReservasPorFecha(inicio, fin, user);
+	}
+
+	public static void insertarReservaCentroSemanal(List<DiasSemana> dias, DateTime dateTimeInicio, DateTime dateTimeFin, int duracion, Long idInst) throws ExcepcionReserva {
+		ReservaDatos.insertarReservaCentroSemanal(dias, dateTimeInicio, dateTimeFin, duracion, idInst);
+
 	}
 }

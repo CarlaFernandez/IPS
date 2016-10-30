@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
+import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoPago;
 import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.ReservaDao;
+import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerFechas;
 
@@ -56,7 +58,7 @@ public class ReservaDatos {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
-			comprobarReservaValidaAdmin(reserva);
+			//comprobarReservaValidaAdmin(reserva);
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into reserva ");
 			sb.append("(hora_inicio, hora_fin, instalacion_id, pago_id, ");
@@ -647,6 +649,29 @@ public class ReservaDatos {
 			e.printStackTrace();
 		}
 		return null;
+
+	}
+
+	public static void insertarReservaCentroSemanal(List<DiasSemana> dias, DateTime date, DateTime date2, int duracion, Long idInst)
+			throws ExcepcionReserva {
+		if (dias.isEmpty())
+			return;
+
+		DateTime inicio = new DateTime(date);
+		DateTime fin = new DateTime(date2);
+		DateTime current = inicio;
+
+		while (!current.plusHours(1).equals(fin)) {
+			for (int i = 0; i < dias.size(); i++) {
+				if (current.getDayOfWeek() == dias.get(i).ordinal() + 1) {
+					ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst,
+							null, null, null, null);
+					insertarReservaAdmin(reserva);
+				}
+			}
+			current = current.plusDays(1);
+
+		}
 
 	}
 }

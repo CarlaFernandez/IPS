@@ -34,7 +34,7 @@ import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerUsuario;
 
-public class VentanaReservaSocio extends JDialog {
+public class VentanaAdminReservaSocio extends JDialog {
 	/**
 	 * 
 	 */
@@ -53,7 +53,7 @@ public class VentanaReservaSocio extends JDialog {
 	private JLabel lblReservaDeSocio;
 
 	@SuppressWarnings("unchecked")
-	public VentanaReservaSocio() {
+	public VentanaAdminReservaSocio() {
 		setTitle("Admin -> Reserva Socio");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
 		setAlwaysOnTop(true);

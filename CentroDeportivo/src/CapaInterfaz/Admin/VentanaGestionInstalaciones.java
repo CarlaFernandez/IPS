@@ -9,13 +9,17 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-public class VentanaReservas extends JFrame {
-	public VentanaReservas() {
+public class VentanaGestionInstalaciones extends JFrame {
+	private VentanaGestionInstalaciones ventana;
+	
+	public VentanaGestionInstalaciones() {
+		ventana = this;
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -34,11 +38,11 @@ public class VentanaReservas extends JFrame {
 			}
 		});
 
-		JButton btnVer = new JButton("Ver Reservas");
+		JButton btnVer = new JButton("Ver reservas");
 		btnVer.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				new VentanaAdminReservasPorInstalacion().show();
+				new VentanaAdminVerReservas().show();
 			}
 		});
 		btnVer.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -47,33 +51,40 @@ public class VentanaReservas extends JFrame {
 		btnPagar.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnPagar);
 
-		JButton btnReservaCentro = new JButton("Realizar reserva centro");
+		JButton btnReservaCentro = new JButton("Realizar reserva de centro");
 		btnReservaCentro.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnReservaCentro.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		btnReservaCentro.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				VentanaReservaCentro vrc = new VentanaReservaCentro();
-				vrc.show();
+				int respuesta = JOptionPane.showOptionDialog(ventana, "¿Quiere realizar una reserva periódica?",
+						"Reserva periódica", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null,
+						null);
+				if (respuesta == JOptionPane.YES_OPTION){
+					VentanaReservaCentroPeriodica v = new VentanaReservaCentroPeriodica();
+					v.show();
+				}
+				else if (respuesta == JOptionPane.NO_OPTION){
+					VentanaReservaCentro vrc = new VentanaReservaCentro();
+					vrc.show();
+				}
+				
 			}
 		});
 		panel.add(btnReservaCentro);
 
-		JButton btnReservaSocio = new JButton("Realizar reserva socio");
+		JButton btnReservaSocio = new JButton("Realizar reserva de socio");
 		btnReservaSocio.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnReservaSocio.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		btnReservaSocio.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				VentanaReservaSocio vrs = new VentanaReservaSocio();
+				VentanaAdminReservaSocio vrs = new VentanaAdminReservaSocio();
 				vrs.show();
 			}
 		});
 		panel.add(btnReservaSocio);
 
-
-
-		
 		JButton btnCancelarCentro = new JButton("Cancelar reserva");
 		btnCancelarCentro.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnCancelarCentro.addActionListener(new ActionListener() {
@@ -85,9 +96,8 @@ public class VentanaReservas extends JFrame {
 		});
 		btnCancelarCentro.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnCancelarCentro);
-		
 
-		JLabel lblTituloAdmin = new JLabel("Ventana Reservas");
+		JLabel lblTituloAdmin = new JLabel("Gestión de instalaciones");
 		lblTituloAdmin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloAdmin.setBorder(new EmptyBorder(20, 0, 20, 0));
 		lblTituloAdmin.setFont(new Font("Arial Black", Font.BOLD, 25));

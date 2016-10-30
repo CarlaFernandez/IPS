@@ -40,7 +40,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.GridLayout;
 
-public class VentanaAdminReservasPorInstalacion extends JFrame {
+public class VentanaAdminVerReservas extends JFrame {
 
 	/**
 	 * 
@@ -56,13 +56,13 @@ public class VentanaAdminReservasPorInstalacion extends JFrame {
 	private Long user;
 
 	@SuppressWarnings("unchecked")
-	public VentanaAdminReservasPorInstalacion() {
+	public VentanaAdminVerReservas() {
 		this.user = user;
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
-		JLabel lblTituloSocio = new JLabel("Reservas Por Instalacion");
+		JLabel lblTituloSocio = new JLabel("Reservas por instalación");
 		lblTituloSocio.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloSocio.setBorder(new EmptyBorder(20, 0, 20, 0));
 		lblTituloSocio.setFont(new Font("Arial Black", Font.BOLD, 25));
