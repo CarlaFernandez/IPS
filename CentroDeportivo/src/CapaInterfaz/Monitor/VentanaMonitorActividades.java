@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -15,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DateFormatter;
 
 import org.joda.time.DateTime;
 
@@ -26,12 +29,15 @@ import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.Usuario;
 
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import java.awt.FlowLayout;
 import javax.swing.border.BevelBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import java.awt.Component;
@@ -42,7 +48,10 @@ import java.awt.GridLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
 
 @SuppressWarnings("rawtypes")
 public class VentanaMonitorActividades extends JFrame {
@@ -66,7 +75,7 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel pnlBotonesAcciones;
 	private JPanel pnlBuscarActividad;
 	private JPanel panelPie;
-	private JComboBox cbActividad;
+	private JComboBox<String> cbActividad;
 	private JPanel panelCentro;
 	private JScrollPane spTabla;
 	private JPanel panel;
@@ -74,19 +83,24 @@ public class VentanaMonitorActividades extends JFrame {
 	private JTextArea txtAreaDescripcion;
 	private JLabel lblNumUsarios;
 	private JButton btnRegistro;
+	private JLabel lblDesde;
+	private JLabel lblFin;
+	private JSpinner spinnerFin;
+	private JSpinner spinnerInicio;
+	private JButton btnBuscar;
+	private JLabel lblHora;
 	
 	
 	@SuppressWarnings("unchecked")
 	public VentanaMonitorActividades(Long idMonitor) {
 		this.idMonitor = idMonitor;
-		actividadesMonitor = MonitorDatos.obtenerActividades(idMonitor);
 		
 		setResizable(false);
 		setBounds(100, 100, 900, 563);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		getContentPane().add(getLblTituloMonitor(), BorderLayout.NORTH);
 		getContentPane().add(getPanel(), BorderLayout.CENTER);
-		asignarDescripcion();
+//		asignarDescripcion();
 	}
 
 	
@@ -118,7 +132,7 @@ public class VentanaMonitorActividades extends JFrame {
 				}
 			});
 			
-			rellenarTabla();		
+			//rellenarTabla();		
 		}
 		return t;
 	}
@@ -154,16 +168,16 @@ public class VentanaMonitorActividades extends JFrame {
 		return panelCentro;
 	}
 	
-	private JComboBox getCbActividad(){
+	private JComboBox<String> getCbActividad(){
 		if(cbActividad==null){
-			String[] actividadesMonitorStrings = new String[actividadesMonitor.size()];
-			int aux = 0;
-			for (Actividad actividad : actividadesMonitor) {
-				actividadesMonitorStrings[aux] = actividad.getCodigo().toString();
-				aux++;
-			}
-			cbActividad = new JComboBox(actividadesMonitorStrings);
-			
+//			String[] actividadesMonitorStrings = new String[actividadesMonitor.size()];
+//			int aux = 0;
+//			for (Actividad actividad : actividadesMonitor) {
+//				actividadesMonitorStrings[aux] = actividad.getCodigo().toString();
+//				aux++;
+//			}
+			cbActividad = new JComboBox<String>();
+			getCbActividad().setEnabled(false);
 			cbActividad.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent arg0) {
 					asignarDescripcion();
@@ -182,18 +196,80 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel getPnlBuscarActividad(){
 		if(pnlBuscarActividad==null){
 			pnlBuscarActividad = new JPanel();
-			pnlBuscarActividad.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnlBuscarActividad.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));
+			pnlBuscarActividad.add(getLblDesde());
+			pnlBuscarActividad.add(getSpinnerInicio());
+			pnlBuscarActividad.add(getLblFin());
+			pnlBuscarActividad.add(getSpinnerFin());
+			pnlBuscarActividad.add(getBtnBuscar());
 			pnlBuscarActividad.add(getLblActividad());
 			pnlBuscarActividad.add(getCbActividad());
-			pnlBuscarActividad.add(getLblNumUsarios());
+			pnlBuscarActividad.add(getLblHora());
 		}
 		return pnlBuscarActividad;
+	}
+
+	private JSpinner getSpinnerInicio(){
+		if(spinnerInicio==null){
+			spinnerInicio = new JSpinner();
+			spinnerInicio.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					Calendar date = Calendar.getInstance();
+					date.setTime((Date) spinnerInicio.getValue());
+					date.add(Calendar.DAY_OF_MONTH, 1);
+					spinnerFin.setValue(date.getTime());
+				}
+			});
+			
+			spinnerInicio.setModel(new SpinnerDateModel(new Date(1477845618209L), null, null, Calendar.DAY_OF_WEEK));
+		    JComponent editor = new JSpinner.DateEditor(spinnerInicio, "dd.MM.yyyy");
+		    spinnerInicio.setEditor(editor);
+
+		}
+		return spinnerInicio;
+	}	
+	
+	private JSpinner getSpinnerFin(){
+		if(spinnerFin==null){
+			spinnerFin = new JSpinner();
+			spinnerFin.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					Calendar dateInicio = Calendar.getInstance();
+					Calendar dateFin = Calendar.getInstance();
+					dateInicio.setTime((Date) getSpinnerInicio().getValue());
+					dateFin.setTime((Date) spinnerFin.getValue());
+					if(dateFin.compareTo(dateInicio)<0){
+						spinnerFin.setValue(dateInicio.getTime());
+					}
+				}
+			});
+			spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+			JComponent editor = new JSpinner.DateEditor(spinnerFin, "dd.MM.yyyy");
+			spinnerFin.setEditor(editor);
+		}
+		return spinnerFin;
+	}
+	
+	private JLabel getLblFin(){
+		if(lblFin==null){
+			lblFin = new JLabel("  Hasta:");
+			lblFin.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		}
+		return lblFin;
+	}
+	private JLabel getLblDesde(){
+		if(lblDesde==null){
+			lblDesde = new JLabel("Desde:");
+			lblDesde.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		}
+		return lblDesde;
 	}
 	
 	private JPanel getPanelPie(){
 		if(panelPie==null){
 			panelPie = new JPanel();
 			panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			panelPie.add(getLblNumUsarios());
 			panelPie.add(getLblNewLabel_4());
 			panelPie.add(getBtnVerDetalles());
 		}
@@ -257,7 +333,7 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private JLabel getLblActividad(){
 		if(lblActividad==null){
-			lblActividad = new JLabel("Actividad: ");
+			lblActividad = new JLabel("       Actividad: ");
 			lblActividad.setFont(new Font("Tahoma", Font.BOLD, 18));
 			
 		}
@@ -284,6 +360,7 @@ public class VentanaMonitorActividades extends JFrame {
 					}
 				}
 			});
+			btnEliminarDeActividad.setEnabled(false);
 		}
 		return btnEliminarDeActividad;
 	}
@@ -303,6 +380,7 @@ public class VentanaMonitorActividades extends JFrame {
 			});
 			btnAadirNuevoSocio.setAlignmentY(Component.TOP_ALIGNMENT);
 			btnAadirNuevoSocio.setAlignmentX(Component.CENTER_ALIGNMENT);
+			btnAadirNuevoSocio.setEnabled(false);
 		}
 		return btnAadirNuevoSocio;
 	}
@@ -412,7 +490,7 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private JLabel getLblNumUsarios() {
 		if (lblNumUsarios == null) {
-			lblNumUsarios = new JLabel("                   Personas en clase:");
+			lblNumUsarios = new JLabel("Personas en clase:        ");
 			lblNumUsarios.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		}
 		return lblNumUsarios;
@@ -420,7 +498,7 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private void revisarNumeroUsuarios(){
 		int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
-		String s ="                   Personas en clase: "+modeloTabla.getRowCount()+"/"+maximo;
+		String s ="Personas en clase: "+modeloTabla.getRowCount()+"/"+maximo+"        ";
 		getLblNumUsarios().setText(s);
 	}
 	private JButton getBtnRegistro() {
@@ -428,12 +506,77 @@ public class VentanaMonitorActividades extends JFrame {
 			btnRegistro = new JButton("Ver registro altas y bajas");
 			btnRegistro.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					List<Usuario> bajas = UsuarioDatos.bajasEnActividad(valorCbActividad());
+					List<Usuario> bajas = UsuarioDatos.bajasSociosEnActividad(valorCbActividad());
 					VentanaAltasBajasActividad vaba = new VentanaAltasBajasActividad(bajas,altas);
 					vaba.show();
 				}
 			});
+			btnRegistro.setEnabled(false);
 		}
 		return btnRegistro;
+	}
+	private JButton getBtnBuscar() {
+		if (btnBuscar == null) {
+			btnBuscar = new JButton("Buscar");
+			btnBuscar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Date valorSpin = (Date) getSpinnerInicio().getValue();
+
+					Date valorSpin2 = (Date) getSpinnerFin().getValue();
+					valorSpin2.setHours(0);;
+					valorSpin2.setMinutes(0);
+					valorSpin2.setSeconds(0);
+					java.sql.Date inicio = new java.sql.Date(valorSpin.getTime());
+					java.sql.Date fin = new java.sql.Date(valorSpin2.getTime());
+					
+					
+					actividadesMonitor = MonitorDatos.obtenerActividadesEntreFechas(idMonitor, inicio, fin);
+					if(actividadesMonitor.size()==0){
+						vaciar();
+						JOptionPane.showMessageDialog(null, "No hay ninguna actividad entre las fechas seleccionadas");
+					}else if(actividadesMonitor==null){
+						JOptionPane.showMessageDialog(null, "Error SQL");
+					}else{
+						getCbActividad().removeAllItems();
+						getCbActividad().setEnabled(true);
+						for(int i=0;i<actividadesMonitor.size();i++){
+							System.out.println(actividadesMonitor.get(i).getCodigo().toString());
+							getCbActividad().addItem(actividadesMonitor.get(i).getCodigo().toString());
+						}
+						habilitarBotones();
+					}
+				}
+			});
+			btnBuscar.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return btnBuscar;
+	}
+	
+	private void habilitarBotones(){
+		getBtnAadirNuevoSocio().setEnabled(true);
+		getBtnRegistro().setEnabled(true);
+		getBtnEliminarDeActividad().setEnabled(true);
+		asignarDescripcion();
+		rellenarTabla();
+		revisarNumeroUsuarios();
+	}
+	
+	private void vaciar(){
+		modeloTabla.getDataVector().clear();
+		modeloTabla.fireTableDataChanged();
+		getTxtAreaDescripcion().setText("");
+		getBtnAadirNuevoSocio().setEnabled(false);
+		getBtnRegistro().setEnabled(false);
+		getBtnEliminarDeActividad().setEnabled(false);
+		getCbActividad().setEnabled(false);
+		getCbActividad().removeAllItems();		
+		getLblNumUsarios().setText("Personas en clase:        ");
+	}
+	private JLabel getLblHora() {
+		if (lblHora == null) {
+			lblHora = new JLabel("    Hora:");
+			lblHora.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lblHora;
 	}
 }

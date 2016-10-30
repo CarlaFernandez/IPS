@@ -100,6 +100,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				date.add(Calendar.DATE, 7);
 				spinnerFin.setValue(date.getTime());
 				btnBuscar.setEnabled(true);
+				
 			}
 		});
 		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.WEEK_OF_YEAR));

@@ -351,17 +351,19 @@ public class UsuarioDatos extends GeneradorIDRandom {
 	}
 	
 	
-	public static List<Usuario> bajasEnActividad(Long idActividad) {
+	public static List<Usuario> bajasSociosEnActividad(Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append("select * from usuario u "
 					+ "inner join APUNTADO_ACTIVIDAD ap on u.ID=ap.usuario_id "
-					+ "where ap.actividad_id=? and ap.asistido=? ORDER BY u.NOMBRE");
+					+ "where ap.actividad_id=? and ap.asistido=? and u.SOCIO=?"
+					+ "ORDER BY u.NOMBRE");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idActividad);
 			ps.setBoolean(2, false);
+			ps.setBoolean(3, true);
 			ResultSet rs = ps.executeQuery();
 			List<Usuario> usuarios = new ArrayList<Usuario>();
 			while (rs.next()) {

@@ -34,9 +34,9 @@ public class ManagerMonitores {
 		return MonitorDatos.obtenerCursos(monitorId);
 	}
 	
-	public static List<Actividad> usuarioEstaEnMisActividades(Long idMonitor, Long idUsuario){
-		return MonitorDatos.usuarioEstaEnMisActividades(idMonitor, idUsuario);
-	}
+//	public static List<Actividad> usuarioEstaEnMisActividades(Long idMonitor, Long idUsuario){
+//		return MonitorDatos.usuarioEstaEnMisActividades(idMonitor, idUsuario);
+//	}
 	
 	public static List<Curso> usuarioEstaEnMisCursos(Long idMonitor, Long idUsuario){
 		return MonitorDatos.usuarioEstaEnMisCursos(idMonitor, idUsuario);
