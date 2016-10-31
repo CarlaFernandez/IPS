@@ -58,7 +58,7 @@ public class ReservaDatos {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
-			//comprobarReservaValidaAdmin(reserva);
+			comprobarReservaValidaAdmin(reserva);
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into reserva ");
 			sb.append("(hora_inicio, hora_fin, instalacion_id, pago_id, ");
@@ -136,12 +136,9 @@ public class ReservaDatos {
 		if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
 			if (reservaEnHoraEnPunto(reserva.getInicio())) {
 				long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
-				long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 				long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
 
-				if (daysDiff > ReservaDao.DIAS_ANTELACION_RESERVA_MAXIMO) {
-					throw new ExcepcionReserva("Es demasiado pronto para realizar esta reserva");
-				} else if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_ADMIN) {
+				if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_ADMIN) {
 					throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
 				}
 			} else {
@@ -149,7 +146,7 @@ public class ReservaDatos {
 			}
 
 		} else {
-			throw new ExcepcionReserva("Esta instalacion ya esta reservada para esas fechas");
+			throw new ExcepcionReserva("Esta instalación ya esta reservada para esas fechas");
 		}
 	}
 
@@ -231,7 +228,6 @@ public class ReservaDatos {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -252,7 +248,6 @@ public class ReservaDatos {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -478,7 +473,6 @@ public class ReservaDatos {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -561,7 +555,6 @@ public class ReservaDatos {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -598,7 +591,6 @@ public class ReservaDatos {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -751,20 +743,21 @@ public class ReservaDatos {
 
 	}
 
-	public static void insertarReservaCentroSemanal(List<DiasSemana> dias, DateTime date, DateTime date2, int duracion, Long idInst)
-			throws ExcepcionReserva {
+	public static void insertarReservaCentroSemanal(List<DiasSemana> dias, DateTime inicio, DateTime fin, int duracion,
+			Long idInst) throws ExcepcionReserva {
 		if (dias.isEmpty())
 			return;
 
-		DateTime inicio = new DateTime(date);
-		DateTime fin = new DateTime(date2);
+		if (inicio.isAfter(fin.getMillis())) {
+			throw new ExcepcionReserva("La fecha de fin no puede ser antes que la de inicio.");
+		}
 		DateTime current = inicio;
 
-		while (!current.plusHours(1).equals(fin)) {
+		while (!current.plusHours(duracion).equals(fin.plusDays(1))) {
 			for (int i = 0; i < dias.size(); i++) {
 				if (current.getDayOfWeek() == dias.get(i).ordinal() + 1) {
-					ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst,
-							null, null, null, null);
+					ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion),
+							idInst, null, null, null, null);
 					insertarReservaAdmin(reserva);
 				}
 			}

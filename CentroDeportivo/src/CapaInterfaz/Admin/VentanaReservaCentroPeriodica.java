@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
@@ -378,8 +379,7 @@ public class VentanaReservaCentroPeriodica extends JDialog {
 				ManagerAdmin.insertarReservaCentroSemanal(dias, dateTimeInicio, dateTimeFin,
 						duracion, idInst);
 			} catch (ExcepcionReserva e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, e.getMessage());
 			}
 
 		}
