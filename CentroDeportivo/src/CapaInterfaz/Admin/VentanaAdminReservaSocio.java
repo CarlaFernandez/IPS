@@ -1,4 +1,4 @@
-package CapaInterfaz.Socio;
+package CapaInterfaz.Admin;
 
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -32,11 +32,9 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
-import CapaNegocio.managers.ManagerFechas;
 import CapaNegocio.managers.ManagerUsuario;
 
-public class VentanaSocioReservaInstalacion extends JDialog {
-
+public class VentanaAdminReservaSocio extends JDialog {
 	/**
 	 * 
 	 */
@@ -49,17 +47,13 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 	private JRadioButton rdbtnMensual;
 	private JRadioButton rdbtnEfectivo;
 	private JLabel lblTipoPago;
+	private JComboBox<String> comboBoxUsuarios;
 	private List<Usuario> usuarios;
+	private JLabel lblUsuario;
 	private JLabel lblReservaDeSocio;
-	private Long user;
-	private boolean bajaEsteMes;
-	private boolean bajaProximoMes;
 
 	@SuppressWarnings("unchecked")
-	public VentanaSocioReservaInstalacion(Long user) {
-		this.user = user;
-		this.bajaProximoMes = ManagerUsuario.esBajaParaElMesQueViene(user);
-		this.bajaEsteMes = ManagerUsuario.esBajaParaEsteMes(user);
+	public VentanaAdminReservaSocio() {
 		setTitle("Admin -> Reserva Socio");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
 		setAlwaysOnTop(true);
@@ -156,6 +150,22 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 		gbc_spinnerFin.gridy = 9;
 		getContentPane().add(spinnerFin, gbc_spinnerFin);
 
+		lblUsuario = new JLabel("Usuario: ");
+		lblUsuario.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblUsuario = new GridBagConstraints();
+		gbc_lblUsuario.insets = new Insets(25, 0, 5, 5);
+		gbc_lblUsuario.gridx = 0;
+		gbc_lblUsuario.gridy = 10;
+		getContentPane().add(lblUsuario, gbc_lblUsuario);
+		comboBoxUsuarios = new JComboBox(usuariosStrings);
+		comboBoxUsuarios.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_comboBoxUsuarios = new GridBagConstraints();
+		gbc_comboBoxUsuarios.insets = new Insets(25, 0, 5, 5);
+		gbc_comboBoxUsuarios.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBoxUsuarios.gridx = 1;
+		gbc_comboBoxUsuarios.gridy = 10;
+		getContentPane().add(comboBoxUsuarios, gbc_comboBoxUsuarios);
+
 		JLabel lblInstalacion = new JLabel("Instalaci\u00F3n:");
 		lblInstalacion.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblInstalacion = new GridBagConstraints();
@@ -221,6 +231,7 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 		horaFin += ":00:00";
 
 		Long idInst = instalaciones.get(comboBoxInstalaciones.getSelectedIndex()).getIdInst();
+		Long idUsu = usuarios.get(comboBoxUsuarios.getSelectedIndex()).getIdUsu();
 		TipoPago tipoPago = rdbtnEfectivo.isSelected() ? TipoPago.EFECTIVO : TipoPago.CUOTA;
 
 		DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
@@ -241,26 +252,15 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);
 		DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
-		DateTime hoy = new DateTime(System.currentTimeMillis());
 
-		// si es baja para el mes que viene y selecciona una reserva de ese mes
-		if (bajaProximoMes && ManagerFechas.fechasEstanEnMismoMes(dateTimeInicio, hoy.plusMonths(1))) {
-			JOptionPane.showMessageDialog(this,
-					"Está dado de baja para el próximo mes." + "Por favor, seleccione una fecha de este mes.");
+		try {
+			ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, idUsu, tipoPago);
+			JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
+		} catch (ExcepcionReserva e) {
+			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
-		// si es baja para este mes y selecciona pagar por banco
-		else if (bajaEsteMes && tipoPago.equals(TipoPago.CUOTA)) {
-			JOptionPane.showMessageDialog(this, "Está dado de baja para este mes." + "Ha de pagar en efectivo.");
-		} else {
-			try {
-				ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, user, tipoPago);
-				JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
-			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this, "El formato es incorrecto");
-			} catch (ExcepcionReserva e) {
-				JOptionPane.showMessageDialog(this, e.getMessage());
-			}
-		}
+
 	}
-
 }

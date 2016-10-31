@@ -33,6 +33,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setString(7, usuario.getCiudad());
 			ps.setString(8, usuario.getCuentaBancaria());
 			ps.setBoolean(9, usuario.isSocio());
+			ps.setDate(10, usuario.getBaja());
 			ps.setDate(10, new java.sql.Date(usuario.getBaja().getTime()));
 			ps.execute();
 			con.close();
@@ -206,6 +207,25 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
+	
+	public static void usuarioNoPresentadoActividad(Long idUsu, Long idActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE apuntado_actividad "
+					+ "set asistido = ? "
+					+ "where usuario_id=? and actividad_id=?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setBoolean(1, false);
+			ps.setLong(2, idUsu);
+			ps.setLong(3, idActividad);
+			ps.execute();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
 
 	public static boolean esBajaParaEsteMes(Long idUsuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -226,7 +246,6 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			return false;
 		}
 		if (fechaBaja != null) {
 			DateTime today = new DateTime(System.currentTimeMillis());
@@ -234,7 +253,6 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return ManagerFechas.fechasEstanEnMismoMes(fechaBaja, today);
 		} else
 			return false;
-
 	}
 
 	public static boolean esBajaParaElMesQueViene(Long idUsuario) {
@@ -267,4 +285,116 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		} else
 			return false;
 	}
+	
+	
+	
+	
+	
+	public static List<Usuario> buscarUsuariosQueNoEstenEnActividad(Long idActividad, String campo) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from usuario u "
+					+ "where u.ID not in "
+					+ "(select usuario_id from APUNTADO_ACTIVIDAD where actividad_id=?) ORDER BY "+campo);
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ResultSet rs = ps.executeQuery();
+			List<Usuario> usuarios = new ArrayList<Usuario>();
+			while (rs.next()) {
+				Usuario usu = new Usuario();
+				usu.setIdUsu(rs.getLong("ID"));
+				usu.setNombre(rs.getString("NOMBRE"));
+				usu.setDNI(rs.getString("DNI"));
+				usu.setApellidos(rs.getString("APELLIDOS"));
+				usu.setDireccion(rs.getString("DIRECCION"));
+				usu.setEmail(rs.getString("EMAIL"));
+				usu.setCiudad(rs.getString("CIUDAD"));
+				usu.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
+				usu.setSocio(rs.getBoolean("SOCIO"));
+				if (rs.getDate("FECHA_BAJA") != null) {
+					usu.setBaja(rs.getDate("FECHA_BAJA"));
+				} else {
+					usu.setBaja(null);
+				}
+				usuarios.add(usu);
+			}
+			con.close();
+
+			return usuarios;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static void anadirUsuarioActividad(Long idActividad, Long idUsuario) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("insert into APUNTADO_ACTIVIDAD ");
+			sb.append("(USUARIO_ID, ACTIVIDAD_ID, ASISTIDO) ");
+			sb.append("values (?,?,?)");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idUsuario);
+			ps.setLong(2, idActividad);
+			ps.setBoolean(3, true);
+			ps.execute();
+			con.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static List<Usuario> bajasSociosEnActividad(Long idActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from usuario u "
+					+ "inner join APUNTADO_ACTIVIDAD ap on u.ID=ap.usuario_id "
+					+ "where ap.actividad_id=? and ap.asistido=? and u.SOCIO=?"
+					+ "ORDER BY u.NOMBRE");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ps.setBoolean(2, false);
+			ps.setBoolean(3, true);
+			ResultSet rs = ps.executeQuery();
+			List<Usuario> usuarios = new ArrayList<Usuario>();
+			while (rs.next()) {
+				Usuario usu = new Usuario();
+				usu.setIdUsu(rs.getLong("ID"));
+				usu.setNombre(rs.getString("NOMBRE"));
+				usu.setDNI(rs.getString("DNI"));
+				usu.setApellidos(rs.getString("APELLIDOS"));
+				usu.setDireccion(rs.getString("DIRECCION"));
+				usu.setEmail(rs.getString("EMAIL"));
+				usu.setCiudad(rs.getString("CIUDAD"));
+				usu.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
+				usu.setSocio(rs.getBoolean("SOCIO"));
+				if (rs.getDate("FECHA_BAJA") != null) {
+					usu.setBaja(rs.getDate("FECHA_BAJA"));
+				} else {
+					usu.setBaja(null);
+				}
+				usuarios.add(usu);
+			}
+			con.close();
+
+			return usuarios;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	
+	
 }

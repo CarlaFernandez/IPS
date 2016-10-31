@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
+import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoPago;
 import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.ReservaDao;
+import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerFechas;
 
@@ -56,7 +58,7 @@ public class ReservaDatos {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
-			comprobarReservaValidaAdmin(reserva);
+			//comprobarReservaValidaAdmin(reserva);
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into reserva ");
 			sb.append("(hora_inicio, hora_fin, instalacion_id, pago_id, ");
@@ -658,4 +660,117 @@ public class ReservaDatos {
 		}
 	}
 
+	public static List<ReservaDao> obtenerReservasActivasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
+		DateTime fecha1 = new DateTime(inicio);
+		DateTime fecha2 = new DateTime(fin);
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from reserva ");
+			sb.append("where hora_inicio >= ? ");
+			sb.append("and hora_fin <= ? ");
+			sb.append("and instalacion_id = ? ");
+			sb.append("and estado = '" + EstadoReserva.ACTIVA.name() + "'");
+			sb.append("order by hora_inicio");
+
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setTimestamp(1, new Timestamp(fecha1.getMillis()));
+			ps.setTimestamp(2, new Timestamp(fecha2.getMillis()));
+			ps.setLong(3, idInst);
+			ResultSet rs = ps.executeQuery();
+			List<ReservaDao> reservas = new ArrayList<>();
+			while (rs.next()) {
+				ReservaDao reserva = new ReservaDao();
+				reserva.setIdRes(rs.getLong("ID"));
+				reserva.setInicio(new DateTime(rs.getTimestamp("hora_inicio")));
+				reserva.setFin(new DateTime(rs.getTimestamp("hora_fin")));
+				Long instalacion_id = rs.getLong("instalacion_id");
+				reserva.setIdInst(instalacion_id);
+				reserva.setIdPago(rs.getLong("PAGO_ID"));
+				reserva.setEstado(rs.getString("ESTADO"));
+				reserva.setTipoRes(rs.getString("TIPO"));
+				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
+				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
+				reserva.setIdCurso(rs.getLong("CURSO_ID"));
+
+				reservas.add(reserva);
+			}
+			con.close();
+			return reservas;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	public static List<ReservaDao> obtenerMisReservasPorFecha(Date inicio, Date fin, Long user) {
+		DateTime fecha1 = new DateTime(inicio);
+		DateTime fecha2 = new DateTime(fin);
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from reserva ");
+			sb.append("where hora_inicio >= ? ");
+			sb.append("and hora_fin <= ? ");
+			sb.append("and usuario_id = ?");
+			sb.append("order by hora_inicio");
+
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setTimestamp(1, new Timestamp(fecha1.getMillis()));
+			ps.setTimestamp(2, new Timestamp(fecha2.getMillis()));
+			ps.setLong(3, user);
+			ResultSet rs = ps.executeQuery();
+			List<ReservaDao> reservas = new ArrayList<>();
+			while (rs.next()) {
+				ReservaDao reserva = new ReservaDao();
+				reserva.setIdRes(rs.getLong("ID"));
+				reserva.setInicio(new DateTime(rs.getTimestamp("hora_inicio")));
+				reserva.setFin(new DateTime(rs.getTimestamp("hora_fin")));
+				Long instalacion_id = rs.getLong("instalacion_id");
+				reserva.setIdInst(instalacion_id);
+				reserva.setIdPago(rs.getLong("PAGO_ID"));
+				reserva.setEstado(rs.getString("ESTADO"));
+				reserva.setTipoRes(rs.getString("TIPO"));
+				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
+				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
+				reserva.setIdCurso(rs.getLong("CURSO_ID"));
+
+				reservas.add(reserva);
+			}
+			con.close();
+			return reservas;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	public static void insertarReservaCentroSemanal(List<DiasSemana> dias, DateTime date, DateTime date2, int duracion, Long idInst)
+			throws ExcepcionReserva {
+		if (dias.isEmpty())
+			return;
+
+		DateTime inicio = new DateTime(date);
+		DateTime fin = new DateTime(date2);
+		DateTime current = inicio;
+
+		while (!current.plusHours(1).equals(fin)) {
+			for (int i = 0; i < dias.size(); i++) {
+				if (current.getDayOfWeek() == dias.get(i).ordinal() + 1) {
+					ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst,
+							null, null, null, null);
+					insertarReservaAdmin(reserva);
+				}
+			}
+			current = current.plusDays(1);
+
+		}
+
+	}
 }

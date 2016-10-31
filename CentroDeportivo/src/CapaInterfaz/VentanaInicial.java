@@ -11,6 +11,7 @@ import java.awt.Font;
 import javax.swing.border.EmptyBorder;
 
 import CapaInterfaz.Admin.VentanaAdmin;
+import CapaInterfaz.Monitor.VentanaLoginMonitor;
 import CapaInterfaz.Socio.VentanaLogin;
 import javax.swing.ImageIcon;
 import javax.swing.border.BevelBorder;
@@ -104,6 +105,11 @@ public class VentanaInicial extends JFrame{
 				panel_monitor.setLayout(new BorderLayout(0, 0));
 				
 				JButton btnNewButton = new JButton("");
+				btnNewButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						new VentanaLoginMonitor().show();
+					}
+				});
 				btnNewButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 				btnNewButton.setToolTipText("Boton Monitor");
 				btnNewButton.setIcon(new ImageIcon(VentanaInicial.class.getResource("/Resources/imagenMonitor.png")));

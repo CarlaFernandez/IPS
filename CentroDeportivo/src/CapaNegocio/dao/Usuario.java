@@ -1,6 +1,6 @@
 package CapaNegocio.dao;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Created by Carla on 08/10/2016.

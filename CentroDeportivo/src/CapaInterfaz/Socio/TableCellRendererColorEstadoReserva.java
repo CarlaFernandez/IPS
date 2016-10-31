@@ -9,7 +9,7 @@ import org.joda.time.DateTime;
 
 import CapaNegocio.EstadoReserva;
 
-public class TableCellRendererColorSocio extends DefaultTableCellRenderer {
+public class TableCellRendererColorEstadoReserva extends DefaultTableCellRenderer {
 
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class TableCellRendererColorSocio extends DefaultTableCellRenderer {
 			componente.setBackground(new Color(255, 185, 185));// rojo
 		}
 		if (table.getModel().getValueAt(row, 5).toString().equals(EstadoReserva.ANULADA.name())) {
-			componente.setBackground(new Color(255, 255, 185));// rojo
+			componente.setBackground(new Color(255, 255, 185));// amarillo
 		}
 		return componente;
 	}
