@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
+import CapaInterfaz.Admin.VentanaReservaCentro;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoPago;
 import CapaNegocio.EstadoReserva;
@@ -762,56 +763,57 @@ public class ReservaDatos {
 				if (current.getDayOfWeek() == dias.get(i).ordinal() + 1) {
 					ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion),
 							idInst, null, null, null, null);
-					try{insertarReservaAdmin(reserva);
-					}catch (ExcepcionReserva e) {
-						if (!e.getMessage().equals("Esta instalación ya esta reservada para esas fechas")) {
-							throw e;
-						}
-						/*
-						 * Comprobacion colisiones
-						 */
-						List<ReservaDao> reservasConflicto = ManagerAdmin.verReservasActivasPorFechaEInstalacion(
-								reserva.getInicio().toDate(), reserva.getFin().toDate(), reserva.getIdInst());
-						if (!e.getMessage().equals("Esta instalación ya esta reservada para esas fechas")) {
-							int seleccion = JOptionPane.showOptionDialog(null,
-									"Conflicto con ya existente: " + reservasConflicto.get(0).toString(), "Conflicto horas",
-									JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-									new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
+					List<ReservaDao> reservasConflicto = ManagerAdmin.verReservasActivasPorFechaEInstalacion(
+							reserva.getInicio().toDate(), reserva.getFin().toDate(), reserva.getIdInst());
+					if (reservasConflicto.isEmpty())
+						insertarReservaAdmin(reserva);
+					/*
+					 * Comprobacion colisiones
+					 */
+					else {
+						int seleccion = JOptionPane.showOptionDialog(null,
+								"Conflicto con ya existente: " + reservasConflicto.get(0).toString(), "Conflicto horas",
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+								new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
 
-							// Seleccion ==0 => cancelar
-							// 1>>Anular previa, insertar esta y aviso a usuario
-							if (seleccion == 1) {
-								// dado que antes podias incluir todas las reservas
-								// que quisieras o meterlas aun ahora desde la BBDD,
-								// asi anulamos todas las activas que conlisionen
-								for (ReservaDao r : reservasConflicto) {
-									if (r.getTipoRes().equals(TipoReserva.CENTRO.name())) {
-										/*
-										 * Mostrar tambien cuando se cancelan reservas del centro?
-										 * System.out.println("La reserva del centro: " + r.toString() + "\n HA SIDO ANULADA");
-										*/
-										} else {
-										System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
-										Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
-										System.out.println(
-												"El usuario: " + usuario.getNombre() + " " + usuario.getApellidos());
-										System.out.println("La reserva: " + r.toString() + "\n HA SIDO ANULADA");
-									}
-									ManagerAdmin.AnularReserva(r.getIdRes());
+						// Seleccion ==0 => cancelar
+						// 1>>Anular previa, insertar esta y aviso a
+						// usuario
+						if (seleccion == 1) {
+							// dado que antes podias incluir todas las
+							// reservas
+							// que quisieras o meterlas aun ahora desde
+							// la BBDD,
+							// asi anulamos todas las activas que
+							// conlisionen
+							for (ReservaDao r : reservasConflicto) {
+								if (r.getTipoRes().equals(TipoReserva.CENTRO.name())) {
+									/*
+									 * Mostrar tambien cuando se cancelan
+									 * reservas del centro? System.out.
+									 * println("La reserva del centro: " +
+									 * r.toString() + "\n HA SIDO ANULADA");
+									 */
+								} else {
+									System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
+									Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
+									System.out.println(
+											"El usuario: " + usuario.getNombre() + " " + usuario.getApellidos());
+									System.out.println("La reserva: " + r.toString() + "\n HA SIDO ANULADA");
 								}
-								insertarReservaAdmin(reserva);
-								JOptionPane.showMessageDialog(null, "La reserva se ha insertado con éxito");
+								ManagerAdmin.AnularReserva(r.getIdRes());
 							}
+							insertarReservaAdmin(reserva);
 						}
-						/*
-						 * Fin Comprobacion colisiones
-						 */
 					}
 				}
+				/*
+				 * Fin Comprobacion colisiones
+				 */
 			}
+
 			current = current.plusDays(1);
-
 		}
-
 	}
+
 }
