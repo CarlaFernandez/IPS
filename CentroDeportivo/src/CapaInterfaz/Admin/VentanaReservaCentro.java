@@ -234,24 +234,32 @@ public class VentanaReservaCentro extends JDialog {
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
 		} catch (ExcepcionReserva e) {
-			// JOptionPane.showMessageDialog(this, e.getMessage());
-			int seleccion = JOptionPane.showOptionDialog(null, e.getMessage(), "Conflicto horas",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, // null
-																					// para
-																					// icono
-																					// por
-																					// defecto.
+			if (!e.getMessage().equals("Esta instalación ya esta reservada para esas fechas")) {
+				JOptionPane.showMessageDialog(this, e.getMessage());
+				return;
+			}
+			String tostringReservaAnulablre = ManagerAdmin
+					.verReservasActivasPorFechaEInstalacion(dateTimeInicio.toDate(), dateTimeFin.toDate(), idInst)
+					.get(0).toString();
+			int seleccion = JOptionPane.showOptionDialog(null,
+					"Conflicto con ya existente: " + tostringReservaAnulablre, "Conflicto horas",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 					new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
 
 			// Seleccion ==0 => cancelar
 			if (seleccion == 1) {// Anular
-				// Anular previa insertar esta y aviso a usuario
+				// Anular previa, insertar esta y aviso a usuario
 				List<ReservaDao> reservaConflicto = ManagerAdmin
 						.verReservasPorFechaEInstalacion(dateTimeInicio.toDate(), dateTimeFin.toDate(), idInst);
 				for (ReservaDao r : reservaConflicto) {
 					if (r.getEstado().equals(EstadoReserva.ACTIVA.name())) {
 						if (r.getTipoRes().equals(TipoReserva.CENTRO.name())) {
-							System.out.println("La reserva del centro: " + r.toString() + "\n HA SIDO ANULADA");
+							/*
+							 * Mostrar tambien cuando se cancelan reservas del
+							 * centro?
+							 * System.out.println("La reserva del centro: " +
+							 * r.toString() + "\n HA SIDO ANULADA");
+							 */
 						} else {
 							System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
 							Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
