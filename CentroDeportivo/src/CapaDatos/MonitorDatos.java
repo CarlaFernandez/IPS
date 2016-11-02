@@ -1,12 +1,12 @@
 package CapaDatos;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -91,6 +91,8 @@ public class MonitorDatos extends GeneradorIDRandom {
 	
 	
 	public static List<Actividad> obtenerActividadesEntreFechas(Long monitorId, Date inicio, Date fin) {
+		DateTime fecha1 = new DateTime(inicio);
+		DateTime fecha2 = new DateTime(fin);
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -102,8 +104,8 @@ public class MonitorDatos extends GeneradorIDRandom {
 					+ "order by fecha_actividad");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1,monitorId);
-			ps.setDate(2, inicio);
-			ps.setDate(3, fin);
+			ps.setTimestamp(2, new Timestamp(fecha1.getMillis()));
+			ps.setTimestamp(3, new Timestamp(fecha2.getMillis()));
 			ResultSet rs = ps.executeQuery();
 			List<Actividad> actividades = new ArrayList<>();
  			while (rs.next()) {
@@ -116,6 +118,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 				actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
 				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
 				actividad.setCancelada(rs.getBoolean("CANCELADA"));
+				actividad.setFecha_entrada(new DateTime(rs.getTimestamp("fecha_entrada")));
 				
 				actividades.add(actividad);
 			}

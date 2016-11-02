@@ -520,17 +520,24 @@ public class VentanaMonitorActividades extends JFrame {
 			btnBuscar = new JButton("Buscar");
 			btnBuscar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					Date valorSpin = (Date) getSpinnerInicio().getValue();
+					Calendar dateInicio = Calendar.getInstance();
+					dateInicio.setTime((Date) spinnerInicio.getValue());
+					dateInicio.set(Calendar.MILLISECOND, 0);
+					dateInicio.set(Calendar.SECOND, 0);
+					dateInicio.set(Calendar.MINUTE, 0);
+					dateInicio.set(Calendar.HOUR, 0);
 
-					Date valorSpin2 = (Date) getSpinnerFin().getValue();
-					valorSpin2.setHours(0);;
-					valorSpin2.setMinutes(0);
-					valorSpin2.setSeconds(0);
-					java.sql.Date inicio = new java.sql.Date(valorSpin.getTime());
-					java.sql.Date fin = new java.sql.Date(valorSpin2.getTime());
+					Calendar dateFin = Calendar.getInstance();
+					dateFin.setTime((Date) getSpinnerFin().getValue());
+					dateFin.set(Calendar.MILLISECOND, 0);
+					dateFin.set(Calendar.SECOND, 0);
+					dateFin.set(Calendar.MINUTE, 0);
+					dateFin.set(Calendar.HOUR, 0);
 					
 					
-					actividadesMonitor = MonitorDatos.obtenerActividadesEntreFechas(idMonitor, inicio, fin);
+					
+					
+					actividadesMonitor = MonitorDatos.obtenerActividadesEntreFechas(idMonitor, dateInicio.getTime(), dateFin.getTime());
 					if(actividadesMonitor.size()==0){
 						vaciar();
 						JOptionPane.showMessageDialog(null, "No hay ninguna actividad entre las fechas seleccionadas");
@@ -544,6 +551,7 @@ public class VentanaMonitorActividades extends JFrame {
 							getCbActividad().addItem(actividadesMonitor.get(i).getCodigo().toString());
 						}
 						habilitarBotones();
+						getLblHora().setText("    Hora:");
 					}
 				}
 			});

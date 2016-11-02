@@ -1,5 +1,7 @@
 package CapaNegocio.dao;
 
+import org.joda.time.DateTime;
+
 public class Actividad {
 	private Long codigo;
 	private String nombre;
@@ -9,10 +11,10 @@ public class Actividad {
 	private double numeroHoras;
 	private Long monitorID;
 	private boolean cancelada;
-	
+	private DateTime fecha_entrada;
 
 	public Actividad(Long codigo, String nombre, String descripcion, int plazasTotales, int plazasOcupadas,
-			double numeroHoras, Long monitorID, boolean cancelada) {
+			double numeroHoras, Long monitorID, boolean cancelada, DateTime fecha_entrada) {
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
@@ -21,11 +23,21 @@ public class Actividad {
 		this.numeroHoras = numeroHoras;
 		this.monitorID = monitorID;
 		this.cancelada = cancelada;
+		this.fecha_entrada=fecha_entrada;
 	}
 
 	public Actividad(){}
 	
 	
+	
+	public DateTime getFecha_entrada() {
+		return fecha_entrada;
+	}
+
+	public void setFecha_entrada(DateTime fecha_entrada) {
+		this.fecha_entrada = fecha_entrada;
+	}
+
 	public Long getCodigo() {
 		return codigo;
 	}
