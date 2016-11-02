@@ -36,16 +36,16 @@ public class VentanaAdmin extends JFrame {
 		});
 		panel.add(btnReservas);
 
-		JButton btnGestionActividades = new JButton("Gestión de actividades");
-		btnGestionActividades.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnGestionActividades.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				VentanaGestionActividades v = new VentanaGestionActividades();
-				v.show();
-			}
-		});
-		btnGestionActividades.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panel.add(btnGestionActividades);
+//		JButton btnGestionActividades = new JButton("Gestión de actividades");
+//		btnGestionActividades.setFont(new Font("Arial", Font.PLAIN, 14));
+//		btnGestionActividades.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				VentanaGestionActividades v = new VentanaGestionActividades();
+//				v.show();
+//			}
+//		});
+//		btnGestionActividades.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+//		panel.add(btnGestionActividades);
 
 		JButton btnPasarPagosACuenta = new JButton("Pasar Pagos Cuenta");
 		btnPasarPagosACuenta.setFont(new Font("Arial", Font.PLAIN, 14));

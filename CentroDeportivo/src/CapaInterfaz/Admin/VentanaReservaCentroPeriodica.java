@@ -358,29 +358,22 @@ public class VentanaReservaCentroPeriodica extends JDialog {
 			if (checkDomingo.isSelected())
 				dias.add(DiasSemana.DOMINGO);
 
-			try {
-				Long idInst = instalaciones.get(comboBoxInstalacion.getSelectedIndex()).getIdInst();
-				int hora = (int) spinnerHora.getValue();
-				int duracion = (int)spinnerDuracion.getValue();
-				
-				String horaInicio = String.valueOf(hora);
-				horaInicio += ":00:00";
-				String horaFin = String.valueOf(hora + duracion);
-				horaFin += ":00:00";
+			Long idInst = instalaciones.get(comboBoxInstalacion.getSelectedIndex()).getIdInst();
+			int hora = (int) spinnerHora.getValue();
+			int duracion = (int)spinnerDuracion.getValue();
+			
+			String horaInicio = String.valueOf(hora);
+			horaInicio += ":00:00";
+			String horaFin = String.valueOf(hora + duracion);
+			horaFin += ":00:00";
 
-				DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-				String fechaInicio = fmt.format(dateInicio.getDate());
-				String fechaFin = fmt.format(dateFin.getDate());
+			DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+			String fechaInicio = fmt.format(dateInicio.getDate());
+			String fechaFin = fmt.format(dateFin.getDate());
 
-				DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-				DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);				
-				DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
-				
-				ManagerAdmin.insertarReservaCentroSemanal(dias, dateTimeInicio, dateTimeFin,
-						duracion, idInst);
-			} catch (ExcepcionReserva e) {
-				JOptionPane.showMessageDialog(this, e.getMessage());
-			}
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+			DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);				
+			DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
 
 		}
 
