@@ -37,8 +37,8 @@ public class VentanaApuntarseActividad extends JFrame {
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
 	JTextArea textArea;
-	private int selectedRow;
-	private HashMap<Long,String> descriptions;
+	private int selectedRow = -1;
+	private HashMap<Long, String> descriptions;
 	private long user;
 
 	public VentanaApuntarseActividad(long user) {
@@ -83,37 +83,51 @@ public class VentanaApuntarseActividad extends JFrame {
 		panelPie.setBorder(new TitledBorder(null, "Descripcion", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel.add(panelPie, BorderLayout.SOUTH);
 		panelPie.setLayout(new GridLayout(2, 1, 0, 0));
-		
+
 		textArea = new JTextArea();
 		textArea.setWrapStyleWord(true);
 		textArea.setLineWrap(true);
 		panelPie.add(textArea);
-		
+
 		JPanel panel_1 = new JPanel();
 		panelPie.add(panel_1);
-		
+
 		JButton btnApuntarme = new JButton("Apuntarme");
 		btnApuntarme.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Long iDActividad = (Long) modeloTabla.getValueAt(selectedRow, 1);
-				String nombreActividad = (String) modeloTabla.getValueAt(selectedRow, 2);
-				int botonDialogo = JOptionPane.YES_NO_OPTION;
-				botonDialogo = JOptionPane.showConfirmDialog(null,
-						"Está seguro de que quiere apuntarse a la actividad: "
-								+ nombreActividad+"?",
-						"Confirmar Inscripcion", botonDialogo);
-				if (botonDialogo == JOptionPane.YES_OPTION)
-					ActividadesDatos.apuntarseActividad(user, iDActividad);
+				if (selectedRow == -1) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado ninguna actividad.\nPor favor seleccione una actividad y vuelva a intentarlo.",
+							"No hay actividad seleccionada", JOptionPane.WARNING_MESSAGE);
+				} else {
+					Long iDActividad = (Long) modeloTabla.getValueAt(selectedRow, 1);
+					String nombreActividad = (String) modeloTabla.getValueAt(selectedRow, 2);
+					if (ActividadesDatos.comprobarUsuarioApuntadoActividad(iDActividad, user)) {
+						JOptionPane.showMessageDialog(null, "Ya está apuntado a esta actividad.",
+								"ERROR: Ya está apuntado", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					int botonDialogo = JOptionPane.YES_NO_OPTION;
+					botonDialogo = JOptionPane.showConfirmDialog(null,
+							"Está seguro de que quiere apuntarse a la actividad: " + nombreActividad + "?",
+							"Confirmar Inscripcion", botonDialogo);
+					if (botonDialogo == JOptionPane.YES_OPTION) {
+						ActividadesDatos.apuntarseActividad(user, iDActividad);
+						JOptionPane.showMessageDialog(null, "Se ha apuntado correctamente.", "Correcto",
+								JOptionPane.PLAIN_MESSAGE);
+					}
+				}
 			}
-			
+
 		});
 		panel_1.add(btnApuntarme);
 	}
 
-	private void actualizarDescripcion(){
+	private void actualizarDescripcion() {
 		textArea.setText(descriptions.get(modeloTabla.getValueAt(selectedRow, 1)));
 	}
-	private void obtenerActividades(){
+
+	private void obtenerActividades() {
 		List<Actividad> actividades = ActividadesDatos.obtenerActividadesFuturas();
 		descriptions = new HashMap<>();
 		Object[] line = new Object[9];
@@ -121,8 +135,8 @@ public class VentanaApuntarseActividad extends JFrame {
 		for (int i = 0; i < tam; i++) {
 			modeloTabla.removeRow(0);
 		}
-		
-		for(int i = 0; i < actividades.size(); i++){
+
+		for (int i = 0; i < actividades.size(); i++) {
 			line[0] = actividades.get(i).getFecha_entrada();
 			line[1] = actividades.get(i).getCodigo();
 			line[2] = actividades.get(i).getNombre();
@@ -133,6 +147,5 @@ public class VentanaApuntarseActividad extends JFrame {
 			modeloTabla.addRow(line);
 		}
 	}
-
 
 }

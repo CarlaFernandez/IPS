@@ -61,7 +61,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	private JButton btnBuscar;
 	private List<Usuario> usuarios;
 	private JComboBox<String> comboBoxInstalaciones;
-	private int selectedRow;
+	private int selectedRow = -1;
 	private JTextField textFieldHoraSalida;
 	private JTextField textFieldHoraEntrada;
 
@@ -70,7 +70,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		usuarios = UsuarioDatos.ObtenerUsuarios();
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
-		JLabel lblReservasInstalaciones = new JLabel("Cancelar Reservas");
+		JLabel lblReservasInstalaciones = new JLabel("Registrar hora entrada/salida del socio");
 		lblReservasInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
 		lblReservasInstalaciones.setBorder(new EmptyBorder(20, 0, 20, 0));
 		lblReservasInstalaciones.setFont(new Font("Arial Black", Font.BOLD, 25));
@@ -95,7 +95,6 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				selectedRow = table.getSelectedRow();
 			}
 		});
-		table.setDefaultRenderer(Object.class, new TableCellRendererColorAdmin());
 		table.setModel(modeloTabla);
 		table.setBackground(Color.WHITE);
 		spTabla.setViewportView(table);
@@ -114,7 +113,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				date.add(Calendar.DATE, 7);
 				spinnerFin.setValue(date.getTime());
 				btnBuscar.setEnabled(true);
-				
+
 			}
 		});
 		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
@@ -185,14 +184,19 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				String textoSalida = textFieldHoraSalida.getText();
 				DateTime horaEntrada = null;
 				DateTime horaSalida = null;
-				if (selectedRow != -1) {
+				if (selectedRow == -1) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado ninguna reserva.\nPorfavor seleccione una reserva e intente otra vez.",
+							"Ninguna reserva seleccionada", JOptionPane.WARNING_MESSAGE);
+				} else {
 					long id = (long) modeloTabla.getValueAt(selectedRow, 1);
 					try {
 						horaEntrada = obtenerHora(textoEntrada);
 						horaSalida = obtenerHora(textoSalida);
 					} catch (NumberFormatException e1) {
 						JOptionPane.showMessageDialog(null,
-								"Formato de hora introducido incorrecto.\n Revise la hora introducida.");
+								"Formato de hora introducido es incorrecto.\nPor favor introduzca la hora con el formato: HH:MM",
+								"Error: Formato Incorrecto", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
