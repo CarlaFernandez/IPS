@@ -63,9 +63,10 @@ public class ActividadesDatos {
 		if (comprobarUsuarioApuntadoActividad(actividadId, userId))
 			return;
 		try {
-			ps = con.prepareStatement("INSERT INTO APUNTADO_ACTIVIDAD (USUARIO_ID, ACTIVIDAD_ID) VALUES (?,?)");
+			ps = con.prepareStatement("INSERT INTO APUNTADO_ACTIVIDAD (USUARIO_ID, ACTIVIDAD_ID, ASISTIDO) VALUES (?,?,?)");
 			ps.setLong(1, userId);
 			ps.setLong(2, actividadId);
+			ps.setBoolean(3, false);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			System.err.println(e.getSQLState() + " " + e.getMessage());

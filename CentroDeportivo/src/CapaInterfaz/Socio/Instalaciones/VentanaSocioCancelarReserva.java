@@ -29,6 +29,7 @@ import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
 import CapaInterfaz.ModeloNoEditable;
 import CapaNegocio.DiasSemana;
+import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
@@ -47,7 +48,7 @@ public class VentanaSocioCancelarReserva extends JFrame {
 	private JButton btnBuscar;
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
-	private int selectedRow;
+	private int selectedRow = -1;
 	private long user;
 
 	public VentanaSocioCancelarReserva(long user) {
@@ -100,7 +101,7 @@ public class VentanaSocioCancelarReserva extends JFrame {
 				btnBuscar.setEnabled(true);
 			}
 		});
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.WEEK_OF_YEAR));
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_WEEK));
 		panelCabecera.add(spinnerInicio);
 
 		JLabel lblFin = new JLabel("Fin");
@@ -129,9 +130,19 @@ public class VentanaSocioCancelarReserva extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int fila = table.getSelectedRow();
 				int botonDialogo = JOptionPane.YES_NO_OPTION;
-				if (fila != -1) {
+				if (fila == -1) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado ninguna reserva.\nSeleccione una reserva y vuelva a intentarlo.",
+							"ERROR: No hay reserva seleccionada", JOptionPane.ERROR_MESSAGE);
+				} else {
 					long id = (long) modeloTabla.getValueAt(fila, 1);
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+					if (!reserva.getEstado().equals(EstadoReserva.ACTIVA.name())) {
+						JOptionPane.showMessageDialog(null,
+								"No puede cancelar una reserva que ya está: " + reserva.getEstado());
+						return;
+					}
+
 					botonDialogo = JOptionPane.showConfirmDialog(null, "Está seguro de que quiere cancelar la reserva?",
 							"Confirmar Cancelacion", botonDialogo);
 					if (botonDialogo == JOptionPane.YES_OPTION)
@@ -160,7 +171,7 @@ public class VentanaSocioCancelarReserva extends JFrame {
 
 		for (int i = 0; i < reservas.size(); i++) {
 			ReservaDao reserva = reservas.get(i);
-			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()];
+			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek() - 1];
 			line[1] = reserva.getIdRes();
 			line[2] = reserva.getInicio();
 			line[3] = reserva.getFin();
