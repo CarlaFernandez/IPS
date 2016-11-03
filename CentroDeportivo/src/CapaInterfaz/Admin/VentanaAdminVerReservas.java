@@ -27,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.joda.time.DateTime;
+import org.joda.time.Hours;
 
 import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
@@ -57,7 +58,6 @@ public class VentanaAdminVerReservas extends JFrame {
 
 	@SuppressWarnings("unchecked")
 	public VentanaAdminVerReservas() {
-		this.user = user;
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -150,7 +150,7 @@ public class VentanaAdminVerReservas extends JFrame {
 		date.add(Calendar.DATE, 7);
 		panelDiaSemana.add(spinnerInicio);
 
-		JLabel lblElDiaQue = new JLabel("Día seleccionado");
+		JLabel lblElDiaQue = new JLabel("Día seleccionado: ");
 		panelDiaSemana.add(lblElDiaQue);
 
 		Calendar ahora = Calendar.getInstance();
@@ -158,14 +158,14 @@ public class VentanaAdminVerReservas extends JFrame {
 		ahora.set(Calendar.SECOND, 0);
 		ahora.set(Calendar.MINUTE, 0);
 		ahora.set(Calendar.HOUR, 0);
-		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek()-1].name();
+		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name();
 		JLabel lblDiaSemana = new JLabel(DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name());
 		panelDiaSemana.add(lblDiaSemana);
 
 		spinnerInicio.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				lblDiaSemana.setText(DiasSemana.values()
-						[new DateTime(((Date) spinnerInicio.getValue()).getTime()).getDayOfWeek() - 1].name());
+				lblDiaSemana.setText(DiasSemana
+						.values()[new DateTime(((Date) spinnerInicio.getValue()).getTime()).getDayOfWeek() - 1].name());
 			}
 		});
 
@@ -263,7 +263,7 @@ public class VentanaAdminVerReservas extends JFrame {
 		for (int i = 0; i < reservas.size(); i++) {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
-			int nhoras = reservas.get(i).getFin().getHourOfDay() - reservas.get(i).getInicio().getHourOfDay();
+			int nhoras = Hours.hoursBetween(reservas.get(i).getInicio(), reservas.get(i).getFin()).getHours();
 			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
 				if (reservas.get(i).getTipoRes().equals(TipoReserva.CENTRO.name())) {
