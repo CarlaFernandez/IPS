@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -32,33 +30,26 @@ import org.joda.time.DateTime;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
 import CapaDatos.UsuarioDatos;
-import CapaInterfaz.ModeloConColumnasEditables;
 import CapaInterfaz.ModeloNoEditable;
-import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
-import CapaNegocio.dao.Instalacion;
+import CapaNegocio.EstadoPago;
+import CapaNegocio.TipoPago;
 import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
-import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerFechas;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Timestamp;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.JTextField;
-import java.awt.GridLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JSpinner spinnerInicio, spinnerFin;
 	private JTable table;
 	private ModeloNoEditable modeloTabla;
-	private JButton btnBuscar;
+	private JButton btnBuscar, btnPagar;
 	private List<Usuario> usuarios;
 	private JComboBox<String> comboBoxInstalaciones;
 	private int selectedRow;
@@ -70,7 +61,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		usuarios = UsuarioDatos.ObtenerUsuarios();
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
-		JLabel lblReservasInstalaciones = new JLabel("Cancelar Reservas");
+		JLabel lblReservasInstalaciones = new JLabel("Uso instalacion");
 		lblReservasInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
 		lblReservasInstalaciones.setBorder(new EmptyBorder(20, 0, 20, 0));
 		lblReservasInstalaciones.setFont(new Font("Arial Black", Font.BOLD, 25));
@@ -93,6 +84,19 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				selectedRow = table.getSelectedRow();
+				btnPagar.setEnabled(true);
+				long id = (long) modeloTabla.getValueAt(selectedRow, 1);
+				ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+				Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
+				// No deja pagar reservas cobradas
+				if (!pago.getEstado().equals(EstadoPago.PENDIENTE.name()))
+					btnPagar.setEnabled(false);
+				// No deja pagar reservas no marcadas como efectivo
+				if (!pago.getTipo().equals(TipoPago.EFECTIVO.name()))
+					btnPagar.setEnabled(false);
+				// No deja pagar reservas hasta tener hora de entrada
+				if (reserva.getHoraEntrada() == null)
+					btnPagar.setEnabled(false);
 			}
 		});
 		table.setDefaultRenderer(Object.class, new TableCellRendererColorAdmin());
@@ -114,7 +118,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				date.add(Calendar.DATE, 7);
 				spinnerFin.setValue(date.getTime());
 				btnBuscar.setEnabled(true);
-				
+
 			}
 		});
 		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
@@ -219,6 +223,34 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 			}
 		});
 		botonModificarHora.add(btnModificarHora, BorderLayout.NORTH);
+
+		JPanel panel_1 = new JPanel();
+		botonModificarHora.add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new BorderLayout(0, 0));
+
+		btnPagar = new JButton("Pagar ahora");
+		btnPagar.setEnabled(false);
+		btnPagar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (selectedRow != -1) {
+					long id = (long) modeloTabla.getValueAt(selectedRow, 1);
+					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+					Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
+					boolean pagoPendiente = false, pagoEfectivo = false;
+					if (pago.getEstado().equals(EstadoPago.PENDIENTE.name()))
+						pagoPendiente = true;
+					if (pago.getTipo().equals(TipoPago.EFECTIVO.name()))
+						pagoEfectivo = true;
+					DateTime hEntrada = reserva.getHoraEntrada();
+					DateTime hSalida = reserva.getHoraSalida();
+					if (hEntrada != null && pagoPendiente && pagoEfectivo) {
+						ManagerAdmin.crearPagoEfectivo(reserva.getIdRes());
+						modeloTabla.setValueAt("COBRADO", table.getSelectedRow(), 4);
+					}
+				}
+			}
+		});
+		panel_1.add(btnPagar, BorderLayout.NORTH);
 
 		JPanel panelHoraEntrada = new JPanel();
 		panelHoras.add(panelHoraEntrada, BorderLayout.NORTH);

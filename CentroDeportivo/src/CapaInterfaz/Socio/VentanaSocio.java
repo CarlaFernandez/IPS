@@ -41,6 +41,7 @@ public class VentanaSocio extends JFrame{
 		
 		JButton btnNewButton_1 = new JButton("Apuntarse a Actividades");
 		btnNewButton_1.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				VentanaApuntarseActividad vaas = new VentanaApuntarseActividad(user);
 				vaas.show();
@@ -59,7 +60,7 @@ public class VentanaSocio extends JFrame{
 		btnNewButton_2.setFont(new Font("Wide Latin", Font.PLAIN, 12));
 		btnNewButton_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_2);
-		
+
 		JLabel lblTituloSocio = new JLabel("Ventana Socios");
 		lblTituloSocio.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloSocio.setBorder(new EmptyBorder(20, 0, 20, 0));
