@@ -147,7 +147,7 @@ public class VentanaSocioVerReservasPorInstalacion extends JFrame {
 		JLabel lblElDiaQue = new JLabel("Dia Seleccionado:   ");
 		panel_1.add(lblElDiaQue);
 
-		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek()-1].name();
+		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name();
 		JLabel lblDiaSemana = new JLabel(DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name());
 		panel_1.add(lblDiaSemana);
 		Calendar date = Calendar.getInstance();
@@ -269,7 +269,9 @@ public class VentanaSocioVerReservasPorInstalacion extends JFrame {
 		for (int i = 0; i < reservas.size(); i++) {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
-			int nhoras = reservas.get(i).getFin().getHourOfDay() - reservas.get(i).getInicio().getHourOfDay();
+			// int nhoras = reservas.get(i).getFin().getHourOfDay() -
+			// reservas.get(i).getInicio().getHourOfDay();
+			int nhoras = (int) (reservas.get(i).getDuracionEnMinutos() / 60);
 			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
 				if (reservas.get(i).getIdUsu().equals(user)) {
@@ -277,8 +279,13 @@ public class VentanaSocioVerReservasPorInstalacion extends JFrame {
 					tablaReservas[dia][hora + j] = reservas.get(i);
 				}
 				if (!reservas.get(i).getIdUsu().equals(user)) {
-					tm.setValueAt("Reserva ajena", hora + j, dia);
-					tablaReservas[dia][hora + j] = reservas.get(i);
+					if (hora + j < 24) {
+						tm.setValueAt("Reserva ajena", hora + j, dia);
+						tablaReservas[dia][hora + j] = reservas.get(i);
+					} else {
+						tm.setValueAt("Reserva ajena", hora + j - 24, dia + 1);
+						tablaReservas[dia + 1][hora + j - 24] = reservas.get(i);
+					}
 				}
 			}
 		}

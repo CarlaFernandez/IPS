@@ -63,9 +63,9 @@ public class Instalacion {
 
 	@Override
 	public String toString() {
-		return "INSTALACION\n\n Codigo=" + codigo + "\n PrecioHora=" + precioHora
-				+ "\n Descripcion=" + descripcion + "\n Disponible="
-				+ disponible + "]";
+		return "INSTALACION\n\n Codigo = " + codigo + "\n PrecioHora = " + precioHora
+				+ "\n Descripcion = " + descripcion + "\n Disponible = "
+				+ disponible;
 	}
 
 }
