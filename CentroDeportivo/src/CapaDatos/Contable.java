@@ -16,10 +16,13 @@ public class Contable {
 		DateTime mesAnterior = fechaActual.minusMonths(1).withDayOfMonth(20);
 		DateTime mesActual = fechaActual.withDayOfMonth(19);
 		StringBuilder sql = new StringBuilder();
-		sql.append("select sum(importe) from pago, reserva, usuario ");
-		sql.append("where pago.id = reserva.pago_id and usuario.id = reserva.usuario_id and usuario.id = ");
+		sql.append(
+				"select u.id, u.dni, u.nombre, u.apellidos, u.cuenta_bancaria from pago, reserva, usuario as u");
+		sql.append(
+				"where pago.id = reserva.pago_id and usuario.id = reserva.usuario_id and usuario.id = ");
 		sql.append(idUsuario);
-		sql.append(" and pago.estado = 1 and pago.tipo_de_pago = 0 ");
+		sql.append(
+				" and pago.estado = 'PENDIENTE' and pago.tipo_de_pago = 'CUOTA' ");
 		sql.append(" and reserva.HORA_INICIO >= TO_TIMESTAMP('");
 		sql.append(ManagerFechas.formatearFecha(mesAnterior));
 		sql.append("', 'DD-MM-YYYY HH:MI:SS')");
@@ -31,7 +34,7 @@ public class Contable {
 		try {
 			PreparedStatement ps = con.prepareStatement(sql.toString());
 			rs = ps.executeQuery();
-			cuotaAniadida = rs.getInt(1);
+
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace(System.err);

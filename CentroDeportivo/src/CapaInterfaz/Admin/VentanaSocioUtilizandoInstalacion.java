@@ -32,7 +32,7 @@ import org.joda.time.DateTime;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
 import CapaDatos.UsuarioDatos;
-import CapaInterfaz.ModeloConColumnasEditables;
+import CapaInterfaz.ModeloConColumnaEditable;
 import CapaInterfaz.ModeloNoEditable;
 import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
@@ -70,10 +70,12 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		usuarios = UsuarioDatos.ObtenerUsuarios();
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
-		JLabel lblReservasInstalaciones = new JLabel("Registrar hora entrada/salida del socio");
+		JLabel lblReservasInstalaciones = new JLabel(
+				"Registrar hora entrada/salida del socio");
 		lblReservasInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
 		lblReservasInstalaciones.setBorder(new EmptyBorder(20, 0, 20, 0));
-		lblReservasInstalaciones.setFont(new Font("Arial Black", Font.BOLD, 25));
+		lblReservasInstalaciones
+				.setFont(new Font("Arial Black", Font.BOLD, 25));
 		getContentPane().add(lblReservasInstalaciones, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
@@ -86,8 +88,10 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.NORTH);
-		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado",
-				"Hora Entrada", "Hora Salida" }, 0);
+		modeloTabla = new ModeloNoEditable(
+				new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago",
+						"Estado", "Hora Entrada", "Hora Salida" },
+				0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -116,7 +120,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 			}
 		});
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerInicio);
 
 		JLabel lblFin = new JLabel("Fin");
@@ -124,7 +129,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		spinnerFin = new JSpinner();
 		spinnerFin.setEnabled(false);
-		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerFin);
 
 		JLabel lblInstalacion = new JLabel("Socio");
@@ -187,7 +193,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				if (selectedRow == -1) {
 					JOptionPane.showMessageDialog(null,
 							"No ha seleccionado ninguna reserva.\nPorfavor seleccione una reserva e intente otra vez.",
-							"Ninguna reserva seleccionada", JOptionPane.WARNING_MESSAGE);
+							"Ninguna reserva seleccionada",
+							JOptionPane.WARNING_MESSAGE);
 				} else {
 					long id = (long) modeloTabla.getValueAt(selectedRow, 1);
 					try {
@@ -196,7 +203,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 					} catch (NumberFormatException e1) {
 						JOptionPane.showMessageDialog(null,
 								"Formato de hora introducido es incorrecto.\nPor favor introduzca la hora con el formato: HH:MM",
-								"Error: Formato Incorrecto", JOptionPane.ERROR_MESSAGE);
+								"Error: Formato Incorrecto",
+								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
@@ -241,7 +249,9 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		Date inicio = (Date) spinnerInicio.getValue();
 		Date fin = (Date) spinnerFin.getValue();
 
-		List<ReservaDao> reservas = ReservaDatos.obtenerReservasPorFechaYUsuario(inicio, fin, obtenerIDUsuario());
+		List<ReservaDao> reservas = ReservaDatos
+				.obtenerReservasPorFechaYUsuario(inicio, fin,
+						obtenerIDUsuario());
 		Object[] line = new Object[9];
 		int tam = modeloTabla.getRowCount();
 		for (int i = 0; i < tam; i++) {
@@ -250,7 +260,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		for (int i = 0; i < reservas.size(); i++) {
 			ReservaDao reserva = reservas.get(i);
-			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek() - 1];
+			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()
+					- 1];
 			line[1] = reserva.getIdRes();
 			line[2] = reserva.getInicio();
 			line[3] = reserva.getFin();
@@ -262,11 +273,13 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 			DateTime entrada = reserva.getHoraEntrada();
 			DateTime salida = reserva.getHoraSalida();
 			if (entrada != null)
-				line[6] = ManagerFechas.getStringDeDateTime(reserva.getHoraEntrada());
+				line[6] = ManagerFechas
+						.getStringDeDateTime(reserva.getHoraEntrada());
 			else
 				line[6] = "";
 			if (salida != null)
-				line[7] = ManagerFechas.getStringDeDateTime(reserva.getHoraSalida());
+				line[7] = ManagerFechas
+						.getStringDeDateTime(reserva.getHoraSalida());
 			else
 				line[7] = "";
 			modeloTabla.addRow(line);
@@ -274,7 +287,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	}
 
 	private Long obtenerIDUsuario() {
-		return usuarios.get(comboBoxInstalaciones.getSelectedIndex()).getIdUsu();
+		return usuarios.get(comboBoxInstalaciones.getSelectedIndex())
+				.getIdUsu();
 	}
 
 	private DateTime obtenerHora(String hora) {
@@ -283,7 +297,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 			String[] partes = hora.split(":");
 			if (partes.length != 2)
 				throw new NumberFormatException();
-			if (partes[0].length() < 1 && partes[0].length() > 2 && partes[1].length() < 1 && partes[1].length() > 2)
+			if (partes[0].length() < 1 && partes[0].length() > 2
+					&& partes[1].length() < 1 && partes[1].length() > 2)
 				throw new NumberFormatException();
 			time = new DateTime();
 			time = time.withHourOfDay(Integer.parseInt(partes[0]));

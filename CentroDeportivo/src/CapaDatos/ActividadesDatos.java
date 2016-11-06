@@ -18,7 +18,7 @@ public class ActividadesDatos {
 		List<Actividad> actividades = new ArrayList<>();
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
-		Timestamp horaAntesActividad = new Timestamp(new DateTime().now().plusHours(1).plusMinutes(1).getMillis());
+		Timestamp horaAntesActividad = new Timestamp(DateTime.now().plusHours(1).plusMinutes(1).getMillis());
 		Actividad actividad = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
