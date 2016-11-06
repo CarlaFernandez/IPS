@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
 import org.joda.time.Minutes;
 
 import CapaInterfaz.Admin.VentanaReservaCentro;
@@ -63,6 +65,55 @@ public class ReservaDatos {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
+			List<ReservaDao> reservasConflicto = ManagerAdmin.verReservasActivasPorFechaEInstalacion(
+					reserva.getInicio().toDate(), reserva.getFin().toDate(), reserva.getIdInst());
+			// if (reservasConflicto.isEmpty()){
+			// // insertarReservaAdmin(reserva);
+			// }
+
+			/*
+			 * Comprobacion colisiones
+			 */
+			if (!reservasConflicto.isEmpty()) {
+				int seleccion = JOptionPane.showOptionDialog(null,
+						"Conflicto con ya existente: " + reservasConflicto.get(0).toString(), "Conflicto horas",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+						new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
+
+				// Seleccion ==0 => cancelar
+				// 1>>Anular previa, insertar esta y aviso a
+				// usuario
+				if (seleccion == 1) {
+					// dado que antes podias incluir todas las
+					// reservas
+					// que quisieras o meterlas aun ahora desde
+					// la BBDD,
+					// asi anulamos todas las activas que
+					// conlisionen
+					for (ReservaDao r : reservasConflicto) {
+						if (r.getTipoRes().equals(TipoReserva.CENTRO.name())) {
+							/*
+							 * Mostrar tambien cuando se cancelan reservas del
+							 * centro? System.out. println(
+							 * "La reserva del centro: " + r.toString() +
+							 * "\n HA SIDO ANULADA");
+							 */
+						} else {
+							System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
+							Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
+							System.out.println("El usuario: " + usuario.getNombre() + " " + usuario.getApellidos());
+							System.out.println("La reserva: " + r.toString() + "\n HA SIDO ANULADA");
+						}
+						ManagerAdmin.AnularReserva(r.getIdRes());
+					}
+					// insertarReservaAdmin(reserva);
+				}
+			}
+
+			/*
+			 * Fin Comprobacion colisiones
+			 */
+
 			comprobarReservaValidaAdmin(reserva);
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into reserva ");
@@ -748,72 +799,29 @@ public class ReservaDatos {
 
 	}
 
-	public static void insertarReservaCentroSemanal(List<DiasSemana> dias, DateTime inicio, DateTime fin, int duracion,
-			Long idInst) throws ExcepcionReserva {
-		if (dias.isEmpty())
-			return;
-
+	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime inicio, DateTime fin, Long idInst, boolean todoElDia)
+			throws ExcepcionReserva {
 		if (inicio.isAfter(fin.getMillis())) {
 			throw new ExcepcionReserva("La fecha de fin no puede ser antes que la de inicio.");
 		}
+		int diasEntre = Days.daysBetween(inicio, fin).getDays();
+
+		int duracion = Hours.hoursBetween(inicio, fin.minusDays(diasEntre)).getHours();
 		DateTime current = inicio;
 
 		while (!current.plusHours(duracion).equals(fin.plusDays(1))) {
-			for (int i = 0; i < dias.size(); i++) {
-				if (current.getDayOfWeek() == dias.get(i).ordinal() + 1) {
-					ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion),
-							idInst, null, null, null, null);
-					List<ReservaDao> reservasConflicto = ManagerAdmin.verReservasActivasPorFechaEInstalacion(
-							reserva.getInicio().toDate(), reserva.getFin().toDate(), reserva.getIdInst());
-					if (reservasConflicto.isEmpty())
-						insertarReservaAdmin(reserva);
-					/*
-					 * Comprobacion colisiones
-					 */
-					else {
-						int seleccion = JOptionPane.showOptionDialog(null,
-								"Conflicto con ya existente: " + reservasConflicto.get(0).toString(), "Conflicto horas",
-								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-								new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
-
-						// Seleccion ==0 => cancelar
-						// 1>>Anular previa, insertar esta y aviso a
-						// usuario
-						if (seleccion == 1) {
-							// dado que antes podias incluir todas las
-							// reservas
-							// que quisieras o meterlas aun ahora desde
-							// la BBDD,
-							// asi anulamos todas las activas que
-							// conlisionen
-							for (ReservaDao r : reservasConflicto) {
-								if (r.getTipoRes().equals(TipoReserva.CENTRO.name())) {
-									/*
-									 * Mostrar tambien cuando se cancelan
-									 * reservas del centro? System.out.
-									 * println("La reserva del centro: " +
-									 * r.toString() + "\n HA SIDO ANULADA");
-									 */
-								} else {
-									System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
-									Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
-									System.out.println(
-											"El usuario: " + usuario.getNombre() + " " + usuario.getApellidos());
-									System.out.println("La reserva: " + r.toString() + "\n HA SIDO ANULADA");
-								}
-								ManagerAdmin.AnularReserva(r.getIdRes());
-							}
-							insertarReservaAdmin(reserva);
-						}
-					}
+			if (current.getDayOfWeek() == dia.ordinal() + 1) {
+				ReservaDao reserva = null;
+				if (todoElDia){
+					reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion).plusDays(1), idInst,
+							null, null, null, null);
 				}
-				/*
-				 * Fin Comprobacion colisiones
-				 */
+				else{
+				reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst,
+						null, null, null, null);}
+				insertarReservaAdmin(reserva);
 			}
-
 			current = current.plusDays(1);
 		}
 	}
-
 }

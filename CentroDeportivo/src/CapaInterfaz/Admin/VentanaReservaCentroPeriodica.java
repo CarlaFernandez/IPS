@@ -15,11 +15,13 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import org.joda.time.DateTime;
@@ -30,13 +32,9 @@ import com.toedter.calendar.JDateChooser;
 
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
-import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JComboBox;
 
-public class VentanaReservaCentroPeriodica extends JDialog {
+public class VentanaReservaCentroPeriodica extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton rdbtnSemanal;
 	private JRadioButton rdbtnMensual;
@@ -358,29 +356,22 @@ public class VentanaReservaCentroPeriodica extends JDialog {
 			if (checkDomingo.isSelected())
 				dias.add(DiasSemana.DOMINGO);
 
-			try {
-				Long idInst = instalaciones.get(comboBoxInstalacion.getSelectedIndex()).getIdInst();
-				int hora = (int) spinnerHora.getValue();
-				int duracion = (int)spinnerDuracion.getValue();
-				
-				String horaInicio = String.valueOf(hora);
-				horaInicio += ":00:00";
-				String horaFin = String.valueOf(hora + duracion);
-				horaFin += ":00:00";
+			Long idInst = instalaciones.get(comboBoxInstalacion.getSelectedIndex()).getIdInst();
+			int hora = (int) spinnerHora.getValue();
+			int duracion = (int)spinnerDuracion.getValue();
+			
+			String horaInicio = String.valueOf(hora);
+			horaInicio += ":00:00";
+			String horaFin = String.valueOf(hora + duracion);
+			horaFin += ":00:00";
 
-				DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-				String fechaInicio = fmt.format(dateInicio.getDate());
-				String fechaFin = fmt.format(dateFin.getDate());
+			DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+			String fechaInicio = fmt.format(dateInicio.getDate());
+			String fechaFin = fmt.format(dateFin.getDate());
 
-				DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-				DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);				
-				DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
-				
-				ManagerAdmin.insertarReservaCentroSemanal(dias, dateTimeInicio, dateTimeFin,
-						duracion, idInst);
-			} catch (ExcepcionReserva e) {
-				JOptionPane.showMessageDialog(this, e.getMessage());
-			}
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+			DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);				
+			DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
 
 		}
 

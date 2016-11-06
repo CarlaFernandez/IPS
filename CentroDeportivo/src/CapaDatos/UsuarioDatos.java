@@ -152,6 +152,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			while (rs.next()) {
 				Usuario usuario = new Usuario();
 				usuario.setIdUsu(rs.getLong("ID"));
+				usuario.setDNI(rs.getString("DNI"));
 				usuario.setNombre(rs.getString("NOMBRE"));
 				usuario.setApellidos(rs.getString("APELLIDOS"));
 				usuario.setDireccion(rs.getString("DIRECCION"));
@@ -185,6 +186,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			Usuario usuario = new Usuario();
 			while (rs.next()) {
 				usuario.setIdUsu(rs.getLong("ID"));
+				usuario.setDNI(rs.getString("DNI"));
 				usuario.setNombre(rs.getString("NOMBRE"));
 				usuario.setApellidos(rs.getString("APELLIDOS"));
 				usuario.setDireccion(rs.getString("DIRECCION"));

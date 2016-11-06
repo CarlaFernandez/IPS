@@ -15,6 +15,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
@@ -34,7 +35,7 @@ import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerUsuario;
 
-public class VentanaAdminReservaSocio extends JDialog {
+public class VentanaAdminReservaSocio extends JFrame {
 	/**
 	 * 
 	 */

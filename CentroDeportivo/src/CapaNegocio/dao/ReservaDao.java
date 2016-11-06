@@ -1,10 +1,13 @@
 package CapaNegocio.dao;
 
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
+
 import CapaDatos.InstalacionDatos;
 import CapaDatos.ReservaDatos;
 import CapaNegocio.EstadoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
+import CapaNegocio.managers.ManagerFechas;
 
 /**
  * Created by Carla on 06/10/2016.
@@ -31,8 +34,9 @@ public class ReservaDao {
 	private DateTime horaEntrada;
 	private DateTime horaSalida;
 
-	public ReservaDao(Long idRes, TipoReserva socio, DateTime inicio, DateTime fin, Long idInst, Long idPago,
-			Long idUsu, Long idAct, Long idCurso) throws ExcepcionReserva {
+	public ReservaDao(Long idRes, TipoReserva socio, DateTime inicio,
+			DateTime fin, Long idInst, Long idPago, Long idUsu, Long idAct,
+			Long idCurso) throws ExcepcionReserva {
 		this.idRes = idRes;
 		this.tipoRes = socio.name();
 		this.inicio = inicio;
@@ -42,10 +46,12 @@ public class ReservaDao {
 		this.idUsu = idUsu;
 		this.idAct = idAct;
 		this.idCurso = idCurso;
-		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio, fin);
+		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio,
+				fin);
 		this.estado = EstadoReserva.ACTIVA.name();
 
-		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO && socio != TipoReserva.CENTRO) {
+		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO
+				&& socio != TipoReserva.CENTRO) {
 			throw new ExcepcionReserva("Esta reserva dura demasiado");
 		}
 		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
@@ -70,8 +76,9 @@ public class ReservaDao {
 	public ReservaDao() {
 	}
 
-	public ReservaDao(TipoReserva socio, DateTime inicio, DateTime fin, Long idInst, Long idPago, Long idUsu,
-			Long idAct, Long idCurso) throws ExcepcionReserva {
+	public ReservaDao(TipoReserva socio, DateTime inicio, DateTime fin,
+			Long idInst, Long idPago, Long idUsu, Long idAct, Long idCurso)
+			throws ExcepcionReserva {
 		this.tipoRes = socio.name();
 		this.inicio = inicio;
 		this.fin = fin;
@@ -80,10 +87,12 @@ public class ReservaDao {
 		this.idUsu = idUsu;
 		this.idAct = idAct;
 		this.idCurso = idCurso;
-		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio, fin);
+		this.duracionEnMinutos = ReservaDatos.calcularDuracionEnMinutos(inicio,
+				fin);
 		this.estado = EstadoReserva.ACTIVA.name();
 
-		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO && socio != TipoReserva.CENTRO) {
+		if (duracionEnMinutos > MINUTOS_DURACION_MAXIMO_SOCIO
+				&& socio != TipoReserva.CENTRO) {
 			throw new ExcepcionReserva("Esta reserva dura demasiado");
 		}
 		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
@@ -102,11 +111,12 @@ public class ReservaDao {
 	}
 
 	public double getDuracionEnMinutos() {
-		return duracionEnMinutos;
+		return Minutes.minutesBetween(inicio, fin).getMinutes();
 	}
 
 	public double calcularImporteReserva() {
-		return InstalacionDatos.obtenerPrecioInstalacion(idInst) * duracionEnMinutos;
+		return InstalacionDatos.obtenerPrecioInstalacion(idInst)
+				* duracionEnMinutos;
 	}
 
 	public Long getIdRes() {
@@ -187,8 +197,11 @@ public class ReservaDao {
 
 	@Override
 	public String toString() {
-		return "RESERVA\n\n TipoRes=" + tipoRes + "\n Inicio=" + inicio + "\n Fin=" + fin + "\n DuracionEnMinutos="
-				+ duracionEnMinutos + "\n Estado=" + estado;
+		return "RESERVA\n\n Tipo de reserva = " + tipoRes + "\n Inicio = "
+				+ ManagerFechas.formatearFecha(inicio) + "\n Fin = "
+				+ ManagerFechas.formatearFecha(fin)
+				+ "\n Duración en minutos = " + getDuracionEnMinutos()
+				+ "\n Estado = " + estado;
 	}
 
 }

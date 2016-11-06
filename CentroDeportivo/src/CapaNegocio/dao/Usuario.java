@@ -116,9 +116,9 @@ public class Usuario {
 
 	@Override
 	public String toString() {
-		return "USUARIO\n\n Socio=" + socio + "\n Nombre=" + nombre + "\n Apellidos=" + apellidos + "\n idUsu=" + idUsu
-				+ "\n DNI=" + DNI + "\n Direccion=" + direccion + "\n CuentaBancaria=" + cuentaBancaria + "\n Email="
-				+ email + "\n Ciudad=" + ciudad + "baja= " + baja + "]";
+		return "USUARIO\n\n Socio = " + socio + "\n Nombre = " + nombre + "\n Apellidos = " + apellidos + "\n IDUsuario = " + idUsu
+				+ "\n DNI = " + DNI + "\n Direccion = " + direccion + "\n CuentaBancaria = " + cuentaBancaria + "\n Email = "
+				+ email + "\n Ciudad = " + ciudad + "\n baja =  " + baja;
 	}
 
 }

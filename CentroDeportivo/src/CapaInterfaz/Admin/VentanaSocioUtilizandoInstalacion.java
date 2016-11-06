@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -32,36 +30,29 @@ import org.joda.time.DateTime;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
 import CapaDatos.UsuarioDatos;
-import CapaInterfaz.ModeloConColumnasEditables;
 import CapaInterfaz.ModeloNoEditable;
-import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
-import CapaNegocio.dao.Instalacion;
+import CapaNegocio.EstadoPago;
+import CapaNegocio.TipoPago;
 import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
-import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerFechas;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Timestamp;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.JTextField;
-import java.awt.GridLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JSpinner spinnerInicio, spinnerFin;
 	private JTable table;
 	private ModeloNoEditable modeloTabla;
-	private JButton btnBuscar;
+	private JButton btnBuscar, btnPagar;
 	private List<Usuario> usuarios;
 	private JComboBox<String> comboBoxInstalaciones;
-	private int selectedRow;
+	private int selectedRow = -1;
 	private JTextField textFieldHoraSalida;
 	private JTextField textFieldHoraEntrada;
 
@@ -70,10 +61,13 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		usuarios = UsuarioDatos.ObtenerUsuarios();
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
-		JLabel lblReservasInstalaciones = new JLabel("Cancelar Reservas");
+
+		JLabel lblReservasInstalaciones = new JLabel("Uso instalacion");
+
 		lblReservasInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
 		lblReservasInstalaciones.setBorder(new EmptyBorder(20, 0, 20, 0));
-		lblReservasInstalaciones.setFont(new Font("Arial Black", Font.BOLD, 25));
+		lblReservasInstalaciones
+				.setFont(new Font("Arial Black", Font.BOLD, 25));
 		getContentPane().add(lblReservasInstalaciones, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
@@ -86,16 +80,30 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.NORTH);
-		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado",
-				"Hora Entrada", "Hora Salida" }, 0);
+		modeloTabla = new ModeloNoEditable(
+				new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago",
+						"Estado", "Hora Entrada", "Hora Salida" },
+				0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				selectedRow = table.getSelectedRow();
+				btnPagar.setEnabled(true);
+				long id = (long) modeloTabla.getValueAt(selectedRow, 1);
+				ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+				Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
+				// No deja pagar reservas cobradas
+				if (!pago.getEstado().equals(EstadoPago.PENDIENTE.name()))
+					btnPagar.setEnabled(false);
+				// No deja pagar reservas no marcadas como efectivo
+				if (!pago.getTipo().equals(TipoPago.EFECTIVO.name()))
+					btnPagar.setEnabled(false);
+				// No deja pagar reservas hasta tener hora de entrada
+				if (reserva.getHoraEntrada() == null)
+					btnPagar.setEnabled(false);
 			}
 		});
-		table.setDefaultRenderer(Object.class, new TableCellRendererColorAdmin());
 		table.setModel(modeloTabla);
 		table.setBackground(Color.WHITE);
 		spTabla.setViewportView(table);
@@ -114,10 +122,11 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				date.add(Calendar.DATE, 7);
 				spinnerFin.setValue(date.getTime());
 				btnBuscar.setEnabled(true);
-				
+
 			}
 		});
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerInicio);
 
 		JLabel lblFin = new JLabel("Fin");
@@ -125,7 +134,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		spinnerFin = new JSpinner();
 		spinnerFin.setEnabled(false);
-		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerFin);
 
 		JLabel lblInstalacion = new JLabel("Socio");
@@ -185,14 +195,21 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 				String textoSalida = textFieldHoraSalida.getText();
 				DateTime horaEntrada = null;
 				DateTime horaSalida = null;
-				if (selectedRow != -1) {
+				if (selectedRow == -1) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado ninguna reserva.\nPorfavor seleccione una reserva e intente otra vez.",
+							"Ninguna reserva seleccionada",
+							JOptionPane.WARNING_MESSAGE);
+				} else {
 					long id = (long) modeloTabla.getValueAt(selectedRow, 1);
 					try {
 						horaEntrada = obtenerHora(textoEntrada);
 						horaSalida = obtenerHora(textoSalida);
 					} catch (NumberFormatException e1) {
 						JOptionPane.showMessageDialog(null,
-								"Formato de hora introducido incorrecto.\n Revise la hora introducida.");
+								"Formato de hora introducido es incorrecto.\nPor favor introduzca la hora con el formato: HH:MM",
+								"Error: Formato Incorrecto",
+								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
@@ -220,6 +237,35 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		});
 		botonModificarHora.add(btnModificarHora, BorderLayout.NORTH);
 
+		JPanel panel_1 = new JPanel();
+		botonModificarHora.add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new BorderLayout(0, 0));
+
+		btnPagar = new JButton("Pagar ahora");
+		btnPagar.setEnabled(false);
+		btnPagar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (selectedRow != -1) {
+					long id = (long) modeloTabla.getValueAt(selectedRow, 1);
+					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+					Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
+					boolean pagoPendiente = false, pagoEfectivo = false;
+					if (pago.getEstado().equals(EstadoPago.PENDIENTE.name()))
+						pagoPendiente = true;
+					if (pago.getTipo().equals(TipoPago.EFECTIVO.name()))
+						pagoEfectivo = true;
+					DateTime hEntrada = reserva.getHoraEntrada();
+					DateTime hSalida = reserva.getHoraSalida();
+					if (hEntrada != null && pagoPendiente && pagoEfectivo) {
+						ManagerAdmin.crearPagoEfectivo(reserva.getIdRes());
+						modeloTabla.setValueAt("COBRADO",
+								table.getSelectedRow(), 4);
+					}
+				}
+			}
+		});
+		panel_1.add(btnPagar, BorderLayout.NORTH);
+
 		JPanel panelHoraEntrada = new JPanel();
 		panelHoras.add(panelHoraEntrada, BorderLayout.NORTH);
 		panelHoraEntrada.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -237,7 +283,9 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 		Date inicio = (Date) spinnerInicio.getValue();
 		Date fin = (Date) spinnerFin.getValue();
 
-		List<ReservaDao> reservas = ReservaDatos.obtenerReservasPorFechaYUsuario(inicio, fin, obtenerIDUsuario());
+		List<ReservaDao> reservas = ReservaDatos
+				.obtenerReservasPorFechaYUsuario(inicio, fin,
+						obtenerIDUsuario());
 		Object[] line = new Object[9];
 		int tam = modeloTabla.getRowCount();
 		for (int i = 0; i < tam; i++) {
@@ -246,7 +294,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 
 		for (int i = 0; i < reservas.size(); i++) {
 			ReservaDao reserva = reservas.get(i);
-			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek() - 1];
+			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()
+					- 1];
 			line[1] = reserva.getIdRes();
 			line[2] = reserva.getInicio();
 			line[3] = reserva.getFin();
@@ -258,11 +307,13 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 			DateTime entrada = reserva.getHoraEntrada();
 			DateTime salida = reserva.getHoraSalida();
 			if (entrada != null)
-				line[6] = ManagerFechas.getStringDeDateTime(reserva.getHoraEntrada());
+				line[6] = ManagerFechas
+						.getStringDeDateTime(reserva.getHoraEntrada());
 			else
 				line[6] = "";
 			if (salida != null)
-				line[7] = ManagerFechas.getStringDeDateTime(reserva.getHoraSalida());
+				line[7] = ManagerFechas
+						.getStringDeDateTime(reserva.getHoraSalida());
 			else
 				line[7] = "";
 			modeloTabla.addRow(line);
@@ -270,7 +321,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 	}
 
 	private Long obtenerIDUsuario() {
-		return usuarios.get(comboBoxInstalaciones.getSelectedIndex()).getIdUsu();
+		return usuarios.get(comboBoxInstalaciones.getSelectedIndex())
+				.getIdUsu();
 	}
 
 	private DateTime obtenerHora(String hora) {
@@ -279,7 +331,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 			String[] partes = hora.split(":");
 			if (partes.length != 2)
 				throw new NumberFormatException();
-			if (partes[0].length() < 1 && partes[0].length() > 2 && partes[1].length() < 1 && partes[1].length() > 2)
+			if (partes[0].length() < 1 && partes[0].length() > 2
+					&& partes[1].length() < 1 && partes[1].length() > 2)
 				throw new NumberFormatException();
 			time = new DateTime();
 			time = time.withHourOfDay(Integer.parseInt(partes[0]));

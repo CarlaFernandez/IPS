@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import CapaInterfaz.Socio.Instalaciones.VentanaApuntarseActividad;
 import CapaInterfaz.Socio.Instalaciones.VentanaSocioInstalaciones;
 
 import javax.swing.border.BevelBorder;
@@ -38,8 +39,15 @@ public class VentanaSocio extends JFrame{
 		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
 		
-		JButton btnNewButton_1 = new JButton(" ");
-		btnNewButton_1.setFont(new Font("Wide Latin", Font.PLAIN, 12));
+		JButton btnNewButton_1 = new JButton("Apuntarse a Actividades");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
+			public void actionPerformed(ActionEvent arg0) {
+				VentanaApuntarseActividad vaas = new VentanaApuntarseActividad(user);
+				vaas.show();
+			}
+		});
+		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNewButton_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_1);
 		
@@ -52,7 +60,7 @@ public class VentanaSocio extends JFrame{
 		btnNewButton_2.setFont(new Font("Wide Latin", Font.PLAIN, 12));
 		btnNewButton_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_2);
-		
+
 		JLabel lblTituloSocio = new JLabel("Ventana Socios");
 		lblTituloSocio.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloSocio.setBorder(new EmptyBorder(20, 0, 20, 0));

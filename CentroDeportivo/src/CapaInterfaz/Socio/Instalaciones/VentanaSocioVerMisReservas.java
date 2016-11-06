@@ -264,7 +264,8 @@ public class VentanaSocioVerMisReservas extends JFrame {
 		for (int i = 0; i < reservas.size(); i++) {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
-			int nhoras = reservas.get(i).getFin().getHourOfDay() - reservas.get(i).getInicio().getHourOfDay();
+			//int nhoras = reservas.get(i).getFin().getHourOfDay() - reservas.get(i).getInicio().getHourOfDay();
+			int nhoras = (int) (reservas.get(i).getDuracionEnMinutos() / 60);
 			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
 				tm.setValueAt(InstalacionDatos.ObtenerInstalacion(reservas.get(i).getIdInst()).getCodigo()+"--"+reservas.get(i).getEstado()+"--"+reservas.get(i).getFin(), hora + j,

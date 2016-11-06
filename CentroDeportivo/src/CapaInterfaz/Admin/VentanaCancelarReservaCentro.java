@@ -31,6 +31,7 @@ import CapaDatos.ReservaDatos;
 import CapaInterfaz.ModeloNoEditable;
 import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
+import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
@@ -49,7 +50,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 	private JButton btnBuscar;
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
-	private int selectedRow;
+	private int selectedRow = -1;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public VentanaCancelarReservaCentro() {
@@ -72,8 +73,8 @@ public class VentanaCancelarReservaCentro extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.CENTER);
-		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado",
-				"Reservante"}, 0);
+		modeloTabla = new ModeloNoEditable(
+				new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado", "Tipo" }, 0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -157,14 +158,29 @@ public class VentanaCancelarReservaCentro extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int fila = table.getSelectedRow();
 				int botonDialogo = JOptionPane.YES_NO_OPTION;
-				if (fila != -1) {
+				if (fila == -1) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado ninguna reserva.\nSeleccione una reserva y vuelva a intentarlo de nuevo.",
+							"ERROR:Reserva no seleccionada", JOptionPane.ERROR_MESSAGE);
+				} else {
 					long id = (long) modeloTabla.getValueAt(fila, 1);
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
+					if (!reserva.getEstado().equals(EstadoReserva.ACTIVA.name())) {
+						JOptionPane.showMessageDialog(null,
+								"No puede cancelar una reserva que ya está: " + reserva.getEstado());
+						return;
+					}
 					botonDialogo = JOptionPane.showConfirmDialog(null, "Está seguro de que quiere cancelar la reserva?",
 							"Confirmar Cancelacion", botonDialogo);
 					if (botonDialogo == JOptionPane.YES_OPTION)
 						try {
 							ReservaDatos.cancelarReservaComoAdmin(reserva);
+							JOptionPane.showMessageDialog(null, "Reserva cancelada correctamente.",
+									"Cancelación correcta", JOptionPane.INFORMATION_MESSAGE);
+							if (reserva.getTipoRes().equals(TipoReserva.SOCIO.name()))
+								JOptionPane.showMessageDialog(null,
+										"Se ha enviado una notificación al socio con ID: " + reserva.getIdRes(),
+										"Notificación", JOptionPane.INFORMATION_MESSAGE);
 							obtenerReservasSemanal();
 						} catch (ExcepcionReserva e1) {
 							e1.printStackTrace();
@@ -188,14 +204,14 @@ public class VentanaCancelarReservaCentro extends JFrame {
 
 		for (int i = 0; i < reservas.size(); i++) {
 			ReservaDao reserva = reservas.get(i);
-			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()];
+			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()-1];
 			line[1] = reserva.getIdRes();
 			line[2] = reserva.getInicio();
 			line[3] = reserva.getFin();
 			Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
 			line[4] = pago.getEstado();
 			line[5] = reserva.getEstado();
-			line[6] = reserva.getTipoRes().equals(TipoReserva.SOCIO.name()) ? reserva.getIdUsu() : TipoReserva.CENTRO;
+			line[6] = reserva.getTipoRes();
 			modeloTabla.addRow(line);
 		}
 	}
