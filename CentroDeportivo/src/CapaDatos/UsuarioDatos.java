@@ -222,8 +222,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setLong(3, idActividad);
 			ps.execute();
 		} catch (SQLException e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			System.err.println("no existe usuario con id: "+idUsu);
 		}
 	}
 
@@ -330,7 +329,38 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		}
 	}
 	
-	public static void anadirUsuarioActividad(Long idActividad, Long idUsuario) {
+	public static int anadirUsuarioActividad(Long idActividad, Long idUsuario) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Select * from APUNTADO_ACTIVIDAD "
+					+ "where ACTIVIDAD_ID = ? and USUARIO_ID = ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ps.setLong(2, idUsuario);
+			ResultSet rs = ps.executeQuery();
+			int contador = -1;
+			while (rs.next()) {
+				//SI EXISTE
+				if(rs.getBoolean("ASISTIDO")==false)//esta en la actividad pero con el chk a false
+					contador = 1;
+				if(rs.getBoolean("ASISTIDO")==true)//esta en la actividad con chk a true
+					contador = 0;
+				//SI NO EXISTE
+				else
+					contador = -1;//no esta en la tabla con la actividad asociada
+			}
+			return contador;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	
+	public static void insertSocioActividad(Long idUsu, Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -339,17 +369,78 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			sb.append("(USUARIO_ID, ACTIVIDAD_ID, ASISTIDO) ");
 			sb.append("values (?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setLong(1, idUsuario);
+			ps.setLong(1, idUsu);
 			ps.setLong(2, idActividad);
-			ps.setBoolean(3, true);
+			ps.setBoolean(3, false);
 			ps.execute();
-			con.close();
+		} catch (SQLException e) {
+			System.err.println("no existe usuario con id: "+idUsu);
+		}
+	}
+	public static boolean getAsistenciaSocioActividad(Long idUsu, Long idActividad){
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Select asistido from APUNTADO_ACTIVIDAD "
+					+ "where ACTIVIDAD_ID = ? and USUARIO_ID = ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ps.setLong(2, idUsu);
+			ResultSet rs = ps.executeQuery();
+			boolean asist = false;
+			int contador = 0;
+			while (rs.next()) {
+				asist = rs.getBoolean("ASISTIDO");
+				contador++;
+			}
+			return asist;
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
+			return true;
 		}
 	}
 	
+	public static void updateSocioActividad(Long idUsu, Long idActividad, boolean asistido) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE apuntado_actividad "
+					+ "set asistido = ? "
+					+ "where usuario_id=? and actividad_id=?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setBoolean(1, asistido);
+			ps.setLong(2, idUsu);
+			ps.setLong(3, idActividad);
+			ps.execute();
+		} catch (SQLException e) {
+			System.err.println("no existe usuario con id: "+idUsu);
+		}
+	}
+	
+	public static void guardarCambiosActividad(Long idActividad, Object[][] cambios, int numFilas){
+//		Long idUsu, Long idActividad, boolean asistido;
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE apuntado_actividad "
+					+ "set asistido = ? "
+					+ "where usuario_id=? and actividad_id=?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			for(int i=0;i<numFilas;i++){
+				ps.setBoolean(1, (Boolean) cambios[i][1]);
+				ps.setLong(2, (Long) cambios[i][0]);
+				ps.setLong(3, idActividad);
+				ps.execute();
+			}
+		} catch (SQLException e) {
+			System.err.println("Error en guardar cambios");
+		}
+		
+	}
 	
 	public static List<Usuario> bajasSociosEnActividad(Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();

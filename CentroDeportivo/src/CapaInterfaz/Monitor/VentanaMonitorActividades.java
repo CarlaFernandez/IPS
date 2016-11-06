@@ -7,16 +7,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.DateFormatter;
 
 import org.joda.time.DateTime;
@@ -24,6 +30,7 @@ import org.joda.time.DateTime;
 import CapaDatos.MonitorDatos;
 import CapaDatos.UsuarioDatos;
 import CapaInterfaz.VentanaDetallesReserva;
+import CapaInterfaz.Admin.TableCellRendererColorAdmin;
 import CapaNegocio.dao.Actividad;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.Usuario;
@@ -40,6 +47,8 @@ import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.awt.Dimension;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
+
 import java.awt.Component;
 import javax.swing.JTextArea;
 import java.awt.event.ItemListener;
@@ -50,27 +59,30 @@ import java.awt.event.FocusEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
+import javax.swing.JTextField;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 @SuppressWarnings("rawtypes")
 public class VentanaMonitorActividades extends JFrame {
 	private Long idMonitor;
 	private static final long serialVersionUID = 1L;
 	private List<Actividad> actividadesMonitor;
-	private JTable t;
-	private DefaultTableModel modeloTabla;
+	private JTable tablaSocios;
+	private ModeloNoEditable modeloTabla;
 	ReservaDao tablaReservas[][];
-	private Usuario usuarioSelec=null;
-	public List<Usuario> altas;
+//	private Usuario usuarioSelec=null;
 	
 	
 	private JLabel lblTituloMonitor;
-	private JButton btnAadirNuevoSocio;
+	private JButton btnAnadirNuevoSocio;
 	private JButton btnEliminarDeActividad;
 	private JLabel lblActividad;
-	private JButton btnVerDetalles;
-	private JLabel lblNewLabel_4;
 	private JPanel pnlAnadirSocio;
 	private JPanel pnlBotonesAcciones;
 	private JPanel pnlBuscarActividad;
@@ -82,14 +94,24 @@ public class VentanaMonitorActividades extends JFrame {
 	private JScrollPane sclDescripcion;
 	private JTextArea txtAreaDescripcion;
 	private JLabel lblNumUsarios;
-	private JButton btnRegistro;
 	private JLabel lblDesde;
 	private JLabel lblFin;
 	private JSpinner spinnerFin;
 	private JSpinner spinnerInicio;
 	private JButton btnBuscar;
 	private JLabel lblHora;
-	
+	private JPanel pnlEliminarSocio;
+	private JPanel pnlBotones;
+	private JTextField txtEliminar;
+	private JTextField txtAnadir;
+	private JLabel lblEliminar;
+	private JLabel lblNewLabel;
+	private JCheckBox chckbxNewCheckBox;
+	private JButton btnConfirmarCambios;
+	private JLabel lblPersonasSinPlaza;
+	private int asistidos=0;
+	private int sinPlaza=0;
+	private JLabel lblFecha;
 	
 	@SuppressWarnings("unchecked")
 	public VentanaMonitorActividades(Long idMonitor) {
@@ -100,41 +122,59 @@ public class VentanaMonitorActividades extends JFrame {
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		getContentPane().add(getLblTituloMonitor(), BorderLayout.NORTH);
 		getContentPane().add(getPanel(), BorderLayout.CENTER);
-//		asignarDescripcion();
 	}
 
 	
 	private JTable getT(){
-		if(t==null){
-			String[] nombresColumnas = {"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"};
-			modeloTabla = new ModeloNoEditable(nombresColumnas,0);//creado a mano
-			t = new JTable(modeloTabla);
-			t.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		if(tablaSocios==null){
+			String[] nombresColumnas = {"ID","NOMBRE","APELLIDOS","EN CLASE"};
 			
-			t.addMouseListener(new MouseAdapter() {
+			modeloTabla = new ModeloNoEditable(nombresColumnas,0);//creado a mano
+	        
+			tablaSocios = new JTable(modeloTabla);
+			
+			
+			tablaSocios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			
+			//aplico el cellEditor y cellRender a la columna de CheckBox
+			tablaSocios.getColumnModel().getColumn(3).setCellEditor(new ChkCellEditor());
+			tablaSocios.getColumnModel().getColumn(3).setCellRenderer(new ChkCellRenderer());
+			
+			//sin estas 4 lineas no pinta bien
+			JCheckBox chk = new JCheckBox();
+			TableColumn tc = tablaSocios.getColumnModel().getColumn(3);
+			TableCellEditor tce = new DefaultCellEditor(chk);
+			tc.setCellEditor(tce);
+	 
+					
+			tablaSocios.getModel().addTableModelListener(new TableModelListener(){
 				@Override
-				public void mouseClicked(MouseEvent e) {
-					int clicks = e.getClickCount();
-					if (clicks == 1) {
-//						if(t.getValueAt(t.getSelectedRow(),0)!=null){//si la fila no esta vacia
-							//"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"
-							Usuario us = new Usuario();
-							us.setIdUsu((Long) t.getValueAt(t.getSelectedRow(),0));
-							us.setDNI((String) t.getValueAt(t.getSelectedRow(),1));
-							us.setNombre((String) t.getValueAt(t.getSelectedRow(),2));
-							us.setApellidos((String) t.getValueAt(t.getSelectedRow(),3));
-							us.setDireccion((String) t.getValueAt(t.getSelectedRow(),4));
-							us.setEmail((String) t.getValueAt(t.getSelectedRow(),5));
-							us.setCiudad((String) t.getValueAt(t.getSelectedRow(),6));
-							usuarioSelec = us;
-//						}
-					}
+				public void tableChanged(TableModelEvent arg0) {
+					// TODO Auto-generated method stub
+					revisarNumeroSocios();
 				}
 			});
 			
-			//rellenarTabla();		
+//			tablaSocios.addMouseListener(new MouseAdapter() {
+//				@Override
+//				public void mouseClicked(MouseEvent e) {
+//					int clicks = e.getClickCount();
+//					if (clicks == 1) {
+////						if(t.getValueAt(t.getSelectedRow(),0)!=null){//si la fila no esta vacia
+//							//"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"
+//							Usuario us = new Usuario();
+//							us.setIdUsu((Long) tablaSocios.getValueAt(tablaSocios.getSelectedRow(),0));
+//							us.setNombre((String) tablaSocios.getValueAt(tablaSocios.getSelectedRow(),1));
+//							us.setApellidos((String) tablaSocios.getValueAt(tablaSocios.getSelectedRow(),2));
+//							usuarioSelec = us;
+////						}
+//					}
+//				}
+//			});
+			
+			
 		}
-		return t;
+		return tablaSocios;
 	}
 
 	
@@ -170,16 +210,11 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private JComboBox<String> getCbActividad(){
 		if(cbActividad==null){
-//			String[] actividadesMonitorStrings = new String[actividadesMonitor.size()];
-//			int aux = 0;
-//			for (Actividad actividad : actividadesMonitor) {
-//				actividadesMonitorStrings[aux] = actividad.getCodigo().toString();
-//				aux++;
-//			}
 			cbActividad = new JComboBox<String>();
 			getCbActividad().setEnabled(false);
 			cbActividad.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent arg0) {
+					getBtnConfirmarCambios();
 					asignarDescripcion();
 					rellenarTabla();
 				}
@@ -204,6 +239,7 @@ public class VentanaMonitorActividades extends JFrame {
 			pnlBuscarActividad.add(getBtnBuscar());
 			pnlBuscarActividad.add(getLblActividad());
 			pnlBuscarActividad.add(getCbActividad());
+			pnlBuscarActividad.add(getLblFecha());
 			pnlBuscarActividad.add(getLblHora());
 		}
 		return pnlBuscarActividad;
@@ -270,8 +306,8 @@ public class VentanaMonitorActividades extends JFrame {
 			panelPie = new JPanel();
 			panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 			panelPie.add(getLblNumUsarios());
-			panelPie.add(getLblNewLabel_4());
-			panelPie.add(getBtnVerDetalles());
+			panelPie.add(getLblPersonasSinPlaza());
+			panelPie.add(getBtnConfirmarCambios());
 		}
 		return panelPie;
 	}
@@ -281,7 +317,7 @@ public class VentanaMonitorActividades extends JFrame {
 			pnlBotonesAcciones = new JPanel();
 			pnlBotonesAcciones.setLayout(new GridLayout(2, 1, 50, 20));
 			pnlBotonesAcciones.add(getSclDescripcion());
-			pnlBotonesAcciones.add(getPnlAnadirSocio());
+			pnlBotonesAcciones.add(getPnlBotones());
 		}
 		return pnlBotonesAcciones;
 	}
@@ -289,46 +325,12 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel getPnlAnadirSocio(){
 		if(pnlAnadirSocio==null){
 			pnlAnadirSocio = new JPanel();
-			pnlAnadirSocio.setLayout(new GridLayout(3, 1, 30, 25));
+			pnlAnadirSocio.setLayout(new GridLayout(3, 1, 0, 5));
+			pnlAnadirSocio.add(getLblEliminar());
+			pnlAnadirSocio.add(getTxtEliminar());
 			pnlAnadirSocio.add(getBtnEliminarDeActividad());
-			pnlAnadirSocio.add(getBtnAadirNuevoSocio());
-			pnlAnadirSocio.add(getBtnRegistro());
 		}
 		return pnlAnadirSocio;
-	}
-	
-	private JLabel getLblNewLabel_4(){
-		if(lblNewLabel_4==null){
-			lblNewLabel_4 = new JLabel("Usuarios en la actividad");
-			lblNewLabel_4.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-			lblNewLabel_4.setOpaque(true);
-			lblNewLabel_4.setBackground(Color.WHITE);
-		}
-		return lblNewLabel_4;
-	}
-	
-	private JButton getBtnVerDetalles(){
-		if(btnVerDetalles==null){
-			btnVerDetalles = new JButton("Ver detalles");
-			btnVerDetalles.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					String s ="Para seleccionar la actividad: \n"
-							+ "     abra el comboBox y elija, se le mostrará un pequeña\n"
-							+ "     descripción de la misma\n"
-							+ "Para eliminar un usuario porque no se presentó:\n"
-							+ "     pulse 'Eliminar de actividad' habiendo seleccionado\n"
-							+ "     la fila correspondiente al usuario en la tabla. \n"
-							+ "     (NOTA: si se elimina de la actividad, no podrá \n"
-							+ "     deshacerse el cambio\n"
-							+ "Para añadir un usuario a la actividad: \n"
-							+ "     pulse 'Añadir nuevo socio' y busque al cliente \n"
-							+ "     que desee')";
-					
-					JOptionPane.showMessageDialog(null, s);
-				}
-			});
-		}
-		return btnVerDetalles;
 	}
 	
 	private JLabel getLblActividad(){
@@ -342,21 +344,25 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private JButton getBtnEliminarDeActividad(){
 		if(btnEliminarDeActividad==null){
-			btnEliminarDeActividad = new JButton("Eliminar de actividad");
+			btnEliminarDeActividad = new JButton("Quitar de tabla");
+			btnEliminarDeActividad.setFont(new Font("Tahoma", Font.PLAIN, 16));
 			btnEliminarDeActividad.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					if(usuarioSelec==null)
-						JOptionPane.showMessageDialog(null, "Seleccione un usuario en la tabla");
-					else{
-						String mensaje="Confirmar eliminar de actividad a usuario:\n"
-								+ usuarioSelec.getNombre()+" "+usuarioSelec.getApellidos()+"\n"
-										+ "ID: "+usuarioSelec.getIdUsu()+"  DNI: "+usuarioSelec.getDNI();
-						int respuesta = JOptionPane.showConfirmDialog(null, mensaje);
-						if(respuesta == 0){//confirma == da OK
-							Long idAcSelec = Long.valueOf((String) getCbActividad().getSelectedItem());
-							UsuarioDatos.usuarioNoPresentadoActividad(usuarioSelec.getIdUsu(), idAcSelec); 
-							rellenarTabla();//actualiza la tabla
+					try{
+						Long idTxt = Long.parseLong(getTxtEliminar().getText());
+						Long idAcSelec = Long.valueOf((String) getCbActividad().getSelectedItem());
+						UsuarioDatos.usuarioNoPresentadoActividad(idTxt, idAcSelec); 
+						int fila = existeId(idTxt);
+						if(fila==-1)
+							JOptionPane.showMessageDialog(null, "Usuario incorrecto");
+						else{
+							UsuarioDatos.updateSocioActividad(idTxt, valorCbActividad(), false);
+							modeloTabla.removeRow(fila);
+							modeloTabla.fireTableDataChanged();
+							getTxtEliminar().setText("");
 						}
+					}catch(Exception e){
+						JOptionPane.showMessageDialog(null, "Usuario incorrecto");
 					}
 				}
 			});
@@ -365,29 +371,62 @@ public class VentanaMonitorActividades extends JFrame {
 		return btnEliminarDeActividad;
 	}
 	
-	private JButton getBtnAadirNuevoSocio(){
-		if(btnAadirNuevoSocio==null){
-			btnAadirNuevoSocio = new JButton("A\u00F1adir nuevo socio");
-			btnAadirNuevoSocio.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
-					if(getT().getRowCount()>=maximo)
-						JOptionPane.showMessageDialog(null, "La actividad tiene el máximo de usuario posible");
-					else{
-						mostrarVentanaAnadirUsuarioActividad();
-					}
-				}
-			});
-			btnAadirNuevoSocio.setAlignmentY(Component.TOP_ALIGNMENT);
-			btnAadirNuevoSocio.setAlignmentX(Component.CENTER_ALIGNMENT);
-			btnAadirNuevoSocio.setEnabled(false);
+	/**
+	 * deuelve la fila en la que esta el id del socio, sino devuelve -1
+	 * @return
+	 */
+	private int existeId(Long idTxt){
+		for(int i=0;i<modeloTabla.getRowCount();i++){
+			if(modeloTabla.getValueAt(i, 0).equals(idTxt))
+				return i;
 		}
-		return btnAadirNuevoSocio;
+		return -1;
 	}
 	
-	private void mostrarVentanaAnadirUsuarioActividad(){
-		VentanaAnadirUsuarioActividad v = new VentanaAnadirUsuarioActividad(this, valorCbActividad());
-		v.show();
+	private JButton getBtnAnadirNuevoSocio(){
+		if(btnAnadirNuevoSocio==null){
+			btnAnadirNuevoSocio = new JButton("A\u00F1adir socio");
+			btnAnadirNuevoSocio.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			btnAnadirNuevoSocio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
+					try{
+						Long idTxt = Long.parseLong(getTxtAnadir().getText());
+						if(getPersonasEnActividad()>=maximo)
+							JOptionPane.showMessageDialog(null, "La actividad tiene el máximo de usuario posible");
+						else{
+							int existe = UsuarioDatos.anadirUsuarioActividad(valorCbActividad(), idTxt);
+							
+							//SI NO EXISTE == -1
+							if(existe == -1){ 
+								//contador a -1 significa que el socio no estaba en la actividad, hay que insertarlo con asistido=false
+								UsuarioDatos.insertSocioActividad(idTxt, valorCbActividad());
+								rellenarTabla();
+							}
+							else{//SI EXISTE >0
+								//esta en la actividad y a true, no hace nada
+								
+							}
+							
+							
+							if(existe>0)
+								JOptionPane.showMessageDialog(null, "Usuario ya esta en la actividad");
+							else
+								rellenarTabla();
+								
+							getTxtAnadir().setText("");
+						}
+					}catch(Exception e){
+						JOptionPane.showMessageDialog(null, "Usuario incorrecto");
+					}
+					
+				}
+			});
+			btnAnadirNuevoSocio.setAlignmentY(Component.TOP_ALIGNMENT);
+			btnAnadirNuevoSocio.setAlignmentX(Component.CENTER_ALIGNMENT);
+			btnAnadirNuevoSocio.setEnabled(false);
+		}
+		return btnAnadirNuevoSocio;
 	}
 	
 	private JLabel getLblTituloMonitor(){
@@ -437,6 +476,10 @@ public class VentanaMonitorActividades extends JFrame {
 		for (Actividad actividad : actividadesMonitor) {
 			if(String.valueOf(actividad.getCodigo()).equals(idAcSelec)){
 				getTxtAreaDescripcion().setText(actividad.getDescripcion());
+				String sHora = actividad.getFecha_actividad().getHourOfDay()+":"+actividad.getFecha_actividad().getMinuteOfHour();
+				String fecha = actividad.getFecha_actividad().getDayOfMonth()+"-"+actividad.getFecha_actividad().getMonthOfYear();
+				getLblHora().setText("    Hora: "+sHora);
+				getLblFecha().setText("Fecha: "+fecha);
 			}
 		}
 	}
@@ -460,9 +503,9 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	
 	public void rellenarTabla(){
-		//"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"
+		//"ID","NOMBRE","APELLIDOS","EN CLASE",""
 		modeloTabla.getDataVector().clear();
-		Object[] nuevaFila = new Object[8];//4 columnas
+		Object[] nuevaFila = new Object[4];
 		Long idActividad = valorCbActividad();
 		if(idActividad!=null){
 			List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad);
@@ -470,24 +513,21 @@ public class VentanaMonitorActividades extends JFrame {
 				JOptionPane.showMessageDialog(null, "La actividad no tiene asignado ningun usuario");
 			else{
 				for(int i=0;i< usuariosAct.size();i++){
-					if(usuariosAct.get(i).getBaja()==null){
+//					if(usuariosAct.get(i).getBaja()==null){
 						nuevaFila[0] =usuariosAct.get(i).getIdUsu();
-						nuevaFila[1] =usuariosAct.get(i).getDNI();			
-						nuevaFila[2] =usuariosAct.get(i).getNombre();
-						nuevaFila[3] =usuariosAct.get(i).getApellidos();
-						nuevaFila[4] =usuariosAct.get(i).getDireccion();
-						nuevaFila[5] =usuariosAct.get(i).getEmail();			
-						nuevaFila[6] =usuariosAct.get(i).getCiudad();
-						nuevaFila[7] =usuariosAct.get(i).isSocio();
+						nuevaFila[1] =usuariosAct.get(i).getNombre();			
+						nuevaFila[2] =usuariosAct.get(i).getApellidos();
+						Boolean asis = UsuarioDatos.getAsistenciaSocioActividad(usuariosAct.get(i).getIdUsu(), idActividad);
+						nuevaFila[3]= asis;
 						modeloTabla.addRow(nuevaFila);
-					}
+//					}
 				}
 				modeloTabla.fireTableDataChanged();
-				revisarNumeroUsuarios();
+				revisarNumeroSocios();
 			}
+			modeloTabla.fireTableDataChanged();
 		}
 	}
-	
 	private JLabel getLblNumUsarios() {
 		if (lblNumUsarios == null) {
 			lblNumUsarios = new JLabel("Personas en clase:        ");
@@ -496,24 +536,14 @@ public class VentanaMonitorActividades extends JFrame {
 		return lblNumUsarios;
 	}
 	
-	private void revisarNumeroUsuarios(){
-		int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
-		String s ="Personas en clase: "+modeloTabla.getRowCount()+"/"+maximo+"        ";
+	private void revisarNumeroSocios(){
+		int maximo=0;
+		if(idMonitor!=null && valorCbActividad()!=null)
+			maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
+		String s = "Personas en clase: "+getPersonasEnActividad()+"/"+maximo+"        ";
+		String s2 = "Sin plaza: "+sinPlaza+"        ";
 		getLblNumUsarios().setText(s);
-	}
-	private JButton getBtnRegistro() {
-		if (btnRegistro == null) {
-			btnRegistro = new JButton("Ver registro altas y bajas");
-			btnRegistro.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					List<Usuario> bajas = UsuarioDatos.bajasSociosEnActividad(valorCbActividad());
-					VentanaAltasBajasActividad vaba = new VentanaAltasBajasActividad(bajas,altas);
-					vaba.show();
-				}
-			});
-			btnRegistro.setEnabled(false);
-		}
-		return btnRegistro;
+		getLblPersonasSinPlaza().setText(s2);
 	}
 	private JButton getBtnBuscar() {
 		if (btnBuscar == null) {
@@ -547,11 +577,10 @@ public class VentanaMonitorActividades extends JFrame {
 						getCbActividad().removeAllItems();
 						getCbActividad().setEnabled(true);
 						for(int i=0;i<actividadesMonitor.size();i++){
-							System.out.println(actividadesMonitor.get(i).getCodigo().toString());
+//							System.out.println(actividadesMonitor.get(i).getCodigo().toString());
 							getCbActividad().addItem(actividadesMonitor.get(i).getCodigo().toString());
 						}
 						habilitarBotones();
-						getLblHora().setText("    Hora:");
 					}
 				}
 			});
@@ -561,24 +590,31 @@ public class VentanaMonitorActividades extends JFrame {
 	}
 	
 	private void habilitarBotones(){
-		getBtnAadirNuevoSocio().setEnabled(true);
-		getBtnRegistro().setEnabled(true);
+		getBtnAnadirNuevoSocio().setEnabled(true);
 		getBtnEliminarDeActividad().setEnabled(true);
 		asignarDescripcion();
 		rellenarTabla();
-		revisarNumeroUsuarios();
+		revisarNumeroSocios();
+		getBtnConfirmarCambios().setEnabled(true);
+		getTxtAnadir().setEnabled(true);
+		getTxtEliminar().setEnabled(true);
 	}
 	
 	private void vaciar(){
+//		modeloTabla.getDataVector().clear();
+//		modeloTabla.fireTableDataChanged();
 		modeloTabla.getDataVector().clear();
 		modeloTabla.fireTableDataChanged();
 		getTxtAreaDescripcion().setText("");
-		getBtnAadirNuevoSocio().setEnabled(false);
-		getBtnRegistro().setEnabled(false);
+		getBtnAnadirNuevoSocio().setEnabled(false);
 		getBtnEliminarDeActividad().setEnabled(false);
 		getCbActividad().setEnabled(false);
 		getCbActividad().removeAllItems();		
 		getLblNumUsarios().setText("Personas en clase:        ");
+		getLblHora().setText("    Hora:");
+		getBtnConfirmarCambios().setEnabled(false);
+		getTxtAnadir().setEnabled(false);
+		getTxtEliminar().setEnabled(false);
 	}
 	private JLabel getLblHora() {
 		if (lblHora == null) {
@@ -586,5 +622,104 @@ public class VentanaMonitorActividades extends JFrame {
 			lblHora.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		}
 		return lblHora;
+	}
+	private JPanel getPnlEliminarSocio() {
+		if (pnlEliminarSocio == null) {
+			pnlEliminarSocio = new JPanel();
+			pnlEliminarSocio.setLayout(new GridLayout(0, 1, 0, 5));
+			pnlEliminarSocio.add(getLblNewLabel());
+			pnlEliminarSocio.add(getTxtAnadir());
+			pnlEliminarSocio.add(getBtnAnadirNuevoSocio());
+		}
+		return pnlEliminarSocio;
+	}
+	private JPanel getPnlBotones() {
+		if (pnlBotones == null) {
+			pnlBotones = new JPanel();
+			pnlBotones.setLayout(new GridLayout(0, 1, 0, 0));
+			pnlBotones.add(getPnlEliminarSocio());
+			pnlBotones.add(getPnlAnadirSocio());
+		}
+		return pnlBotones;
+	}
+	private JTextField getTxtEliminar() {
+		if (txtEliminar == null) {
+			txtEliminar = new JTextField();
+			txtEliminar.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			txtEliminar.setColumns(10);
+		}
+		return txtEliminar;
+	}
+	private JTextField getTxtAnadir() {
+		if (txtAnadir == null) {
+			txtAnadir = new JTextField();
+			txtAnadir.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			txtAnadir.setColumns(10);
+		}
+		return txtAnadir;
+	}
+	private JLabel getLblEliminar() {
+		if (lblEliminar == null) {
+			lblEliminar = new JLabel("ID quitar de tabla:");
+		}
+		return lblEliminar;
+	}
+	private JLabel getLblNewLabel() {
+		if (lblNewLabel == null) {
+			lblNewLabel = new JLabel("ID a\u00F1adir a actividad:");
+		}
+		return lblNewLabel;
+	}
+	
+	public int getPersonasEnActividad(){
+		asistidos =0;
+		sinPlaza=0;
+		for(int i=0;i<getT().getRowCount();i++){
+			if((Boolean)modeloTabla.getValueAt(i, 3) == true)
+				asistidos++;	
+			else if((Boolean)modeloTabla.getValueAt(i, 3) == false)
+				sinPlaza++;
+		}
+		return asistidos;
+	}
+	private JButton getBtnConfirmarCambios() {
+		if (btnConfirmarCambios == null) {
+			btnConfirmarCambios = new JButton("Confirmar cambios");
+			btnConfirmarCambios.setEnabled(false);
+			btnConfirmarCambios.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					int maximo = MonitorDatos.maxPlazasActividad(idMonitor, valorCbActividad());
+					if(asistidos>maximo){
+						JOptionPane.showMessageDialog(null, "Numero de asistidos no puede ser mayor \nque el numero de plazas de la actividad");						
+					}else{
+						Object[][] cambios = new Object[modeloTabla.getRowCount()][2];
+						for(int i=0;i<modeloTabla.getRowCount();i++){
+							cambios[i][0] = (Long) modeloTabla.getValueAt(i, 0);
+							cambios[i][1] = (Boolean) modeloTabla.getValueAt(i, 3);
+						}				
+						UsuarioDatos.guardarCambiosActividad(valorCbActividad(), cambios, modeloTabla.getRowCount());
+					}
+				}
+			});
+			btnConfirmarCambios.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return btnConfirmarCambios;
+	}
+	
+
+
+	private JLabel getLblPersonasSinPlaza() {
+		if (lblPersonasSinPlaza == null) {
+			lblPersonasSinPlaza = new JLabel("Sin plaza:        ");
+			lblPersonasSinPlaza.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lblPersonasSinPlaza;
+	}
+	private JLabel getLblFecha() {
+		if (lblFecha == null) {
+			lblFecha = new JLabel("Fecha:");
+			lblFecha.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lblFecha;
 	}
 }

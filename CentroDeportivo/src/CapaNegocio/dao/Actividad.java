@@ -11,10 +11,10 @@ public class Actividad {
 	private double numeroHoras;
 	private Long monitorID;
 	private boolean cancelada;
-	private DateTime fecha_entrada;
+	private DateTime fecha_actividad;
 
 	public Actividad(Long codigo, String nombre, String descripcion, int plazasTotales, int plazasOcupadas,
-			double numeroHoras, Long monitorID, boolean cancelada, DateTime fecha_entrada) {
+			double numeroHoras, Long monitorID, boolean cancelada, DateTime fecha_actividad) {
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
@@ -23,19 +23,21 @@ public class Actividad {
 		this.numeroHoras = numeroHoras;
 		this.monitorID = monitorID;
 		this.cancelada = cancelada;
-		this.fecha_entrada=fecha_entrada;
+		this.fecha_actividad=fecha_actividad;
 	}
 
 	public Actividad(){}
 	
 	
 	
-	public DateTime getFecha_entrada() {
-		return fecha_entrada;
+	
+
+	public DateTime getFecha_actividad() {
+		return fecha_actividad;
 	}
 
-	public void setFecha_entrada(DateTime fecha_entrada) {
-		this.fecha_entrada = fecha_entrada;
+	public void setFecha_actividad(DateTime fecha_actividad) {
+		this.fecha_actividad = fecha_actividad;
 	}
 
 	public Long getCodigo() {
