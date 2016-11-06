@@ -86,8 +86,8 @@ public class Pago {
 
 	@Override
 	public String toString() {
-		return "PAGO\n\n Concepto=" + concepto + "\n Fecha=" + fecha
-				+ "\n Importe=" + importe + "\n Estado=" + estado + "\n Tipo="
+		return "PAGO\n\n Concepto = " + concepto + "\n Fecha = " + fecha
+				+ "\n Importe = " + importe + "\n Estado = " + estado + "\n Tipo = "
 				+ tipo;
 	}
 

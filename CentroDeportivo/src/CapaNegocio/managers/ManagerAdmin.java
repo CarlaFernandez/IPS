@@ -82,8 +82,8 @@ public class ManagerAdmin {
 		return ReservaDatos.obtenerMisReservasPorFecha(inicio, fin, user);
 	}
 
-	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst) throws ExcepcionReserva {
-		ReservaDatos.insertarReservaCentroSemanal(dia, dateTimeInicio, dateTimeFin, idInst);
+	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, boolean todoElDia) throws ExcepcionReserva {
+		ReservaDatos.insertarReservaCentroSemanal(dia, dateTimeInicio, dateTimeFin, idInst, todoElDia);
 
 	}
 }

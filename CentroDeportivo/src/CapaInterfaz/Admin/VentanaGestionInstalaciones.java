@@ -57,17 +57,17 @@ public class VentanaGestionInstalaciones extends JFrame {
 		btnReservaCentro.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				int respuesta = JOptionPane.showOptionDialog(ventana, "¿Quiere realizar una reserva periódica?",
-						"Reserva periódica", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null,
-						null);
-				if (respuesta == JOptionPane.YES_OPTION){
-					VentanaReservaCentroPeriodica v = new VentanaReservaCentroPeriodica();
-					v.show();
-				}
-				else if (respuesta == JOptionPane.NO_OPTION){
+//				int respuesta = JOptionPane.showOptionDialog(ventana, "¿Quiere realizar una reserva periódica?",
+//						"Reserva periódica", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null,
+//						null);
+//				if (respuesta == JOptionPane.YES_OPTION){
+//					VentanaReservaCentroPeriodica v = new VentanaReservaCentroPeriodica();
+//					v.show();
+//				}
+//				else if (respuesta == JOptionPane.NO_OPTION){
 					VentanaReservaCentro vrc = new VentanaReservaCentro();
 					vrc.show();
-				}
+//				}
 				
 			}
 		});

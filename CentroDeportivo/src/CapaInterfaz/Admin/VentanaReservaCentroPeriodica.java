@@ -15,11 +15,13 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import org.joda.time.DateTime;
@@ -30,13 +32,9 @@ import com.toedter.calendar.JDateChooser;
 
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
-import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JComboBox;
 
-public class VentanaReservaCentroPeriodica extends JDialog {
+public class VentanaReservaCentroPeriodica extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton rdbtnSemanal;
 	private JRadioButton rdbtnMensual;
