@@ -118,7 +118,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 				actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
 				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
 				actividad.setCancelada(rs.getBoolean("CANCELADA"));
-				actividad.setFecha_actividad(new DateTime(rs.getTimestamp("FECHA_ACTIVIDAD")));
+				actividad.setFecha_entrada(new DateTime(rs.getTimestamp("FECHA_ACTIVIDAD")));
 				
 				actividades.add(actividad);
 			}

@@ -476,8 +476,8 @@ public class VentanaMonitorActividades extends JFrame {
 		for (Actividad actividad : actividadesMonitor) {
 			if(String.valueOf(actividad.getCodigo()).equals(idAcSelec)){
 				getTxtAreaDescripcion().setText(actividad.getDescripcion());
-				String sHora = actividad.getFecha_actividad().getHourOfDay()+":"+actividad.getFecha_actividad().getMinuteOfHour();
-				String fecha = actividad.getFecha_actividad().getDayOfMonth()+"-"+actividad.getFecha_actividad().getMonthOfYear();
+				String sHora = actividad.getFecha_entrada().getHourOfDay()+":"+actividad.getFecha_entrada().getMinuteOfHour();
+				String fecha = actividad.getFecha_entrada().getDayOfMonth()+"-"+actividad.getFecha_entrada().getMonthOfYear();
 				getLblHora().setText("    Hora: "+sHora);
 				getLblFecha().setText("Fecha: "+fecha);
 			}
