@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
 public class VentanaApuntarseActividad extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JTable table;
-	private ModeloNoEditable modeloTabla;
+	public ModeloNoEditable modeloTabla;
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
 	JTextArea textArea;
@@ -49,7 +49,8 @@ public class VentanaApuntarseActividad extends JFrame {
 		JLabel lblReservasInstalaciones = new JLabel("Apuntarse a actividades");
 		lblReservasInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
 		lblReservasInstalaciones.setBorder(new EmptyBorder(20, 0, 20, 0));
-		lblReservasInstalaciones.setFont(new Font("Arial Black", Font.BOLD, 25));
+		lblReservasInstalaciones
+				.setFont(new Font("Arial Black", Font.BOLD, 25));
 		getContentPane().add(lblReservasInstalaciones, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
@@ -63,7 +64,9 @@ public class VentanaApuntarseActividad extends JFrame {
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.CENTER);
 		modeloTabla = new ModeloNoEditable(
-				new String[] { "Fecha", "ID", "Nombre", "Plazas Totales", "Plazas Ocupadas", "Numero de horas" }, 0);
+				new String[] { "Fecha", "ID", "Nombre", "Plazas Totales",
+						"Plazas Ocupadas", "Numero de horas" },
+				0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -76,11 +79,13 @@ public class VentanaApuntarseActividad extends JFrame {
 		table.setBackground(Color.WHITE);
 		spTabla.setViewportView(table);
 		obtenerActividades();
+
 		JPanel panelCabecera = new JPanel();
 		panel.add(panelCabecera, BorderLayout.NORTH);
 
 		JPanel panelPie = new JPanel();
-		panelPie.setBorder(new TitledBorder(null, "Descripcion", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelPie.setBorder(new TitledBorder(null, "Descripcion",
+				TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel.add(panelPie, BorderLayout.SOUTH);
 		panelPie.setLayout(new GridLayout(2, 1, 0, 0));
 
@@ -98,22 +103,30 @@ public class VentanaApuntarseActividad extends JFrame {
 				if (selectedRow == -1) {
 					JOptionPane.showMessageDialog(null,
 							"No ha seleccionado ninguna actividad.\nPor favor seleccione una actividad y vuelva a intentarlo.",
-							"No hay actividad seleccionada", JOptionPane.WARNING_MESSAGE);
+							"No hay actividad seleccionada",
+							JOptionPane.WARNING_MESSAGE);
 				} else {
-					Long iDActividad = (Long) modeloTabla.getValueAt(selectedRow, 1);
-					String nombreActividad = (String) modeloTabla.getValueAt(selectedRow, 2);
-					if (ActividadesDatos.comprobarUsuarioApuntadoActividad(iDActividad, user)) {
-						JOptionPane.showMessageDialog(null, "Ya está apuntado a esta actividad.",
-								"ERROR: Ya está apuntado", JOptionPane.ERROR_MESSAGE);
+					Long iDActividad = (Long) modeloTabla
+							.getValueAt(selectedRow, 1);
+					String nombreActividad = (String) modeloTabla
+							.getValueAt(selectedRow, 2);
+					if (ActividadesDatos.comprobarUsuarioApuntadoActividad(
+							iDActividad, user)) {
+						JOptionPane.showMessageDialog(null,
+								"Ya está apuntado a esta actividad.",
+								"ERROR: Ya está apuntado",
+								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					int botonDialogo = JOptionPane.YES_NO_OPTION;
 					botonDialogo = JOptionPane.showConfirmDialog(null,
-							"Está seguro de que quiere apuntarse a la actividad: " + nombreActividad + "?",
+							"Está seguro de que quiere apuntarse a la actividad: "
+									+ nombreActividad + "?",
 							"Confirmar Inscripcion", botonDialogo);
 					if (botonDialogo == JOptionPane.YES_OPTION) {
 						ActividadesDatos.apuntarseActividad(user, iDActividad);
-						JOptionPane.showMessageDialog(null, "Se ha apuntado correctamente.", "Correcto",
+						JOptionPane.showMessageDialog(null,
+								"Se ha apuntado correctamente.", "Correcto",
 								JOptionPane.PLAIN_MESSAGE);
 					}
 				}
@@ -124,11 +137,13 @@ public class VentanaApuntarseActividad extends JFrame {
 	}
 
 	private void actualizarDescripcion() {
-		textArea.setText(descriptions.get(modeloTabla.getValueAt(selectedRow, 1)));
+		textArea.setText(
+				descriptions.get(modeloTabla.getValueAt(selectedRow, 1)));
 	}
 
 	private void obtenerActividades() {
-		List<Actividad> actividades = ActividadesDatos.obtenerActividadesFuturas();
+		List<Actividad> actividades = ActividadesDatos
+				.obtenerActividadesFuturas();
 		descriptions = new HashMap<>();
 		Object[] line = new Object[9];
 		int tam = modeloTabla.getRowCount();
@@ -143,7 +158,8 @@ public class VentanaApuntarseActividad extends JFrame {
 			line[3] = actividades.get(i).getPlazasTotales();
 			line[4] = actividades.get(i).getPlazasOcupadas();
 			line[5] = actividades.get(i).getNumeroHoras();
-			descriptions.put(actividades.get(i).getCodigo(), actividades.get(i).getDescripcion());
+			descriptions.put(actividades.get(i).getCodigo(),
+					actividades.get(i).getDescripcion());
 			modeloTabla.addRow(line);
 		}
 	}

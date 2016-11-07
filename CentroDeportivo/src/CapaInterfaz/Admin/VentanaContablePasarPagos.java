@@ -127,7 +127,7 @@ public class VentanaContablePasarPagos extends JFrame {
 				botonDialogo = JOptionPane.showConfirmDialog(null,
 						"Está seguro de enviar los pagos de "
 								+ getNumeroSeleccionados()
-								+ " a sus cuotas mensuales?",
+								+ " socios a sus cuotas mensuales?",
 						"Enviar pagos a la cuota mensual", botonDialogo);
 				if (botonDialogo == JOptionPane.YES_OPTION) {
 					JOptionPane.showMessageDialog(null,
