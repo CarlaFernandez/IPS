@@ -17,7 +17,6 @@ import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
 
-import CapaInterfaz.Admin.VentanaReservaCentro;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoPago;
 import CapaNegocio.EstadoReserva;
@@ -258,6 +257,12 @@ public class ReservaDatos {
 			reserva.setIdUsu(rs.getLong("USUARIO_ID"));
 			reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 			reserva.setIdCurso(rs.getLong("CURSO_ID"));
+			Timestamp horaEntrada = rs.getTimestamp("HORA_ENTRADA");
+			Timestamp horaSalida = rs.getTimestamp("HORA_SALIDA");
+			if (horaEntrada != null)
+				reserva.setHoraEntrada(new DateTime(horaEntrada.getTime()));
+			if (horaSalida != null)
+				reserva.setHoraSalida(new DateTime(horaSalida.getTime()));
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -399,6 +404,12 @@ public class ReservaDatos {
 				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
+				Timestamp horaEntrada = rs.getTimestamp("HORA_ENTRADA");
+				Timestamp horaSalida = rs.getTimestamp("HORA_SALIDA");
+				if (horaEntrada != null)
+					reserva.setHoraEntrada(new DateTime(horaEntrada.getTime()));
+				if (horaSalida != null)
+					reserva.setHoraSalida(new DateTime(horaSalida.getTime()));
 
 				reservas.add(reserva);
 			}
@@ -437,6 +448,12 @@ public class ReservaDatos {
 				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
+				Timestamp horaEntrada = rs.getTimestamp("HORA_ENTRADA");
+				Timestamp horaSalida = rs.getTimestamp("HORA_SALIDA");
+				if (horaEntrada != null)
+					reserva.setHoraEntrada(new DateTime(horaEntrada.getTime()));
+				if (horaSalida != null)
+					reserva.setHoraSalida(new DateTime(horaSalida.getTime()));
 
 				reservas.add(reserva);
 			}
@@ -479,6 +496,12 @@ public class ReservaDatos {
 				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
+				Timestamp horaEntrada = rs.getTimestamp("HORA_ENTRADA");
+				Timestamp horaSalida = rs.getTimestamp("HORA_SALIDA");
+				if (horaEntrada != null)
+					reserva.setHoraEntrada(new DateTime(horaEntrada.getTime()));
+				if (horaSalida != null)
+					reserva.setHoraSalida(new DateTime(horaSalida.getTime()));
 
 				reservas.add(reserva);
 			}
@@ -519,6 +542,12 @@ public class ReservaDatos {
 				reserva.setIdUsu(rs.getLong("USUARIO_ID"));
 				reserva.setIdAct(rs.getLong("ACTIVIDAD_ID"));
 				reserva.setIdCurso(rs.getLong("CURSO_ID"));
+				Timestamp horaEntrada = rs.getTimestamp("HORA_ENTRADA");
+				Timestamp horaSalida = rs.getTimestamp("HORA_SALIDA");
+				if (horaEntrada != null)
+					reserva.setHoraEntrada(new DateTime(horaEntrada.getTime()));
+				if (horaSalida != null)
+					reserva.setHoraSalida(new DateTime(horaSalida.getTime()));
 			}
 
 			return reserva;
@@ -799,8 +828,8 @@ public class ReservaDatos {
 
 	}
 
-	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime inicio, DateTime fin, Long idInst, boolean todoElDia)
-			throws ExcepcionReserva {
+	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime inicio, DateTime fin, Long idInst,
+			boolean todoElDia) throws ExcepcionReserva {
 		if (inicio.isAfter(fin.getMillis())) {
 			throw new ExcepcionReserva("La fecha de fin no puede ser antes que la de inicio.");
 		}
@@ -812,13 +841,13 @@ public class ReservaDatos {
 		while (!current.plusHours(duracion).equals(fin.plusDays(1))) {
 			if (current.getDayOfWeek() == dia.ordinal() + 1) {
 				ReservaDao reserva = null;
-				if (todoElDia){
-					reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion).plusDays(1), idInst,
-							null, null, null, null);
+				if (todoElDia) {
+					reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion).plusDays(1),
+							idInst, null, null, null, null);
+				} else {
+					reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst, null,
+							null, null, null);
 				}
-				else{
-				reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst,
-						null, null, null, null);}
 				insertarReservaAdmin(reserva);
 			}
 			current = current.plusDays(1);
