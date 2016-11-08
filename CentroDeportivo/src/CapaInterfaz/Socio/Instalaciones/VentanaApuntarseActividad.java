@@ -125,9 +125,11 @@ public class VentanaApuntarseActividad extends JFrame {
 							"Confirmar Inscripcion", botonDialogo);
 					if (botonDialogo == JOptionPane.YES_OPTION) {
 						ActividadesDatos.apuntarseActividad(user, iDActividad);
+						ActividadesDatos.aumentarPlazaActividad(iDActividad);
 						JOptionPane.showMessageDialog(null,
 								"Se ha apuntado correctamente.", "Correcto",
 								JOptionPane.PLAIN_MESSAGE);
+						obtenerActividades();
 					}
 				}
 			}

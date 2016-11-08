@@ -18,12 +18,14 @@ public class ActividadesDatos {
 		List<Actividad> actividades = new ArrayList<>();
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
-		Timestamp horaAntesActividad = new Timestamp(DateTime.now().plusHours(1).plusMinutes(1).getMillis());
+		Timestamp horaAntesActividad = new Timestamp(
+				DateTime.now().plusHours(1).plusMinutes(1).getMillis());
 		Actividad actividad = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = con.prepareStatement("SELECT * FROM ACTIVIDAD WHERE FECHA_ACTIVIDAD >= ?");
+			ps = con.prepareStatement(
+					"SELECT * FROM ACTIVIDAD WHERE FECHA_ACTIVIDAD >= ?");
 			ps.setTimestamp(1, horaAntesActividad);
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -36,7 +38,8 @@ public class ActividadesDatos {
 				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
 				actividad.setCancelada(rs.getBoolean("CANCELADA"));
 				actividad.setNombre(rs.getString("NOMBRE"));
-				actividad.setFecha_entrada(new DateTime(rs.getTimestamp("FECHA_ACTIVIDAD").getTime()));
+				actividad.setFecha_entrada(new DateTime(
+						rs.getTimestamp("FECHA_ACTIVIDAD").getTime()));
 				actividades.add(actividad);
 			}
 		} catch (SQLException e) {
@@ -63,7 +66,8 @@ public class ActividadesDatos {
 		if (comprobarUsuarioApuntadoActividad(actividadId, userId))
 			return;
 		try {
-			ps = con.prepareStatement("INSERT INTO APUNTADO_ACTIVIDAD (USUARIO_ID, ACTIVIDAD_ID, ASISTIDO) VALUES (?,?,?)");
+			ps = con.prepareStatement(
+					"INSERT INTO APUNTADO_ACTIVIDAD (USUARIO_ID, ACTIVIDAD_ID, ASISTIDO) VALUES (?,?,?)");
 			ps.setLong(1, userId);
 			ps.setLong(2, actividadId);
 			ps.setBoolean(3, false);
@@ -82,15 +86,40 @@ public class ActividadesDatos {
 		}
 	}
 
-	public static boolean comprobarUsuarioApuntadoActividad(Long idActividad, Long idUsuario) {
+	public static void aumentarPlazaActividad(Long actividadId) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		try {
+			ps = con.prepareStatement(
+					"update actividad set plazas_ocupadas = plazas_ocupadas + 1 where id = ?");
+			ps.setLong(1, actividadId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static boolean comprobarUsuarioApuntadoActividad(Long idActividad,
+			Long idUsuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = con.prepareStatement("select count(*) as is_apuntado from actividad, apuntado_actividad "
-					+ "where actividad.id = apuntado_actividad.actividad_id "
-					+ "and actividad.id=? and usuario_id = ?");
+			ps = con.prepareStatement(
+					"select count(*) as is_apuntado from actividad, apuntado_actividad "
+							+ "where actividad.id = apuntado_actividad.actividad_id "
+							+ "and actividad.id=? and usuario_id = ?");
 			ps.setLong(1, idActividad);
 			ps.setLong(2, idUsuario);
 			rs = ps.executeQuery();
