@@ -59,7 +59,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 		JLabel lblReservasInstalaciones = new JLabel("Cancelar Reservas");
 		lblReservasInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
 		lblReservasInstalaciones.setBorder(new EmptyBorder(20, 0, 20, 0));
-		lblReservasInstalaciones.setFont(new Font("Arial Black", Font.BOLD, 25));
+		lblReservasInstalaciones
+				.setFont(new Font("Arial Black", Font.BOLD, 25));
 		getContentPane().add(lblReservasInstalaciones, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
@@ -72,8 +73,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 
 		JScrollPane spTabla = new JScrollPane();
 		panelCentro.add(spTabla, BorderLayout.CENTER);
-		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID", "Hora Inicio", "Hora Fin", "Pago", "Estado" },
-				0);
+		modeloTabla = new ModeloNoEditable(new String[] { "Día", "ID",
+				"Hora Inicio", "Hora Fin", "Pago", "Estado" }, 0);
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -101,7 +102,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 				btnBuscar.setEnabled(true);
 			}
 		});
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_WEEK));
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_WEEK));
 		panelCabecera.add(spinnerInicio);
 
 		JLabel lblFin = new JLabel("Fin");
@@ -109,7 +111,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 
 		spinnerFin = new JSpinner();
 		spinnerFin.setEnabled(false);
-		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		spinnerFin.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_YEAR));
 		panelCabecera.add(spinnerFin);
 
 		btnBuscar = new JButton("Ver reservas");
@@ -133,21 +136,25 @@ public class VentanaSocioCancelarReserva extends JFrame {
 				if (fila == -1) {
 					JOptionPane.showMessageDialog(null,
 							"No ha seleccionado ninguna reserva.\nSeleccione una reserva y vuelva a intentarlo.",
-							"ERROR: No hay reserva seleccionada", JOptionPane.ERROR_MESSAGE);
+							"ERROR: No hay reserva seleccionada",
+							JOptionPane.ERROR_MESSAGE);
 				} else {
 					long id = (long) modeloTabla.getValueAt(fila, 1);
 					ReservaDao reserva = ReservaDatos.obtenerReservaPorId(id);
-					if (!reserva.getEstado().equals(EstadoReserva.ACTIVA.name())) {
+					if (!reserva.getEstado()
+							.equals(EstadoReserva.ACTIVA.name())) {
 						JOptionPane.showMessageDialog(null,
-								"No puede cancelar una reserva que ya está: " + reserva.getEstado());
+								"No puede cancelar una reserva que ya está: "
+										+ reserva.getEstado());
 						return;
 					}
 
-					botonDialogo = JOptionPane.showConfirmDialog(null, "Está seguro de que quiere cancelar la reserva?",
+					botonDialogo = JOptionPane.showConfirmDialog(null,
+							"Está seguro de que quiere cancelar la reserva?",
 							"Confirmar Cancelacion", botonDialogo);
 					if (botonDialogo == JOptionPane.YES_OPTION)
 						try {
-							ReservaDatos.cancelarReservaComoAdmin(reserva);
+							ReservaDatos.cancelarReservaComoSocio(reserva);
 							obtenerReservasSemanal();
 						} catch (ExcepcionReserva e1) {
 							e1.printStackTrace();
@@ -162,7 +169,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 		Date inicio = (Date) spinnerInicio.getValue();
 		Date fin = (Date) spinnerFin.getValue();
 
-		List<ReservaDao> reservas = ManagerUsuario.verReservasPorFecha(inicio, fin, user);
+		List<ReservaDao> reservas = ManagerUsuario.verReservasPorFecha(inicio,
+				fin, user);
 		Object[] line = new Object[9];
 		int tam = modeloTabla.getRowCount();
 		for (int i = 0; i < tam; i++) {
@@ -171,7 +179,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 
 		for (int i = 0; i < reservas.size(); i++) {
 			ReservaDao reserva = reservas.get(i);
-			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek() - 1];
+			line[0] = DiasSemana.values()[reserva.getInicio().getDayOfWeek()
+					- 1];
 			line[1] = reserva.getIdRes();
 			line[2] = reserva.getInicio();
 			line[3] = reserva.getFin();
@@ -183,7 +192,8 @@ public class VentanaSocioCancelarReserva extends JFrame {
 	}
 
 	private Long obtenerIDInstalacion() {
-		return instalaciones.get(comboBoxInstalaciones.getSelectedIndex()).getIdInst();
+		return instalaciones.get(comboBoxInstalaciones.getSelectedIndex())
+				.getIdInst();
 	}
 
 }

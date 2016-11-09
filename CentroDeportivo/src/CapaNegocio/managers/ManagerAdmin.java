@@ -41,7 +41,7 @@ public class ManagerAdmin {
 				ReservaDatos.calcularImporteReserva(idInst, duracionReserva), EstadoPago.PENDIENTE, tipoPago);
 		PagoDatos.insertarPago(pago);
 
-		ReservaDao reserva = new ReservaDao(ReservaDatos.obtenerNuevoIDReserva(), TipoReserva.SOCIO, inicio, fin,
+		ReservaDao reserva = new ReservaDao(TipoReserva.SOCIO, inicio, fin,
 				idInst, idPago, idUsu, null, null);
 
 		ReservaDatos.insertarReservaUsuario(reserva);

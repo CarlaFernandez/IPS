@@ -226,6 +226,8 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 							ReservaDatos.actualizarHoraEntrada(reserva);
 							ReservaDatos.actualizarHoraSalida(reserva);
 							obtenerReservasSemanal();
+							textFieldHoraEntrada.setText("");
+							textFieldHoraSalida.setText("");
 						} catch (ExcepcionReserva e) {
 							System.err.println(e.getMessage());
 							e.printStackTrace();
