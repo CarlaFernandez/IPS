@@ -116,7 +116,7 @@ public class ReservaDao {
 
 	public double calcularImporteReserva() {
 		return InstalacionDatos.obtenerPrecioInstalacion(idInst)
-				* duracionEnMinutos;
+				* getDuracionEnMinutos();
 	}
 
 	public Long getIdRes() {

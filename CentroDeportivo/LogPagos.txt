@@ -1,0 +1,4 @@
+PAGO-Usuario=12350-Reserva=22-Fecha=Sat Nov 12 20:44:47 CET 2016
+PAGO-Usuario=12350-Reserva=22-Fecha=Sat Nov 12 20:45:24 CET 2016
+PAGO-Usuario=12350-Reserva=22-Fecha=Sat Nov 12 20:45:32 CET 2016
+PAGO-Usuario=12350-Reserva=22-Fecha=Sat Nov 12 20:45:43 CET 2016
