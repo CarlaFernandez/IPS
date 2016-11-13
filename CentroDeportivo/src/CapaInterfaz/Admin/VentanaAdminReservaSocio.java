@@ -33,6 +33,7 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
+import CapaNegocio.managers.ManagerFechas;
 import CapaNegocio.managers.ManagerUsuario;
 
 public class VentanaAdminReservaSocio extends JFrame {
@@ -253,14 +254,27 @@ public class VentanaAdminReservaSocio extends JFrame {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);
 		DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
+		DateTime hoy = new DateTime(System.currentTimeMillis());
+		
+		boolean bajaProximoMes = ManagerUsuario.esBajaParaElMesQueViene(idUsu);
 
-		try {
-			ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, idUsu, tipoPago);
-			JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
-		} catch (ExcepcionReserva e) {
-			JOptionPane.showMessageDialog(this, e.getMessage());
+		// si es baja para el mes que viene y selecciona una reserva de ese mes
+		if (bajaProximoMes && ManagerFechas.fechasEstanEnMismoMes(dateTimeInicio, hoy.plusMonths(1))) {
+			JOptionPane.showMessageDialog(this,
+					"El usuario está dado de baja para el próximo mes." + "Por favor, seleccione una fecha de este mes.");
+		}
+		// si es baja para el mes que viene y selecciona pagar por banco
+		else if (bajaProximoMes && tipoPago.equals(TipoPago.CUOTA)) {
+			JOptionPane.showMessageDialog(this, "El usuario está dado de baja para el próximo mes." + "Ha de pagar en efectivo.");
+		} else {
+			try {
+				ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, idUsu, tipoPago);
+				JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "El formato es incorrecto");
+			} catch (ExcepcionReserva e) {
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			}
 		}
 
 	}
