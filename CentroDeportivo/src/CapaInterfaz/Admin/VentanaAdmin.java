@@ -26,8 +26,7 @@ public class VentanaAdmin extends JFrame {
 
 		JButton btnReservas = new JButton("Gestión de instalaciones");
 		btnReservas.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnReservas.setBorder(
-				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		btnReservas.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
@@ -37,21 +36,18 @@ public class VentanaAdmin extends JFrame {
 		});
 		panel.add(btnReservas);
 
-		// JButton btnGestionActividades = new JButton("Gestión de
-		// actividades");
-		// btnGestionActividades.setFont(new Font("Arial", Font.PLAIN, 14));
-		// btnGestionActividades.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent arg0) {
-		// VentanaGestionActividades v = new VentanaGestionActividades();
-		// v.show();
-		// }
-		// });
-		// btnGestionActividades.setBorder(new BevelBorder(BevelBorder.RAISED,
-		// null, null, null, null));
-		// panel.add(btnGestionActividades);
+		JButton btnGestionActividades = new JButton("Gestión de actividades");
+		btnGestionActividades.setFont(new Font("Arial", Font.PLAIN, 14));
+		btnGestionActividades.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				VentanaGestionActividades v = new VentanaGestionActividades();
+				v.show();
+			}
+		});
+		btnGestionActividades.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		panel.add(btnGestionActividades);
 
-		JButton btnPasarPagosACuenta = new JButton(
-				"Enviar pagos a la cuota mensual");
+		JButton btnPasarPagosACuenta = new JButton("Enviar pagos a la cuota mensual");
 		btnPasarPagosACuenta.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnPasarPagosACuenta.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
@@ -60,8 +56,7 @@ public class VentanaAdmin extends JFrame {
 				vpp.show();
 			}
 		});
-		btnPasarPagosACuenta.setBorder(
-				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnPasarPagosACuenta.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnPasarPagosACuenta);
 
 		//
