@@ -3,56 +3,39 @@ package CapaInterfaz.Admin;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
+import CapaDatos.InstalacionDatos;
 import CapaDatos.MonitorDatos;
-import CapaDatos.UsuarioDatos;
-import CapaInterfaz.Monitor.ChkCellEditor;
-import CapaInterfaz.Monitor.ChkCellRenderer;
 import CapaInterfaz.Monitor.ModeloNoEditable;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
-import CapaNegocio.dao.Usuario;
+import CapaNegocio.dao.Monitor;
 import CapaNegocio.managers.ManagerAdmin;
-
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.GridBagLayout;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JCheckBox;
 
 public class VentanaCrearActividad extends JFrame {
 	// private static final long serialVersionUID = 1L;
@@ -97,6 +80,7 @@ public class VentanaCrearActividad extends JFrame {
 	private List<Instalacion> instalaciones;
 	private JTable table;
 	private ModeloNoEditable modeloTabla;
+	private List<Monitor> monitores;
 
 	public VentanaCrearActividad() {
 		setTitle("Admin -> Crear actividades");
@@ -105,10 +89,10 @@ public class VentanaCrearActividad extends JFrame {
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 
-		JLabel lblReservaDeCentro = new JLabel("Reserva de centro peri\u00F3dica");
-		lblReservaDeCentro.setHorizontalAlignment(SwingConstants.CENTER);
-		lblReservaDeCentro.setFont(new Font("Arial Black", Font.BOLD, 25));
-		getContentPane().add(lblReservaDeCentro, BorderLayout.NORTH);
+		JLabel lblReservaDeActividad = new JLabel("Reserva de actividades");
+		lblReservaDeActividad.setHorizontalAlignment(SwingConstants.CENTER);
+		lblReservaDeActividad.setFont(new Font("Arial Black", Font.BOLD, 25));
+		getContentPane().add(lblReservaDeActividad, BorderLayout.NORTH);
 
 		JPanel panelBotones = new JPanel();
 		getContentPane().add(panelBotones, BorderLayout.SOUTH);
@@ -175,11 +159,134 @@ public class VentanaCrearActividad extends JFrame {
 		panelPuntual = new JPanel();
 		panelMostrarEleccion.add(panelPuntual, "panelSemanal");
 		GridBagLayout gbl_panelPuntual = new GridBagLayout();
-		gbl_panelPuntual.columnWidths = new int[] { 0 };
-		gbl_panelPuntual.rowHeights = new int[] { 0 };
-		gbl_panelPuntual.columnWeights = new double[] { Double.MIN_VALUE };
-		gbl_panelPuntual.rowWeights = new double[] { Double.MIN_VALUE };
+		gbl_panelPuntual.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
+		gbl_panelPuntual.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panelPuntual.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panelPuntual.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panelPuntual.setLayout(gbl_panelPuntual);
+		
+		JLabel lblFechaPuntual = new JLabel("Fecha:");
+		lblFechaPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblFechaPuntual = new GridBagConstraints();
+		gbc_lblFechaPuntual.insets = new Insets(20, 50, 5, 5);
+		gbc_lblFechaPuntual.gridx = 1;
+		gbc_lblFechaPuntual.gridy = 0;
+		panelPuntual.add(lblFechaPuntual, gbc_lblFechaPuntual);
+		
+		JDateChooser dateInicioPuntual = new JDateChooser();
+		dateInicioPuntual.setDateFormatString("dd/MM/yyyy");
+		dateInicioPuntual.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateInicioPuntual.setDate(new Date(System.currentTimeMillis()));
+		GridBagConstraints gbc_dateInicioPuntual = new GridBagConstraints();
+		gbc_dateInicioPuntual.insets = new Insets(20, 0, 5, 5);
+		gbc_dateInicioPuntual.gridx = 2;
+		gbc_dateInicioPuntual.gridy = 0;
+		panelPuntual.add(dateInicioPuntual, gbc_dateInicioPuntual);
+		
+		JLabel lblHoraPuntual = new JLabel("Hora:");
+		lblHoraPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblHoraPuntual = new GridBagConstraints();
+		gbc_lblHoraPuntual.insets = new Insets(10, 50, 5, 5);
+		gbc_lblHoraPuntual.gridx = 1;
+		gbc_lblHoraPuntual.gridy = 1;
+		panelPuntual.add(lblHoraPuntual, gbc_lblHoraPuntual);
+		
+		JSpinner spinnerHoraPuntual = new JSpinner();
+		spinnerHoraPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerHoraPuntual.setModel(new SpinnerNumberModel(15, 0, 23, 1));
+		GridBagConstraints gbc_spinnerHoraPuntual = new GridBagConstraints();
+		gbc_spinnerHoraPuntual.insets = new Insets(10, 0, 5, 5);
+		gbc_spinnerHoraPuntual.gridx = 2;
+		gbc_spinnerHoraPuntual.gridy = 1;
+		panelPuntual.add(spinnerHoraPuntual, gbc_spinnerHoraPuntual);
+		
+		JLabel lblDuracion = new JLabel("Duraci\u00F3n");
+		lblDuracion.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblDuracion = new GridBagConstraints();
+		gbc_lblDuracion.insets = new Insets(10, 50, 5, 5);
+		gbc_lblDuracion.gridx = 1;
+		gbc_lblDuracion.gridy = 2;
+		panelPuntual.add(lblDuracion, gbc_lblDuracion);
+		
+		JSpinner spinnerDuracionPuntual = new JSpinner();
+		spinnerDuracionPuntual.setModel(new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_spinnerDuracionPuntual = new GridBagConstraints();
+		gbc_spinnerDuracionPuntual.insets = new Insets(10, 0, 5, 5);
+		gbc_spinnerDuracionPuntual.gridx = 2;
+		gbc_spinnerDuracionPuntual.gridy = 2;
+		panelPuntual.add(spinnerDuracionPuntual, gbc_spinnerDuracionPuntual);
+		
+		JCheckBox chckbxTodoElDiaPuntual = new JCheckBox("Todo el d\u00EDa");
+		chckbxTodoElDiaPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_chckbxTodoElDiaPuntual = new GridBagConstraints();
+		gbc_chckbxTodoElDiaPuntual.insets = new Insets(10, 0, 5, 5);
+		gbc_chckbxTodoElDiaPuntual.gridx = 3;
+		gbc_chckbxTodoElDiaPuntual.gridy = 2;
+		panelPuntual.add(chckbxTodoElDiaPuntual, gbc_chckbxTodoElDiaPuntual);
+		
+		JLabel lblMonitor = new JLabel("Monitor:");
+		lblMonitor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblMonitor = new GridBagConstraints();
+		gbc_lblMonitor.insets = new Insets(30, 50, 5, 5);
+		gbc_lblMonitor.gridx = 1;
+		gbc_lblMonitor.gridy = 4;
+		panelPuntual.add(lblMonitor, gbc_lblMonitor);
+		
+		
+		monitores = MonitorDatos.obtenerMonitores();
+		String[] nombresMonitores = new String[monitores.size()];
+		for (int i = 0; i<nombresMonitores.length; i++){
+			nombresMonitores[i] = monitores.get(i).getNombre() + " " + monitores.get(i).getApellidos();
+		}
+		JComboBox comboBoxMonitorPuntual = new JComboBox(nombresMonitores);
+		comboBoxMonitorPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_comboBoxMonitorPuntual = new GridBagConstraints();
+		gbc_comboBoxMonitorPuntual.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBoxMonitorPuntual.insets = new Insets(30, 0, 5, 5);
+		gbc_comboBoxMonitorPuntual.gridx = 2;
+		gbc_comboBoxMonitorPuntual.gridy = 4;
+		panelPuntual.add(comboBoxMonitorPuntual, gbc_comboBoxMonitorPuntual);
+		
+		JLabel lblInstalacionPuntual = new JLabel("Instalaci\u00F3n:");
+		lblInstalacionPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblInstalacionPuntual = new GridBagConstraints();
+		gbc_lblInstalacionPuntual.insets = new Insets(10, 50, 5, 5);
+		gbc_lblInstalacionPuntual.gridx = 1;
+		gbc_lblInstalacionPuntual.gridy = 5;
+		panelPuntual.add(lblInstalacionPuntual, gbc_lblInstalacionPuntual);
+		
+		
+		instalaciones = InstalacionDatos.ObtenerInstalaciones();
+		String[] nombresInstalaciones = new String[instalaciones.size()];
+		for (int i = 0; i<nombresInstalaciones.length; i++){
+			nombresInstalaciones[i] = instalaciones.get(i).getCodigo();
+		}
+		JComboBox comboBoxInstalacionPuntual = new JComboBox(nombresInstalaciones);
+		comboBoxInstalacionPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_comboBoxInstalacionPuntual = new GridBagConstraints();
+		gbc_comboBoxInstalacionPuntual.insets = new Insets(10, 0, 5, 5);
+		gbc_comboBoxInstalacionPuntual.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBoxInstalacionPuntual.gridx = 2;
+		gbc_comboBoxInstalacionPuntual.gridy = 5;
+		panelPuntual.add(comboBoxInstalacionPuntual, gbc_comboBoxInstalacionPuntual);
+		
+		JLabel lblMxPlazas = new JLabel("M\u00E1x. Plazas:");
+		lblMxPlazas.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbc_lblMxPlazas = new GridBagConstraints();
+		gbc_lblMxPlazas.insets = new Insets(0, 50, 0, 5);
+		gbc_lblMxPlazas.gridx = 1;
+		gbc_lblMxPlazas.gridy = 6;
+		panelPuntual.add(lblMxPlazas, gbc_lblMxPlazas);
+		
+		JSpinner spinnerPlazasPuntual = new JSpinner();
+		spinnerPlazasPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		spinnerPlazasPuntual.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+		GridBagConstraints gbc_comboBoxPlazasPuntual = new GridBagConstraints();
+		gbc_comboBoxPlazasPuntual.insets = new Insets(0, 0, 0, 5);
+		gbc_comboBoxPlazasPuntual.gridx = 2;
+		gbc_comboBoxPlazasPuntual.gridy = 6;
+		panelPuntual.add(spinnerPlazasPuntual, gbc_comboBoxPlazasPuntual);
 
 		JPanel panelPeriodica = new JPanel();
 		panelMostrarEleccion.add(panelPeriodica, "panelMensual");
