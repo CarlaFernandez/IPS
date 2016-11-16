@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -29,6 +32,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import CapaDatos.InstalacionDatos;
 import CapaDatos.MonitorDatos;
 import CapaInterfaz.ModeloConColumnaEditable;
@@ -36,6 +43,7 @@ import CapaInterfaz.Monitor.ModeloNoEditable;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Monitor;
+import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
 import com.toedter.calendar.JDateChooser;
@@ -74,10 +82,10 @@ public class VentanaCrearActividad extends JFrame {
 	// }
 
 	private static final long serialVersionUID = 1L;
-	private JRadioButton rdbtnSemanal;
-	private JRadioButton rdbtnMensual;
-	private JDateChooser dateInicio;
-	private JDateChooser dateFin;
+	private JRadioButton rdbtnPuntual;
+	private JRadioButton rdbtnPeriodica;
+	private JDateChooser dateInicioPeriodica;
+	private JDateChooser dateFinPeriodica;
 	private JPanel panelMostrarEleccion;
 	private JPanel panelPuntual;
 	private List<Instalacion> instalaciones;
@@ -85,6 +93,13 @@ public class VentanaCrearActividad extends JFrame {
 	private ModeloConColumnaEditable modeloTabla;
 	private List<Monitor> monitores;
 	private int selectedRow = -1;
+	private JSpinner spinnerPlazasPuntual;
+	private JComboBox comboBoxInstalacionPuntual;
+	private JComboBox comboBoxMonitorPuntual;
+	private JCheckBox chckbxTodoElDiaPuntual;
+	private JSpinner spinnerDuracionPuntual;
+	private JSpinner spinnerHoraPuntual;
+	private JDateChooser dateInicioPuntual;
 
 	public VentanaCrearActividad() {
 		setTitle("Admin -> Crear actividades");
@@ -104,7 +119,12 @@ public class VentanaCrearActividad extends JFrame {
 		JButton btnCrearActividad = new JButton("Crear actividad(es)");
 		btnCrearActividad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				insertarActividad();
+				if (rdbtnPuntual.isSelected()){
+				insertarActividadPuntual();
+				}
+				else{
+					insertarActividadPeriodica();
+				}
 			}
 		});
 		btnCrearActividad.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -121,28 +141,30 @@ public class VentanaCrearActividad extends JFrame {
 		lblTipoReserva.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelTipo.add(lblTipoReserva);
 
-		rdbtnSemanal = new JRadioButton("Puntual");
-		rdbtnSemanal.addActionListener(new ActionListener() {
+		rdbtnPuntual = new JRadioButton("Puntual");
+		rdbtnPuntual.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				((CardLayout) panelMostrarEleccion.getLayout()).show(panelMostrarEleccion, "panelSemanal");
+				((CardLayout) panelMostrarEleccion.getLayout()).show(
+						panelMostrarEleccion, "panelSemanal");
 			}
 		});
-		rdbtnSemanal.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		rdbtnSemanal.setSelected(true);
-		panelTipo.add(rdbtnSemanal);
+		rdbtnPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		rdbtnPuntual.setSelected(true);
+		panelTipo.add(rdbtnPuntual);
 
-		rdbtnMensual = new JRadioButton("Peri\u00F3dica");
-		rdbtnMensual.addActionListener(new ActionListener() {
+		rdbtnPeriodica = new JRadioButton("Peri\u00F3dica");
+		rdbtnPeriodica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				((CardLayout) panelMostrarEleccion.getLayout()).show(panelMostrarEleccion, "panelMensual");
+				((CardLayout) panelMostrarEleccion.getLayout()).show(
+						panelMostrarEleccion, "panelMensual");
 			}
 		});
-		rdbtnMensual.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		panelTipo.add(rdbtnMensual);
+		rdbtnPeriodica.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		panelTipo.add(rdbtnPeriodica);
 
 		ButtonGroup grupoRadioButton = new ButtonGroup();
-		grupoRadioButton.add(rdbtnMensual);
-		grupoRadioButton.add(rdbtnSemanal);
+		grupoRadioButton.add(rdbtnPeriodica);
+		grupoRadioButton.add(rdbtnPuntual);
 
 		JPanel panelOpciones = new JPanel();
 		panelReserva.add(panelOpciones, BorderLayout.CENTER);
@@ -165,10 +187,12 @@ public class VentanaCrearActividad extends JFrame {
 		GridBagLayout gbl_panelPuntual = new GridBagLayout();
 		gbl_panelPuntual.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
 		gbl_panelPuntual.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_panelPuntual.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panelPuntual.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_panelPuntual.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0,
+				0.0, Double.MIN_VALUE };
+		gbl_panelPuntual.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, Double.MIN_VALUE };
 		panelPuntual.setLayout(gbl_panelPuntual);
-		
+
 		JLabel lblFechaPuntual = new JLabel("Fecha:");
 		lblFechaPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblFechaPuntual = new GridBagConstraints();
@@ -176,17 +200,18 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_lblFechaPuntual.gridx = 1;
 		gbc_lblFechaPuntual.gridy = 0;
 		panelPuntual.add(lblFechaPuntual, gbc_lblFechaPuntual);
-		
-		JDateChooser dateInicioPuntual = new JDateChooser();
+
+		dateInicioPuntual = new JDateChooser();
 		dateInicioPuntual.setDateFormatString("dd/MM/yyyy");
-		dateInicioPuntual.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateInicioPuntual.setMinSelectableDate(new Date(System
+				.currentTimeMillis()));
 		dateInicioPuntual.setDate(new Date(System.currentTimeMillis()));
 		GridBagConstraints gbc_dateInicioPuntual = new GridBagConstraints();
 		gbc_dateInicioPuntual.insets = new Insets(20, 0, 5, 5);
 		gbc_dateInicioPuntual.gridx = 2;
 		gbc_dateInicioPuntual.gridy = 0;
 		panelPuntual.add(dateInicioPuntual, gbc_dateInicioPuntual);
-		
+
 		JLabel lblHoraPuntual = new JLabel("Hora:");
 		lblHoraPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblHoraPuntual = new GridBagConstraints();
@@ -194,8 +219,8 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_lblHoraPuntual.gridx = 1;
 		gbc_lblHoraPuntual.gridy = 1;
 		panelPuntual.add(lblHoraPuntual, gbc_lblHoraPuntual);
-		
-		JSpinner spinnerHoraPuntual = new JSpinner();
+
+		spinnerHoraPuntual = new JSpinner();
 		spinnerHoraPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerHoraPuntual.setModel(new SpinnerNumberModel(15, 0, 23, 1));
 		GridBagConstraints gbc_spinnerHoraPuntual = new GridBagConstraints();
@@ -203,7 +228,7 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_spinnerHoraPuntual.gridx = 2;
 		gbc_spinnerHoraPuntual.gridy = 1;
 		panelPuntual.add(spinnerHoraPuntual, gbc_spinnerHoraPuntual);
-		
+
 		JLabel lblDuracion = new JLabel("Duraci\u00F3n");
 		lblDuracion.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblDuracion = new GridBagConstraints();
@@ -211,8 +236,8 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_lblDuracion.gridx = 1;
 		gbc_lblDuracion.gridy = 2;
 		panelPuntual.add(lblDuracion, gbc_lblDuracion);
-		
-		JSpinner spinnerDuracionPuntual = new JSpinner();
+
+		spinnerDuracionPuntual = new JSpinner();
 		spinnerDuracionPuntual.setModel(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_spinnerDuracionPuntual = new GridBagConstraints();
@@ -220,15 +245,15 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_spinnerDuracionPuntual.gridx = 2;
 		gbc_spinnerDuracionPuntual.gridy = 2;
 		panelPuntual.add(spinnerDuracionPuntual, gbc_spinnerDuracionPuntual);
-		
-		JCheckBox chckbxTodoElDiaPuntual = new JCheckBox("Todo el d\u00EDa");
+
+		chckbxTodoElDiaPuntual = new JCheckBox("Todo el d\u00EDa");
 		chckbxTodoElDiaPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_chckbxTodoElDiaPuntual = new GridBagConstraints();
 		gbc_chckbxTodoElDiaPuntual.insets = new Insets(10, 0, 5, 5);
 		gbc_chckbxTodoElDiaPuntual.gridx = 3;
 		gbc_chckbxTodoElDiaPuntual.gridy = 2;
 		panelPuntual.add(chckbxTodoElDiaPuntual, gbc_chckbxTodoElDiaPuntual);
-		
+
 		JLabel lblMonitor = new JLabel("Monitor:");
 		lblMonitor.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblMonitor = new GridBagConstraints();
@@ -236,14 +261,14 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_lblMonitor.gridx = 1;
 		gbc_lblMonitor.gridy = 4;
 		panelPuntual.add(lblMonitor, gbc_lblMonitor);
-		
-		
+
 		monitores = MonitorDatos.obtenerMonitores();
 		String[] nombresMonitores = new String[monitores.size()];
-		for (int i = 0; i<nombresMonitores.length; i++){
-			nombresMonitores[i] = monitores.get(i).getNombre() + " " + monitores.get(i).getApellidos();
+		for (int i = 0; i < nombresMonitores.length; i++) {
+			nombresMonitores[i] = monitores.get(i).getNombre() + " "
+					+ monitores.get(i).getApellidos();
 		}
-		JComboBox comboBoxMonitorPuntual = new JComboBox(nombresMonitores);
+		comboBoxMonitorPuntual = new JComboBox(nombresMonitores);
 		comboBoxMonitorPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_comboBoxMonitorPuntual = new GridBagConstraints();
 		gbc_comboBoxMonitorPuntual.fill = GridBagConstraints.HORIZONTAL;
@@ -251,7 +276,7 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_comboBoxMonitorPuntual.gridx = 2;
 		gbc_comboBoxMonitorPuntual.gridy = 4;
 		panelPuntual.add(comboBoxMonitorPuntual, gbc_comboBoxMonitorPuntual);
-		
+
 		JLabel lblInstalacionPuntual = new JLabel("Instalaci\u00F3n:");
 		lblInstalacionPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblInstalacionPuntual = new GridBagConstraints();
@@ -259,22 +284,23 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_lblInstalacionPuntual.gridx = 1;
 		gbc_lblInstalacionPuntual.gridy = 5;
 		panelPuntual.add(lblInstalacionPuntual, gbc_lblInstalacionPuntual);
-		
-		
+
 		instalaciones = InstalacionDatos.ObtenerInstalaciones();
 		String[] nombresInstalaciones = new String[instalaciones.size()];
-		for (int i = 0; i<nombresInstalaciones.length; i++){
+		for (int i = 0; i < nombresInstalaciones.length; i++) {
 			nombresInstalaciones[i] = instalaciones.get(i).getCodigo();
 		}
-		JComboBox comboBoxInstalacionPuntual = new JComboBox(nombresInstalaciones);
+		comboBoxInstalacionPuntual = new JComboBox(
+				nombresInstalaciones);
 		comboBoxInstalacionPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_comboBoxInstalacionPuntual = new GridBagConstraints();
 		gbc_comboBoxInstalacionPuntual.insets = new Insets(10, 0, 5, 5);
 		gbc_comboBoxInstalacionPuntual.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBoxInstalacionPuntual.gridx = 2;
 		gbc_comboBoxInstalacionPuntual.gridy = 5;
-		panelPuntual.add(comboBoxInstalacionPuntual, gbc_comboBoxInstalacionPuntual);
-		
+		panelPuntual.add(comboBoxInstalacionPuntual,
+				gbc_comboBoxInstalacionPuntual);
+
 		JLabel lblMxPlazas = new JLabel("M\u00E1x. Plazas:");
 		lblMxPlazas.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblMxPlazas = new GridBagConstraints();
@@ -282,10 +308,11 @@ public class VentanaCrearActividad extends JFrame {
 		gbc_lblMxPlazas.gridx = 1;
 		gbc_lblMxPlazas.gridy = 6;
 		panelPuntual.add(lblMxPlazas, gbc_lblMxPlazas);
-		
-		JSpinner spinnerPlazasPuntual = new JSpinner();
+
+		spinnerPlazasPuntual = new JSpinner();
 		spinnerPlazasPuntual.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		spinnerPlazasPuntual.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+		spinnerPlazasPuntual.setModel(new SpinnerNumberModel(new Integer(0),
+				new Integer(0), null, new Integer(1)));
 		GridBagConstraints gbc_comboBoxPlazasPuntual = new GridBagConstraints();
 		gbc_comboBoxPlazasPuntual.insets = new Insets(0, 0, 0, 5);
 		gbc_comboBoxPlazasPuntual.gridx = 2;
@@ -303,50 +330,51 @@ public class VentanaCrearActividad extends JFrame {
 		panelFechas.add(lblDesdeEl);
 		lblDesdeEl.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
-		dateInicio = new JDateChooser();
-		panelFechas.add(dateInicio);
-		BorderLayout bl_dateInicio = (BorderLayout) dateInicio.getLayout();
-		dateInicio.setDateFormatString("dd/MM/yyyy");
-		dateInicio.setMinSelectableDate(new Date(System.currentTimeMillis()));
-		dateInicio.setDate(new Date(System.currentTimeMillis()));
+		dateInicioPeriodica = new JDateChooser();
+		panelFechas.add(dateInicioPeriodica);
+		BorderLayout bl_dateInicio = (BorderLayout) dateInicioPeriodica.getLayout();
+		dateInicioPeriodica.setDateFormatString("dd/MM/yyyy");
+		dateInicioPeriodica.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateInicioPeriodica.setDate(new Date(System.currentTimeMillis()));
 
 		JLabel lblHastaEl = new JLabel("Hasta el:");
 		panelFechas.add(lblHastaEl);
 		lblHastaEl.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
-		dateFin = new JDateChooser();
-		panelFechas.add(dateFin);
-		BorderLayout bl_dateFin = (BorderLayout) dateFin.getLayout();
-		dateFin.setDateFormatString("dd/MM/yyyy");
-		dateFin.setMinSelectableDate(new Date(System.currentTimeMillis()));
-		dateFin.setDate(new Date(System.currentTimeMillis()));
+		dateFinPeriodica = new JDateChooser();
+		panelFechas.add(dateFinPeriodica);
+		BorderLayout bl_dateFin = (BorderLayout) dateFinPeriodica.getLayout();
+		dateFinPeriodica.setDateFormatString("dd/MM/yyyy");
+		dateFinPeriodica.setMinSelectableDate(new Date(System.currentTimeMillis()));
+		dateFinPeriodica.setDate(new Date(System.currentTimeMillis()));
 
-		String[] columnas = {"","Día", "Hora inicio", "Duración", 
-				"Monitor", "Instalación", "Máx. plazas"};
-		
+		String[] columnas = { "", "Día", "Hora inicio", "Duración", "Monitor",
+				"Instalación", "Máx. plazas" };
+
 		modeloTabla = new ModeloConColumnaEditable(columnas, 0);
-//		table = new JTable(new DefaultTableModel(
-//			new Object[][] {
-//				{DiasSemana.LUNES.name(), null, null, null, null, null},
-//				{DiasSemana.MARTES.name(), null, null, null, null, null},
-//				{DiasSemana.MIERCOLES.name(), null, null, null, null, null},
-//				{DiasSemana.JUEVES.name(), null, null, null, null, null},
-//				{DiasSemana.VIERNES.name(), null, null, null, null, null},
-//				{DiasSemana.SABADO.name(), null, null, null, null, null},
-//				{DiasSemana.DOMINGO.name(), null, null, null, null, null},
-//			},
-//			new String[] {
-//				"D\u00EDa", "Hora inicio", "Duraci\u00F3n", "Monitor", "Instalaci\u00F3n", "M\u00E1x. plazas"
-//			}
-//		) {
-//			boolean[] columnEditables = new boolean[] {
-//				false, false, false, true, false, false
-//			};
-//			public boolean isCellEditable(int row, int column) {
-//				return columnEditables[column];
-//			}
-//		});
-////		
+		// table = new JTable(new DefaultTableModel(
+		// new Object[][] {
+		// {DiasSemana.LUNES.name(), null, null, null, null, null},
+		// {DiasSemana.MARTES.name(), null, null, null, null, null},
+		// {DiasSemana.MIERCOLES.name(), null, null, null, null, null},
+		// {DiasSemana.JUEVES.name(), null, null, null, null, null},
+		// {DiasSemana.VIERNES.name(), null, null, null, null, null},
+		// {DiasSemana.SABADO.name(), null, null, null, null, null},
+		// {DiasSemana.DOMINGO.name(), null, null, null, null, null},
+		// },
+		// new String[] {
+		// "D\u00EDa", "Hora inicio", "Duraci\u00F3n", "Monitor",
+		// "Instalaci\u00F3n", "M\u00E1x. plazas"
+		// }
+		// ) {
+		// boolean[] columnEditables = new boolean[] {
+		// false, false, false, true, false, false
+		// };
+		// public boolean isCellEditable(int row, int column) {
+		// return columnEditables[column];
+		// }
+		// });
+		// //
 		crearTabla();
 
 		JScrollPane scrollPaneTabla = new JScrollPane(table);
@@ -375,8 +403,8 @@ public class VentanaCrearActividad extends JFrame {
 			public void mouseClicked(MouseEvent arg0) {
 				selectedRow = table.getSelectedRow();
 				int clickedColumn = table.getSelectedColumn();
-				boolean seleccionado = (boolean) modeloTabla
-						.getValueAt(selectedRow, 0);
+				boolean seleccionado = (boolean) modeloTabla.getValueAt(
+						selectedRow, 0);
 				if (clickedColumn > 0)
 					modeloTabla.setValueAt(!seleccionado, selectedRow, 0);
 				table.repaint();
@@ -389,65 +417,72 @@ public class VentanaCrearActividad extends JFrame {
 		table.getColumnModel().getColumn(0).setMaxWidth(20);
 		table.setDefaultRenderer(Object.class,
 				new TableCellRendererPasarPagos());
-		modeloTabla.addRow(new Object[]{true, DiasSemana.LUNES.name(), new JSpinner(),
-				new JSpinner(), new JComboBox(), new JComboBox(), new JSpinner()});
-		
+		modeloTabla.addRow(new Object[] { true, DiasSemana.LUNES.name(),
+				new JSpinner(), new JSpinner(), new JComboBox(),
+				new JComboBox(), new JSpinner() });
+
 		table.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
-	public void insertarActividad() {
-		// if (rdbtnSemanal.isSelected()) {
-		// List<DiasSemana> dias = new ArrayList<>();
-		// JCheckBox checkLunes = (JCheckBox) panelPuntual.getComponents()[0];
-		// JCheckBox checkMartes = (JCheckBox) panelPuntual.getComponents()[1];
-		// JCheckBox checkMiercoles = (JCheckBox)
-		// panelPuntual.getComponents()[2];
-		// JCheckBox checkJueves = (JCheckBox) panelPuntual.getComponents()[3];
-		// JCheckBox checkViernes = (JCheckBox) panelPuntual.getComponents()[4];
-		// JCheckBox checkSabado = (JCheckBox) panelPuntual.getComponents()[5];
-		// JCheckBox checkDomingo = (JCheckBox) panelPuntual.getComponents()[6];
-		//
-		// if (checkLunes.isSelected())
-		// dias.add(DiasSemana.LUNES);
-		// if (checkMartes.isSelected())
-		// dias.add(DiasSemana.MARTES);
-		// if (checkMiercoles.isSelected())
-		// dias.add(DiasSemana.MIERCOLES);
-		// if (checkJueves.isSelected())
-		// dias.add(DiasSemana.JUEVES);
-		// if (checkViernes.isSelected())
-		// dias.add(DiasSemana.VIERNES);
-		// if (checkSabado.isSelected())
-		// dias.add(DiasSemana.SABADO);
-		// if (checkDomingo.isSelected())
-		// dias.add(DiasSemana.DOMINGO);
-		//
-		// Long idInst =
-		// instalaciones.get(comboBoxInstalacion.getSelectedIndex()).getIdInst();
-		// int hora = (int) spinnerHora.getValue();
-		// int duracion = (int) spinnerDuracion.getValue();
-		//
-		// String horaInicio = String.valueOf(hora);
-		// horaInicio += ":00:00";
-		// String horaFin = String.valueOf(hora + duracion);
-		// horaFin += ":00:00";
-		//
-		// DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-		// String fechaInicio = fmt.format(dateInicio.getDate());
-		// String fechaFin = fmt.format(dateFin.getDate());
-		//
-		// DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy
-		// HH:mm:ss");
-		// DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " +
-		// horaInicio);
-		// DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " +
-		// horaFin);
-		//
-		// }
-		//
-		// if (rdbtnMensual.isSelected()) {
-		//
-		// }
+	public void insertarActividadPuntual() {
+//		int horaInicio = (int)spinnerHoraPuntual.getValue();
+//		String horaInicioString = String.valueOf(horaInicio);
+//		horaInicioString += ":00:00";
+//		int duracion = (int)spinnerDuracionPuntual.getValue();
+//		Long idInst = instalaciones.get(
+//				comboBoxInstalacionPuntual.getSelectedIndex()).getIdInst();
+//
+//		DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+//		String fechaInicio = fmt.format(dateInicioPuntual.getDate());
+//		String fechaFin = "";
+//
+//		boolean todoElDia = false;
+//
+//		// para una reserva no periodica
+//		// si es de todo el día o la reserva es por ej. de 23 a 1...
+//			if (chckbxTodoElDiaPuntual.isSelected()) {
+//				todoElDia = true;
+//				DateTimeFormatter formatter = DateTimeFormat
+//						.forPattern("dd/MM/yyyy");
+//				DateTime dateTimeInicio = new DateTime(formatter.parseDateTime(
+//						fechaInicio).getMillis());
+//				dateTimeInicio = dateTimeInicio.withHourOfDay(0);
+//				dateTimeInicio = dateTimeInicio.withMinuteOfHour(0);
+//				dateTimeInicio = dateTimeInicio.withSecondOfMinute(0);
+//				fechaFin = fmt.format(new Date(dtPlusOne.getMillis()));
+//
+//			} else {
+//				fechaFin = fechaInicio;
+//			}
+//		}
+//
+//		DateTimeFormatter formatter = DateTimeFormat
+//				.forPattern("dd/MM/yyyy HH:mm:ss");
+//		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " "
+//				+ horaInicio);
+//		DateTime dateTimeFin = formatter
+//				.parseDateTime(fechaFin + " " + horaFin);
+//
+//		try {
+//			if (chckbxPeridioca.isSelected()) {
+//				ManagerAdmin.insertarReservaCentroSemanal(
+//						(DiasSemana) comboBoxDia.getSelectedItem(),
+//						dateTimeInicio, dateTimeFin, idInst, todoElDia);
+//			} else {
+//				ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin,
+//						idInst, null, null);
+//			}
+//			JOptionPane.showMessageDialog(this,
+//					"La reserva se ha insertado con éxito");
+//		} catch (NumberFormatException e) {
+//			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
+//		} catch (ExcepcionReserva e) {
+//			JOptionPane.showMessageDialog(this, e.getMessage());
+//		}
+
+	}
+	public void insertarActividadPeriodica(){
+		
 	}
 }
