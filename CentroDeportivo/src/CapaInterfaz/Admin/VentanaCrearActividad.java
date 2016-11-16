@@ -2,17 +2,21 @@ package CapaInterfaz.Admin;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,18 +28,17 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
-
-import com.toedter.calendar.JDateChooser;
 
 import CapaDatos.InstalacionDatos;
 import CapaDatos.MonitorDatos;
+import CapaInterfaz.ModeloConColumnaEditable;
 import CapaInterfaz.Monitor.ModeloNoEditable;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Monitor;
 import CapaNegocio.managers.ManagerAdmin;
-import javax.swing.JCheckBox;
+
+import com.toedter.calendar.JDateChooser;
 
 public class VentanaCrearActividad extends JFrame {
 	// private static final long serialVersionUID = 1L;
@@ -79,8 +82,9 @@ public class VentanaCrearActividad extends JFrame {
 	private JPanel panelPuntual;
 	private List<Instalacion> instalaciones;
 	private JTable table;
-	private ModeloNoEditable modeloTabla;
+	private ModeloConColumnaEditable modeloTabla;
 	private List<Monitor> monitores;
+	private int selectedRow = -1;
 
 	public VentanaCrearActividad() {
 		setTitle("Admin -> Crear actividades");
@@ -317,45 +321,79 @@ public class VentanaCrearActividad extends JFrame {
 		dateFin.setMinSelectableDate(new Date(System.currentTimeMillis()));
 		dateFin.setDate(new Date(System.currentTimeMillis()));
 
-		String[] columnas = {"Día", "Hora inicio", "Duración", 
+		String[] columnas = {"","Día", "Hora inicio", "Duración", 
 				"Monitor", "Instalación", "Máx. plazas"};
 		
-		modeloTabla = new ModeloNoEditable(columnas, 0);
-		table = new JTable(new DefaultTableModel(
-			new Object[][] {
-				{DiasSemana.LUNES.name(), null, null, null, null, null},
-				{DiasSemana.MARTES.name(), null, null, null, null, null},
-				{DiasSemana.MIERCOLES.name(), null, null, null, null, null},
-				{DiasSemana.JUEVES.name(), null, null, null, null, null},
-				{DiasSemana.VIERNES.name(), null, null, null, null, null},
-				{DiasSemana.SABADO.name(), null, null, null, null, null},
-				{DiasSemana.DOMINGO.name(), null, null, null, null, null},
-			},
-			new String[] {
-				"D\u00EDa", "Hora inicio", "Duraci\u00F3n", "Monitor", "Instalaci\u00F3n", "M\u00E1x. plazas"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, true, false, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-//		
-//		table.getColumnModel().getColumn(0).setCellRenderer(new ChkCellRenderer());
-//		table.getColumnModel().getColumn(0).setCellEditor(new ChkCellEditor());
-//		
-//		JCheckBox chk = new JCheckBox();
-//		TableColumn tc = table.getColumnModel().getColumn(0);
-//		TableCellEditor tce = new DefaultCellEditor(chk);
-//		tc.setCellEditor(tce);
-		
-		table.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		modeloTabla = new ModeloConColumnaEditable(columnas, 0);
+//		table = new JTable(new DefaultTableModel(
+//			new Object[][] {
+//				{DiasSemana.LUNES.name(), null, null, null, null, null},
+//				{DiasSemana.MARTES.name(), null, null, null, null, null},
+//				{DiasSemana.MIERCOLES.name(), null, null, null, null, null},
+//				{DiasSemana.JUEVES.name(), null, null, null, null, null},
+//				{DiasSemana.VIERNES.name(), null, null, null, null, null},
+//				{DiasSemana.SABADO.name(), null, null, null, null, null},
+//				{DiasSemana.DOMINGO.name(), null, null, null, null, null},
+//			},
+//			new String[] {
+//				"D\u00EDa", "Hora inicio", "Duraci\u00F3n", "Monitor", "Instalaci\u00F3n", "M\u00E1x. plazas"
+//			}
+//		) {
+//			boolean[] columnEditables = new boolean[] {
+//				false, false, false, true, false, false
+//			};
+//			public boolean isCellEditable(int row, int column) {
+//				return columnEditables[column];
+//			}
+//		});
+////		
+		crearTabla();
 
 		JScrollPane scrollPaneTabla = new JScrollPane(table);
 		panelPeriodica.add(scrollPaneTabla, BorderLayout.CENTER);
+	}
+
+	private void crearTabla() {
+		table = new JTable() {
+
+			private static final long serialVersionUID = 1L;
+
+			/*
+			 * @Override public Class getColumnClass(int column) { return
+			 * getValueAt(0, column).getClass(); }
+			 */
+			@Override
+			public Class getColumnClass(int column) {
+				if (column == 0)
+					return Boolean.class;
+				else
+					return Object.class;
+			}
+		};
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				selectedRow = table.getSelectedRow();
+				int clickedColumn = table.getSelectedColumn();
+				boolean seleccionado = (boolean) modeloTabla
+						.getValueAt(selectedRow, 0);
+				if (clickedColumn > 0)
+					modeloTabla.setValueAt(!seleccionado, selectedRow, 0);
+				table.repaint();
+			}
+		});
+
+		table.setAutoCreateRowSorter(true);
+		table.setModel(modeloTabla);
+		table.setBackground(Color.WHITE);
+		table.getColumnModel().getColumn(0).setMaxWidth(20);
+		table.setDefaultRenderer(Object.class,
+				new TableCellRendererPasarPagos());
+		modeloTabla.addRow(new Object[]{true, DiasSemana.LUNES.name(), new JSpinner(),
+				new JSpinner(), new JComboBox(), new JComboBox(), new JSpinner()});
+		
+		table.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
 	public void insertarActividad() {
