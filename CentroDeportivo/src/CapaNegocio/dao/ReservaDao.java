@@ -56,26 +56,7 @@ public class ReservaDao {
 		}
 		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
 	}
-
-	public DateTime getHoraEntrada() {
-		return horaEntrada;
-	}
-
-	public void setHoraEntrada(DateTime horaEntrada) {
-		this.horaEntrada = horaEntrada;
-	}
-
-	public DateTime getHoraSalida() {
-		return horaSalida;
-	}
-
-	public void setHoraSalida(DateTime horaSalida) {
-		this.horaSalida = horaSalida;
-	}
-
-	public ReservaDao() {
-	}
-
+	
 	public ReservaDao(TipoReserva socio, DateTime inicio, DateTime fin,
 			Long idInst, Long idPago, Long idUsu, Long idAct, Long idCurso)
 			throws ExcepcionReserva {
@@ -96,6 +77,25 @@ public class ReservaDao {
 			throw new ExcepcionReserva("Esta reserva dura demasiado");
 		}
 		// usuario = UsuarioDatos.obtenerUsuarioAPartirDeID(idUsu);
+	}
+
+	public DateTime getHoraEntrada() {
+		return horaEntrada;
+	}
+
+	public void setHoraEntrada(DateTime horaEntrada) {
+		this.horaEntrada = horaEntrada;
+	}
+
+	public DateTime getHoraSalida() {
+		return horaSalida;
+	}
+
+	public void setHoraSalida(DateTime horaSalida) {
+		this.horaSalida = horaSalida;
+	}
+
+	public ReservaDao() {
 	}
 
 	public Long getIdPago() {
