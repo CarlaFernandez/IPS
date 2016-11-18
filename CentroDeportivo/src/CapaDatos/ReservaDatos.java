@@ -31,7 +31,8 @@ import CapaNegocio.managers.ManagerFechas;
  * Created by Carla on 08/10/2016.
  */
 public class ReservaDatos {
-	public static void insertarReservaUsuario(ReservaDao reserva) throws ExcepcionReserva {
+	public static void insertarReservaUsuario(ReservaDao reserva)
+			throws ExcepcionReserva {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -42,8 +43,10 @@ public class ReservaDatos {
 			sb.append("estado, tipo, usuario_id, actividad_id, curso_id) ");
 			sb.append("values (?,?,?,?,?,?,?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setTimestamp(1, ManagerFechas.convertirATimestampSql(reserva.getInicio()));
-			ps.setTimestamp(2, ManagerFechas.convertirATimestampSql(reserva.getFin()));
+			ps.setTimestamp(1,
+					ManagerFechas.convertirATimestampSql(reserva.getInicio()));
+			ps.setTimestamp(2,
+					ManagerFechas.convertirATimestampSql(reserva.getFin()));
 			ps.setLong(3, reserva.getIdInst());
 			ps.setLong(4, reserva.getIdPago());
 			ps.setString(5, reserva.getEstado());
@@ -59,12 +62,15 @@ public class ReservaDatos {
 		}
 	}
 
-	public static void insertarReservaAdmin(ReservaDao reserva) throws ExcepcionReserva {
+	public static void insertarReservaAdmin(ReservaDao reserva)
+			throws ExcepcionReserva {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
-			List<ReservaDao> reservasConflicto = ManagerAdmin.verReservasActivasPorFechaEInstalacion(
-					reserva.getInicio().toDate(), reserva.getFin().toDate(), reserva.getIdInst());
+			List<ReservaDao> reservasConflicto = ManagerAdmin
+					.verReservasActivasPorFechaEInstalacion(
+							reserva.getInicio().toDate(),
+							reserva.getFin().toDate(), reserva.getIdInst());
 			// if (reservasConflicto.isEmpty()){
 			// // insertarReservaAdmin(reserva);
 			// }
@@ -74,9 +80,12 @@ public class ReservaDatos {
 			 */
 			if (!reservasConflicto.isEmpty()) {
 				int seleccion = JOptionPane.showOptionDialog(null,
-						"Conflicto con ya existente: " + reservasConflicto.get(0).toString(), "Conflicto horas",
-						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-						new Object[] { "No reservar", "Anular reserva previa" }, "No reservar");
+						"Conflicto con ya existente: "
+								+ reservasConflicto.get(0).toString(),
+						"Conflicto horas", JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null,
+						new Object[] { "No reservar", "Anular reserva previa" },
+						"No reservar");
 
 				// Seleccion ==0 => cancelar
 				// 1>>Anular previa, insertar esta y aviso a
@@ -97,10 +106,15 @@ public class ReservaDatos {
 							 * "\n HA SIDO ANULADA");
 							 */
 						} else {
-							System.out.println(">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
-							Usuario usuario = UsuarioDatos.ObtenerUsuario(r.getIdUsu());
-							System.out.println("El usuario: " + usuario.getNombre() + " " + usuario.getApellidos());
-							System.out.println("La reserva: " + r.toString() + "\n HA SIDO ANULADA");
+							System.out.println(
+									">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
+							Usuario usuario = UsuarioDatos
+									.ObtenerUsuario(r.getIdUsu());
+							System.out.println(
+									"El usuario: " + usuario.getNombre() + " "
+											+ usuario.getApellidos());
+							System.out.println("La reserva: " + r.toString()
+									+ "\n HA SIDO ANULADA");
 						}
 						ManagerAdmin.AnularReserva(r.getIdRes());
 					}
@@ -119,8 +133,10 @@ public class ReservaDatos {
 			sb.append("estado, tipo, usuario_id, actividad_id, curso_id) ");
 			sb.append("values (?,?,?,?,?,?,?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setTimestamp(1, ManagerFechas.convertirATimestampSql(reserva.getInicio()));
-			ps.setTimestamp(2, ManagerFechas.convertirATimestampSql(reserva.getFin()));
+			ps.setTimestamp(1,
+					ManagerFechas.convertirATimestampSql(reserva.getInicio()));
+			ps.setTimestamp(2,
+					ManagerFechas.convertirATimestampSql(reserva.getFin()));
 			ps.setLong(3, reserva.getIdInst());
 			if (reserva.getIdPago() != null)
 				ps.setLong(4, reserva.getIdPago());
@@ -148,33 +164,44 @@ public class ReservaDatos {
 		}
 	}
 
-	private static void comprobarReservaValidaUsuario(ReservaDao reserva) throws ExcepcionReserva {
+	private static void comprobarReservaValidaUsuario(ReservaDao reserva)
+			throws ExcepcionReserva {
 
 		// usuario de baja
 		if (comprobarUsuarioBaja(reserva.getIdUsu(), reserva.getInicio())) {
 			// reservas simultaneas
-			if (!UsuarioDatos.usuarioTieneReservaEnHoras(reserva.getIdUsu(), reserva.getInicio(), reserva.getFin())) {
+			if (!UsuarioDatos.usuarioTieneReservaEnHoras(reserva.getIdUsu(),
+					reserva.getInicio(), reserva.getFin())) {
 				// instalacion esta libre
-				if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
+				if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(),
+						reserva.getInicio(), reserva.getFin())) {
 
-					long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
-					long daysDiff = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-					long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+					long diff = reserva.getInicio().getMillis()
+							- new Date(System.currentTimeMillis()).getTime();
+					long daysDiff = TimeUnit.DAYS.convert(diff,
+							TimeUnit.MILLISECONDS);
+					long minutesDiff = TimeUnit.MINUTES.convert(diff,
+							TimeUnit.MILLISECONDS);
 
 					if (daysDiff > ReservaDao.DIAS_ANTELACION_RESERVA_MAXIMO) {
-						throw new ExcepcionReserva("Es demasiado pronto para realizar esta reserva");
+						throw new ExcepcionReserva(
+								"Es demasiado pronto para realizar esta reserva");
 					} else if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_SOCIO) {
-						throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
+						throw new ExcepcionReserva(
+								"Es demasiado tarde para realizar esta reserva");
 					}
 
 				} else {
-					throw new ExcepcionReserva("Esta instalacion ya esta reservada para esas fechas");
+					throw new ExcepcionReserva(
+							"Esta instalacion ya esta reservada para esas fechas");
 				}
 			} else {
-				throw new ExcepcionReserva("El usuario tiene otra actividad simultanea");
+				throw new ExcepcionReserva(
+						"El usuario tiene otra actividad simultanea");
 			}
 		} else {
-			throw new ExcepcionReserva("El usuario no puede reservar porque está dado de baja");
+			throw new ExcepcionReserva(
+					"El usuario no puede reservar porque está dado de baja");
 		}
 	}
 
@@ -183,24 +210,31 @@ public class ReservaDatos {
 		return baja == null || new DateTime(baja).isAfter(inicio);
 	}
 
-	private static void comprobarReservaValidaAdmin(ReservaDao reserva) throws ExcepcionReserva {
+	private static void comprobarReservaValidaAdmin(ReservaDao reserva)
+			throws ExcepcionReserva {
 		// TODO cambiar esta condicion si comprobamos que este disponible
 		// tambien en el caso de reserva de centro
 
-		if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(), reserva.getInicio(), reserva.getFin())) {
+		if (InstalacionDatos.estaLibreEnHoras(reserva.getIdInst(),
+				reserva.getInicio(), reserva.getFin())) {
 			if (reservaEnHoraEnPunto(reserva.getInicio())) {
-				long diff = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
-				long minutesDiff = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
+				long diff = reserva.getInicio().getMillis()
+						- new Date(System.currentTimeMillis()).getTime();
+				long minutesDiff = TimeUnit.MINUTES.convert(diff,
+						TimeUnit.MILLISECONDS);
 
 				if (minutesDiff < ReservaDao.MINUTOS_ANTELACION_RESERVA_MAXIMO_ADMIN) {
-					throw new ExcepcionReserva("Es demasiado tarde para realizar esta reserva");
+					throw new ExcepcionReserva(
+							"Es demasiado tarde para realizar esta reserva");
 				}
 			} else {
-				throw new ExcepcionReserva("La reserva ha de comenzar en la hora en punto");
+				throw new ExcepcionReserva(
+						"La reserva ha de comenzar en la hora en punto");
 			}
 
 		} else {
-			throw new ExcepcionReserva("Esta instalación ya esta reservada para esas fechas");
+			throw new ExcepcionReserva(
+					"Esta instalación ya esta reservada para esas fechas");
 		}
 	}
 
@@ -241,7 +275,8 @@ public class ReservaDatos {
 		ResultSet rs = null;
 		ReservaDao reserva = null;
 		try {
-			PreparedStatement ps = con.prepareStatement("select * from reserva where id = ?");
+			PreparedStatement ps = con
+					.prepareStatement("select * from reserva where id = ?");
 			ps.setLong(1, idReserva);
 			rs = ps.executeQuery();
 			reserva = new ReservaDao();
@@ -269,16 +304,21 @@ public class ReservaDatos {
 		return reserva;
 	}
 
-	public static void cancelarReservaComoSocio(ReservaDao reserva) throws ExcepcionReserva {
+	public static void cancelarReservaComoSocio(ReservaDao reserva)
+			throws ExcepcionReserva {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
-		long tiempo = reserva.getInicio().getMillis() - new Date(System.currentTimeMillis()).getTime();
-		long tiempoPermitido = TimeUnit.MINUTES.toMillis(ReservaDao.MINUTOS_CANCELACION_MAXIMO_SOCIO);
+		long tiempo = reserva.getInicio().getMillis()
+				- new Date(System.currentTimeMillis()).getTime();
+		long tiempoPermitido = TimeUnit.MINUTES
+				.toMillis(ReservaDao.MINUTOS_CANCELACION_MAXIMO_SOCIO);
 		if (tiempo < tiempoPermitido)
-			throw new ExcepcionReserva("Demasiado tarde para cancelar la reserva");
+			throw new ExcepcionReserva(
+					"Demasiado tarde para cancelar la reserva");
 		else {
 			try {
-				PreparedStatement ps = con.prepareStatement("update reserva set ESTADO='CANCELADA' where id = ?");
+				PreparedStatement ps = con.prepareStatement(
+						"update reserva set ESTADO='CANCELADA' where id = ?");
 				ps.setLong(1, reserva.getIdRes());
 				ps.executeUpdate();
 			} catch (SQLException e) {
@@ -294,11 +334,13 @@ public class ReservaDatos {
 		}
 	}
 
-	public static void cancelarReservaComoAdmin(ReservaDao reserva) throws ExcepcionReserva {
+	public static void cancelarReservaComoAdmin(ReservaDao reserva)
+			throws ExcepcionReserva {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
-			PreparedStatement ps = con.prepareStatement("update reserva set estado='ANULADA' where id = ?");
+			PreparedStatement ps = con.prepareStatement(
+					"update reserva set estado='ANULADA' where id = ?");
 			ps.setLong(1, reserva.getIdRes());
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -313,15 +355,19 @@ public class ReservaDatos {
 		}
 	}
 
-	public static double calcularDuracionEnMinutos(DateTime inicio, DateTime fin) {
+	public static double calcularDuracionEnMinutos(DateTime inicio,
+			DateTime fin) {
 		return Minutes.minutesBetween(inicio, fin).getMinutes();
 	}
 
-	public static double calcularImporteReserva(Long idInst, double duracionReserva) {
-		return InstalacionDatos.obtenerPrecioInstalacion(idInst) * duracionReserva;
+	public static double calcularImporteReserva(Long idInst,
+			double duracionReserva) {
+		return InstalacionDatos.obtenerPrecioInstalacion(idInst)
+				* duracionReserva;
 	}
 
-	public static List<ReservaDao> obtenerReservasPorFechaYUsuario(Date inicio, Date fin, Long idUser) {
+	public static List<ReservaDao> obtenerReservasPorFechaYUsuario(Date inicio,
+			Date fin, Long idUser) {
 		DateTime fecha1 = new DateTime(inicio);
 		DateTime fecha2 = new DateTime(fin);
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -371,7 +417,8 @@ public class ReservaDatos {
 
 	}
 
-	public static List<ReservaDao> obtenerReservasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
+	public static List<ReservaDao> obtenerReservasPorFechaEInstalacion(
+			Date inicio, Date fin, Long idInst) {
 		DateTime fecha1 = new DateTime(inicio);
 		DateTime fecha2 = new DateTime(fin);
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -422,7 +469,8 @@ public class ReservaDatos {
 
 	}
 
-	public static List<ReservaDao> obtenerReservasPorInstalacion(long instalacion) {
+	public static List<ReservaDao> obtenerReservasPorInstalacion(
+			long instalacion) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -469,12 +517,14 @@ public class ReservaDatos {
 
 	}
 
-	public static List<ReservaDao> obtenerReservasPorUsuarioEInstalacionSinPagar(long usuario) {
+	public static List<ReservaDao> obtenerReservasPorUsuarioEInstalacionSinPagar(
+			long usuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("SELECT * FROM reserva,pago where pago.id=reserva.pago_id and pago.estado=?");
+			sb.append(
+					"SELECT * FROM reserva,pago where pago.id=reserva.pago_id and pago.estado=?");
 			sb.append("and usuario_id = ? and reserva.estado='ACTIVA'");
 
 			PreparedStatement ps = con.prepareStatement(sb.toString());
@@ -583,7 +633,8 @@ public class ReservaDatos {
 		}
 	}
 
-	public static List<ReservaDao> obtenerReservaPorInstalacion(Long instalacion) {
+	public static List<ReservaDao> obtenerReservaPorInstalacion(
+			Long instalacion) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -628,7 +679,8 @@ public class ReservaDatos {
 		Connection con = creador.crearConexion();
 		ResultSet rs = null;
 		try {
-			PreparedStatement ps = con.prepareStatement("UPDATE RESERVA SET HORA_ENTRADA = ? WHERE ID = ?");
+			PreparedStatement ps = con.prepareStatement(
+					"UPDATE RESERVA SET HORA_ENTRADA = ? WHERE ID = ?");
 			ps.setTimestamp(1, hora);
 			ps.setLong(2, idReserva);
 			rs = ps.executeQuery();
@@ -649,7 +701,8 @@ public class ReservaDatos {
 		Connection con = creador.crearConexion();
 		ResultSet rs = null;
 		try {
-			PreparedStatement ps = con.prepareStatement("UPDATE RESERVA SET HORA_SALIDA = ? WHERE ID = ?");
+			PreparedStatement ps = con.prepareStatement(
+					"UPDATE RESERVA SET HORA_SALIDA = ? WHERE ID = ?");
 			ps.setTimestamp(1, hora);
 			ps.setLong(2, idReserva);
 			rs = ps.executeQuery();
@@ -664,7 +717,8 @@ public class ReservaDatos {
 		Connection con = creador.crearConexion();
 		try {
 			PreparedStatement ps = con
-					.prepareStatement("update reserva set ESTADO='" + EstadoReserva.ANULADA + "' where id = ?");
+					.prepareStatement("update reserva set ESTADO='"
+							+ EstadoReserva.ANULADA + "' where id = ?");
 			ps.setLong(1, idResConflict);
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -680,7 +734,8 @@ public class ReservaDatos {
 		}
 	}
 
-	public static void actualizarHoraEntrada(ReservaDao reserva) throws ExcepcionReserva {
+	public static void actualizarHoraEntrada(ReservaDao reserva)
+			throws ExcepcionReserva {
 		Timestamp horaEntrada = null;
 		if (reserva.getHoraEntrada() != null)
 			horaEntrada = new Timestamp(reserva.getHoraEntrada().getMillis());
@@ -690,7 +745,8 @@ public class ReservaDatos {
 		Connection con = creador.crearConexion();
 		PreparedStatement ps = null;
 		try {
-			ps = con.prepareStatement("update reserva set hora_entrada = ? where id = ? ");
+			ps = con.prepareStatement(
+					"update reserva set hora_entrada = ? where id = ? ");
 			ps.setTimestamp(1, horaEntrada);
 			ps.setLong(2, reserva.getIdRes());
 			ps.executeUpdate();
@@ -708,7 +764,8 @@ public class ReservaDatos {
 		}
 	}
 
-	public static void actualizarHoraSalida(ReservaDao reserva) throws ExcepcionReserva {
+	public static void actualizarHoraSalida(ReservaDao reserva)
+			throws ExcepcionReserva {
 		Timestamp horaSalida = null;
 		if (reserva.getHoraSalida() != null)
 			horaSalida = new Timestamp(reserva.getHoraSalida().getMillis());
@@ -718,7 +775,8 @@ public class ReservaDatos {
 		Connection con = creador.crearConexion();
 		PreparedStatement ps = null;
 		try {
-			ps = con.prepareStatement("update reserva set hora_salida = ? where id = ? ");
+			ps = con.prepareStatement(
+					"update reserva set hora_salida = ? where id = ? ");
 			ps.setTimestamp(1, horaSalida);
 			ps.setLong(2, reserva.getIdRes());
 			ps.executeUpdate();
@@ -736,7 +794,8 @@ public class ReservaDatos {
 		}
 	}
 
-	public static List<ReservaDao> obtenerReservasActivasPorFechaEInstalacion(Date inicio, Date fin, Long idInst) {
+	public static List<ReservaDao> obtenerReservasActivasPorFechaEInstalacion(
+			Date inicio, Date fin, Long idInst) {
 		DateTime fecha1 = new DateTime(inicio);
 		DateTime fecha2 = new DateTime(fin);
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -782,7 +841,8 @@ public class ReservaDatos {
 
 	}
 
-	public static List<ReservaDao> obtenerMisReservasPorFecha(Date inicio, Date fin, Long user) {
+	public static List<ReservaDao> obtenerMisReservasPorFecha(Date inicio,
+			Date fin, Long user) {
 		DateTime fecha1 = new DateTime(inicio);
 		DateTime fecha2 = new DateTime(fin);
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -827,25 +887,30 @@ public class ReservaDatos {
 
 	}
 
-	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime inicio, DateTime fin, Long idInst,
-			boolean todoElDia) throws ExcepcionReserva {
+	public static void insertarReservaCentroSemanal(DiasSemana dia,
+			DateTime inicio, DateTime fin, Long idInst, boolean todoElDia)
+			throws ExcepcionReserva {
 		if (inicio.isAfter(fin.getMillis())) {
-			throw new ExcepcionReserva("La fecha de fin no puede ser antes que la de inicio.");
+			throw new ExcepcionReserva(
+					"La fecha de fin no puede ser antes que la de inicio.");
 		}
 		int diasEntre = Days.daysBetween(inicio, fin).getDays();
 
-		int duracion = Hours.hoursBetween(inicio, fin.minusDays(diasEntre)).getHours();
+		int duracion = Hours.hoursBetween(inicio, fin.minusDays(diasEntre))
+				.getHours();
 		DateTime current = inicio;
 
 		while (!current.plusHours(duracion).equals(fin.plusDays(1))) {
 			if (current.getDayOfWeek() == dia.ordinal() + 1) {
 				ReservaDao reserva = null;
 				if (todoElDia) {
-					reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion).plusDays(1),
-							idInst, null, null, null, null);
+					reserva = new ReservaDao(TipoReserva.CENTRO, current,
+							current.plusHours(duracion).plusDays(1), idInst,
+							null, null, null, null);
 				} else {
-					reserva = new ReservaDao(TipoReserva.CENTRO, current, current.plusHours(duracion), idInst, null,
-							null, null, null);
+					reserva = new ReservaDao(TipoReserva.CENTRO, current,
+							current.plusHours(duracion), idInst, null, null,
+							null, null);
 				}
 				insertarReservaAdmin(reserva);
 			}

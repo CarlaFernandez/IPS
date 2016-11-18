@@ -9,7 +9,7 @@ import org.joda.time.DateTime;
 
 import CapaNegocio.dao.TipoReserva;
 
-public class TableCellRendererPasarPagos extends DefaultTableCellRenderer {
+public class TableCellRendererPasarPagosSocios extends DefaultTableCellRenderer {
 
 	/**
 	 * 

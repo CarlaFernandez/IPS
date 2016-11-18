@@ -109,7 +109,8 @@ public class UsuarioDatos extends GeneradorIDRandom {
 
 	}
 
-	public static boolean usuarioTieneReservaEnHoras(Long idUsu, DateTime inicio, DateTime fin) {
+	public static boolean usuarioTieneReservaEnHoras(Long idUsu,
+			DateTime inicio, DateTime fin) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -209,14 +210,14 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
-	public static void usuarioNoPresentadoActividad(Long idUsu, Long idActividad) {
+
+	public static void usuarioNoPresentadoActividad(Long idUsu,
+			Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE apuntado_actividad "
-					+ "set asistido = ? "
+			sb.append("UPDATE apuntado_actividad " + "set asistido = ? "
 					+ "where usuario_id=? and actividad_id=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setBoolean(1, false);
@@ -224,7 +225,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setLong(3, idActividad);
 			ps.execute();
 		} catch (SQLException e) {
-			System.err.println("no existe usuario con id: "+idUsu);
+			System.err.println("no existe usuario con id: " + idUsu);
 		}
 	}
 
@@ -282,23 +283,21 @@ public class UsuarioDatos extends GeneradorIDRandom {
 
 			// no se comprueba el año, se sobreentiende que una baja se da
 			// con poca antelacion
-			return fechaBaja.getMonthOfYear() == today.plusMonths(1).getMonthOfYear();
+			return fechaBaja.getMonthOfYear() == today.plusMonths(1)
+					.getMonthOfYear();
 		} else
 			return false;
 	}
-	
-	
-	
-	
-	
-	public static List<Usuario> buscarUsuariosQueNoEstenEnActividad(Long idActividad, String campo) {
+
+	public static List<Usuario> buscarUsuariosQueNoEstenEnActividad(
+			Long idActividad, String campo) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("select * from usuario u "
-					+ "where u.ID not in "
-					+ "(select usuario_id from APUNTADO_ACTIVIDAD where actividad_id=?) ORDER BY "+campo);
+			sb.append("select * from usuario u " + "where u.ID not in "
+					+ "(select usuario_id from APUNTADO_ACTIVIDAD where actividad_id=?) ORDER BY "
+					+ campo);
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idActividad);
 			ResultSet rs = ps.executeQuery();
@@ -330,7 +329,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
+
 	public static int anadirUsuarioActividad(Long idActividad, Long idUsuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -344,14 +343,18 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ResultSet rs = ps.executeQuery();
 			int contador = -1;
 			while (rs.next()) {
-				//SI EXISTE
-				if(rs.getBoolean("ASISTIDO")==false)//esta en la actividad pero con el chk a false
+				// SI EXISTE
+				if (rs.getBoolean("ASISTIDO") == false)// esta en la actividad
+														// pero con el chk a
+														// false
 					contador = 1;
-				if(rs.getBoolean("ASISTIDO")==true)//esta en la actividad con chk a true
+				if (rs.getBoolean("ASISTIDO") == true)// esta en la actividad
+														// con chk a true
 					contador = 0;
-				//SI NO EXISTE
+				// SI NO EXISTE
 				else
-					contador = -1;//no esta en la tabla con la actividad asociada
+					contador = -1;// no esta en la tabla con la actividad
+									// asociada
 			}
 			return contador;
 		} catch (SQLException e) {
@@ -360,8 +363,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return 0;
 		}
 	}
-	
-	
+
 	public static void insertSocioActividad(Long idUsu, Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -376,10 +378,12 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setBoolean(3, false);
 			ps.execute();
 		} catch (SQLException e) {
-			System.err.println("no existe usuario con id: "+idUsu);
+			System.err.println("no existe usuario con id: " + idUsu);
 		}
 	}
-	public static boolean getAsistenciaSocioActividad(Long idUsu, Long idActividad){
+
+	public static boolean getAsistenciaSocioActividad(Long idUsu,
+			Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -403,14 +407,14 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return true;
 		}
 	}
-	
-	public static void updateSocioActividad(Long idUsu, Long idActividad, boolean asistido) {
+
+	public static void updateSocioActividad(Long idUsu, Long idActividad,
+			boolean asistido) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE apuntado_actividad "
-					+ "set asistido = ? "
+			sb.append("UPDATE apuntado_actividad " + "set asistido = ? "
 					+ "where usuario_id=? and actividad_id=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setBoolean(1, asistido);
@@ -418,21 +422,21 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setLong(3, idActividad);
 			ps.execute();
 		} catch (SQLException e) {
-			System.err.println("no existe usuario con id: "+idUsu);
+			System.err.println("no existe usuario con id: " + idUsu);
 		}
 	}
-	
-	public static void guardarCambiosActividad(Long idActividad, Object[][] cambios, int numFilas){
-//		Long idUsu, Long idActividad, boolean asistido;
+
+	public static void guardarCambiosActividad(Long idActividad,
+			Object[][] cambios, int numFilas) {
+		// Long idUsu, Long idActividad, boolean asistido;
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE apuntado_actividad "
-					+ "set asistido = ? "
+			sb.append("UPDATE apuntado_actividad " + "set asistido = ? "
 					+ "where usuario_id=? and actividad_id=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			for(int i=0;i<numFilas;i++){
+			for (int i = 0; i < numFilas; i++) {
 				ps.setBoolean(1, (Boolean) cambios[i][1]);
 				ps.setLong(2, (Long) cambios[i][0]);
 				ps.setLong(3, idActividad);
@@ -441,9 +445,9 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		} catch (SQLException e) {
 			System.err.println("Error en guardar cambios");
 		}
-		
+
 	}
-	
+
 	public static List<Usuario> bajasSociosEnActividad(Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -486,8 +490,52 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
-	
-	
-	
+
+	public static List<Usuario> ObtenerUsuariosConPagosPendientes() {
+		DateTime fechaActual = new DateTime();
+		DateTime mesAnterior = fechaActual.minusMonths(1).withDayOfMonth(20);
+		DateTime mesActual = fechaActual.withDayOfMonth(19);
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			String sql = "select distinct u.id, u.dni, u. nombre, u.apellidos, "
+					+ "u.direccion, u.email, u.ciudad, u.cuenta_bancaria, "
+					+ "u.socio, u.fecha_baja from pago as p, usuario as u, reserva as r "
+					+ "where r.pago_id = p.id and r.usuario_id = u.id and p.estado = 'PENDIENTE' and "
+					+ "r.hora_inicio >= ? and r.hora_inicio <= ?";
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setTimestamp(1,
+					ManagerFechas.convertirATimestampSql(mesAnterior));
+			ps.setTimestamp(2, ManagerFechas.convertirATimestampSql(mesActual));
+			ResultSet rs = ps.executeQuery();
+			Usuario usuario = new Usuario();
+			List<Usuario> usuarios = new ArrayList<>();
+			while (rs.next()) {
+				usuario = new Usuario();
+				usuario.setIdUsu(rs.getLong("ID"));
+				usuario.setDNI(rs.getString("DNI"));
+				usuario.setNombre(rs.getString("NOMBRE"));
+				usuario.setApellidos(rs.getString("APELLIDOS"));
+				usuario.setDireccion(rs.getString("DIRECCION"));
+				usuario.setEmail(rs.getString("EMAIL"));
+				usuario.setCiudad(rs.getString("CIUDAD"));
+				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
+				usuario.setSocio(rs.getBoolean("SOCIO"));
+				if (rs.getDate("FECHA_BAJA") != null) {
+					usuario.setBaja(rs.getDate("FECHA_BAJA"));
+				} else {
+					usuario.setBaja(null);
+				}
+				usuarios.add(usuario);
+			}
+			con.close();
+
+			return usuarios;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }
