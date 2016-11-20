@@ -6,13 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
 
 import CapaNegocio.dao.Actividad;
+import CapaNegocio.dao.ActividadHoras;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
+import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerFechas;
 
@@ -219,4 +222,117 @@ public class ActividadesDatos {
 		}
 
 	}
+
+	public static Actividad obtenerActividad(Long idActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from actividad where id= ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ResultSet rs = ps.executeQuery();
+			Actividad actividad = new Actividad();
+			while (rs.next()) {
+				actividad.setCodigo(rs.getLong("ID"));
+				actividad.setNombre(rs.getString("NOMBRE"));
+				actividad.setDescripcion(rs.getString("DESCRIPCION"));
+			}
+			con.close();
+
+			return actividad;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static List<ActividadHoras> verMisActividadesPorFecha(Date inicio, Date fin, Long user) {
+		DateTime fecha1 = new DateTime(inicio);
+		DateTime fecha2 = new DateTime(fin);
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from horas_actividad , apuntado_actividad ");
+			sb.append("where id=horas_actividad_id ");
+			sb.append("and fecha_actividad_inicio >= ? ");
+			sb.append("and fecha_actividad_fin <= ? ");
+			sb.append("and usuario_id = ?");
+			sb.append("order by fecha_actividad_inicio");
+
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setTimestamp(1, new Timestamp(fecha1.getMillis()));
+			ps.setTimestamp(2, new Timestamp(fecha2.getMillis()));
+			ps.setLong(3, user);
+			ResultSet rs = ps.executeQuery();
+			List<ActividadHoras> clases = new ArrayList<>();
+			while (rs.next()) {
+				ActividadHoras clase = new ActividadHoras();
+				clase.setId(rs.getLong("ID"));
+				clase.setIdActividad(rs.getLong("actividad_id"));
+				clase.setIdMonitor(rs.getLong("monitor_id"));
+				clase.setIdReserva(rs.getLong("reserva_id"));
+				clase.setFechaInicio(new DateTime(rs.getTimestamp("fecha_actividad_inicio")));
+				clase.setFechaFin(new DateTime(rs.getTimestamp("fecha_actividad_fin")));
+				clase.setPlazasTotales(rs.getInt("plazas_totales"));
+				clase.setPlazasOcupadas(rs.getInt("plazas_ocupadas"));
+				clases.add(clase);
+			}
+			con.close();
+			return clases;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static void cancelarClase(ActividadHoras clase, Long user) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			PreparedStatement ps = con.prepareStatement(
+					"update apuntado_actividad set cancelado=true where horas_actividad_id = ? and usuario_id = ?");
+			ps.setLong(1, clase.getId());
+			ps.setLong(2, user);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static boolean isMiApuntadoActividadCancelada(ActividadHoras actividadHoras, Long user) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from apuntado_actividad ");
+			sb.append("where horas_actividad_id = ?");
+			sb.append("and usuario_id = ?");
+
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, actividadHoras.getId());
+			ps.setLong(2, user);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				if (rs.getBoolean("cancelado"))
+					return true;
+			}
+			con.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

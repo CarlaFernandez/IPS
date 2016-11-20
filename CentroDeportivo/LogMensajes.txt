@@ -3,3 +3,4 @@ MensajeAUsuario-Usuario=12350-Fecha=Sat Nov 12 20:49:48 CET 2016-Mensaje=asdasd
 MensajeAUsuario-Usuario=12350-Fecha=Sat Nov 12 20:50:03 CET 2016-Mensaje=asdasd
 MensajeAUsuario-Usuario=12350-Fecha=Sat Nov 12 20:58:43 CET 2016-Mensaje=asdasd
 MensajeAUsuario-Usuario=12345-Fecha=Sat Nov 12 21:02:12 CET 2016-Mensaje=Su reserva de la instalacion Tenis1 para la fecha 2016-11-18 19:0:0 ha sido cancelada, disculpe las molestias.
+MensajeAUsuario-Usuario=12345-Fecha=Sun Nov 20 22:48:54 CET 2016-Mensaje=Su clase de la actividad spinning para la fecha 2016-11-19T12:00:00.000+01:00 ha sido cancelada de acuerdo a su petición.

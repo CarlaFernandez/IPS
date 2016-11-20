@@ -2,6 +2,8 @@ package salida;
 
 import java.util.Date;
 
+import CapaDatos.UsuarioDatos;
+import CapaNegocio.dao.ActividadHoras;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.Usuario;
 
@@ -28,5 +30,10 @@ public class Salida {
 		String cadena = "MensajeAUsuario-Usuario=" + usuario.getIdUsu() + "-Fecha=" + new Date() + "-Mensaje="
 				+ mensaje;
 		logMensajes.agregar(cadena);
+	}
+
+	public void mensajeUsuario(Long user, String mensaje) {
+		Usuario usuario = UsuarioDatos.ObtenerUsuario(user);
+		mensajeUsuario(usuario, mensaje);
 	}
 }
