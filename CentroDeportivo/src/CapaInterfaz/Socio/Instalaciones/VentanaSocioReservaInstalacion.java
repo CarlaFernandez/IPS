@@ -59,8 +59,8 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 	public VentanaSocioReservaInstalacion(Long user) {
 		this.user = user;
 		this.bajaProximoMes = ManagerUsuario.esBajaParaElMesQueViene(user);
-		this.bajaEsteMes = ManagerUsuario.esBajaParaEsteMes(user);
-		setTitle("Admin -> Reserva Socio");
+		//this.bajaEsteMes = ManagerUsuario.esBajaParaEsteMes(user);
+		setTitle("Socio -> Reserva Socio");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
 		setAlwaysOnTop(true);
 		setResizable(false);
@@ -248,9 +248,9 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 			JOptionPane.showMessageDialog(this,
 					"Está dado de baja para el próximo mes." + "Por favor, seleccione una fecha de este mes.");
 		}
-		// si es baja para este mes y selecciona pagar por banco
-		else if (bajaEsteMes && tipoPago.equals(TipoPago.CUOTA)) {
-			JOptionPane.showMessageDialog(this, "Está dado de baja para este mes." + "Ha de pagar en efectivo.");
+		// si es baja para el mes que viene y selecciona pagar por banco
+		else if (bajaProximoMes && tipoPago.equals(TipoPago.CUOTA)) {
+			JOptionPane.showMessageDialog(this, "Está dado de baja para el próximo mes." + "Ha de pagar en efectivo.");
 		} else {
 			try {
 				ManagerAdmin.crearReservaSocio(dateTimeInicio, dateTimeFin, idInst, user, tipoPago);

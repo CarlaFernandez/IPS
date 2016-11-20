@@ -3,6 +3,8 @@ package CapaInterfaz.Socio;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -10,14 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-import CapaInterfaz.Socio.Instalaciones.VentanaApuntarseActividad;
 import CapaInterfaz.Socio.Instalaciones.VentanaSocioInstalaciones;
-
-import javax.swing.border.BevelBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import CapaInterfaz.Socio.actividades.VentanaSocioInscribirseActividades;
 
 public class VentanaSocio extends JFrame {
 	public VentanaSocio(Long user) {
@@ -45,10 +44,10 @@ public class VentanaSocio extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				VentanaApuntarseActividad vaas = new VentanaApuntarseActividad(
+				VentanaSocioInscribirseActividades vaas = new VentanaSocioInscribirseActividades(
 						user);
 				vaas.show();
-				if (vaas.modeloTabla.getRowCount() == 0) {
+				if (vaas.modeloTablaActividades.getRowCount() == 0) {
 					JOptionPane.showMessageDialog(null,
 							"No hay actividades disponibles para apntarse.",
 							"No hay actividades disponibles",

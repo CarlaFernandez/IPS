@@ -26,6 +26,7 @@ import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerFechas;
+import salida.Salida;
 
 /**
  * Created by Carla on 08/10/2016.
@@ -106,15 +107,28 @@ public class ReservaDatos {
 							 * "\n HA SIDO ANULADA");
 							 */
 						} else {
-							System.out.println(
-									">>>>>>>>Avisando a usuario via SMS/Email!!!!!");
+
 							Usuario usuario = UsuarioDatos
 									.ObtenerUsuario(r.getIdUsu());
-							System.out.println(
-									"El usuario: " + usuario.getNombre() + " "
-											+ usuario.getApellidos());
-							System.out.println("La reserva: " + r.toString()
-									+ "\n HA SIDO ANULADA");
+							// System.out.println(">>>>>>>>Avisando a usuario
+							// via SMS/Email!!!!!");
+							// System.out.println("El usuario: " +
+							// usuario.getNombre() + " " +
+							// usuario.getApellidos());
+							// System.out.println("La reserva: " + r.toString()
+							// + "\n HA SIDO ANULADA");
+							String cadena = "";
+							cadena += "Su reserva de la instalacion "
+									+ InstalacionDatos
+											.ObtenerInstalacion(
+													reserva.getIdInst())
+											.getCodigo()
+									+ " para la fecha "
+									+ ManagerFechas
+											.formatearFecha(reserva.getInicio())
+									+ " ha sido cancelada, disculpe las molestias.";
+							new Salida().mensajeUsuario(usuario, cadena);
+
 						}
 						ManagerAdmin.AnularReserva(r.getIdRes());
 					}
@@ -262,6 +276,28 @@ public class ReservaDatos {
 			} while (result != 0);
 			con.close();
 			return id;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static Long obtenerUltimoIDReserva() {
+		// TODO eliminar duplicacion de codigo al obtener nuevos ids
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		long result = 0;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select id from reserva ");
+			sb.append("order by id desc");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			result = rs.getLong("id");
+			con.close();
+			return result;
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();

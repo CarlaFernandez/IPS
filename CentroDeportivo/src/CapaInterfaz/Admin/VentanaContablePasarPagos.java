@@ -204,21 +204,10 @@ public class VentanaContablePasarPagos extends JFrame {
 						"Enviar pagos a la cuota mensual", botonDialogo);
 				if (botonDialogo == JOptionPane.YES_OPTION) {
 					List<Long> idSocios = getSociosSeleccionados();
-					Long idPagoCobrado = Contable.incrementarPagos(idSocios);
-					if (idPagoCobrado == null)
-						JOptionPane.showMessageDialog(null,
-								"Los pagos se han enviado correctamente",
-								"Exito", JOptionPane.INFORMATION_MESSAGE);
-					else {
-						Long idSocio = PagoDatos
-								.obtenerIDSocioDePago(idPagoCobrado);
-						JOptionPane.showMessageDialog(null,
-								"El pago con el id: " + idPagoCobrado
-										+ " perteneciente al socio con id: "
-										+ idSocio
-										+ " ya está cobrado.\nSeleccione los pagos sin cobrar y vuelva a intentarlo",
-								"Error", JOptionPane.INFORMATION_MESSAGE);
-					}
+					Contable.incrementarPagos(idSocios);
+					JOptionPane.showMessageDialog(null,
+							"Los pagos se han enviado correctamente", "Exito",
+							JOptionPane.INFORMATION_MESSAGE);
 					getPagosSocio((Long) table.getValueAt(selectedRow, 1));
 				}
 				return;

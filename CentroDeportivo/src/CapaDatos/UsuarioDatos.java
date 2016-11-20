@@ -229,7 +229,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		}
 	}
 
-	public static boolean esBajaParaEsteMes(Long idUsuario) {
+	/*public static boolean esBajaParaEsteMes(Long idUsuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		DateTime fechaBaja = null;
@@ -255,7 +255,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return ManagerFechas.fechasEstanEnMismoMes(fechaBaja, today);
 		} else
 			return false;
-	}
+	}*/
 
 	public static boolean esBajaParaElMesQueViene(Long idUsuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();

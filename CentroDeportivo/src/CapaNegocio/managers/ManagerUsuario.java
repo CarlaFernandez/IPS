@@ -39,9 +39,9 @@ public class ManagerUsuario {
 		return ReservaDatos.obtenerReservaPorInstalacion(instalacion);
 	}
 	
-	public static boolean esBajaParaEsteMes(Long idUsuario){
+	/*public static boolean esBajaParaEsteMes(Long idUsuario){
 		return UsuarioDatos.esBajaParaEsteMes(idUsuario);
-	}
+	}*/
 	
 	public static boolean esBajaParaElMesQueViene(Long idUsuario){
 		return UsuarioDatos.esBajaParaElMesQueViene(idUsuario);

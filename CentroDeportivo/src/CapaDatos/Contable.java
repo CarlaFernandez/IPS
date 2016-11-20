@@ -37,7 +37,7 @@ public class Contable {
 
 	}
 
-	public static Long incrementarPagos(List<Long> idSocios) {
+	public static void incrementarPagos(List<Long> idSocios) {
 		List<Map<String, Object>> pagos = null;
 		List<Long> idPagos = new ArrayList<>();
 		for (long id : idSocios) {
@@ -47,14 +47,9 @@ public class Contable {
 			}
 		}
 		for (long id : idPagos) {
-			if (!comprobarPagoPendiente(id))
-				return id;
+			if (comprobarPagoPendiente(id))
+				cobrarPagosCuota(id);
 		}
-
-		for (long id : idPagos) {
-			cobrarPagosCuota(id);
-		}
-		return null;
 	}
 
 	private static boolean comprobarPagoPendiente(Long idPago) {

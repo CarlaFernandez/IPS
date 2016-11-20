@@ -7,3 +7,16 @@ Titulo secundario
 Texto
   EmptyBorder arriba5 abajo5
   Wide Latin 9 Bold
+
+
+
+
+Añadir un boolean cancelada a actividades.
+Añadir tabla "HorasActividadad" - IDActividad IDMonitor Hora Instalacion cancelada?
+-Actividad cancelada -> HorasActividad Canceladas -> ReservasInstalacion Canceladas
+
+
+Correcciones Raul Sprint2
+Imprimir recibo con detalles.
+Guardar log con mensajes/bajas/etc...
+Motivo de la anulacion accesible

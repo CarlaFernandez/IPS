@@ -7,9 +7,11 @@ import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 
+import CapaDatos.ActividadesDatos;
 import CapaDatos.InstalacionDatos;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
+import CapaDatos.UsuarioDatos;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoPago;
 import CapaNegocio.TipoPago;
@@ -17,7 +19,9 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
+import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
+import salida.Salida;
 
 /**
  * Created by Carla on 08/10/2016.
@@ -61,13 +65,14 @@ public class ManagerAdmin {
 
 	public static void crearPagoEfectivo(Long idReserva) {
 		ReservaDao reserva = ReservaDatos.obtenerReservaPorId(idReserva);
+		Usuario usuario = UsuarioDatos.ObtenerUsuario(reserva.getIdUsu());
 		Pago pago = PagoDatos.obtenerPago(reserva.getIdPago());
 		if (pago.getEstado().equals(EstadoPago.COBRADO.name())) {
 			JOptionPane.showMessageDialog(null, "Reserva ya estaba cobrada");
 			return;
 		}
 		PagoDatos.CobrarPago(pago.getId());
-		System.out.println("Imprimiendo recibo....");
+		new Salida().reciboReserva(reserva,usuario);
 	}
 
 	public static void AnularReserva(Long idResConflict) {
@@ -85,5 +90,12 @@ public class ManagerAdmin {
 	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, boolean todoElDia) throws ExcepcionReserva {
 		ReservaDatos.insertarReservaCentroSemanal(dia, dateTimeInicio, dateTimeFin, idInst, todoElDia);
 
+	}
+
+	public static void crearReservaActividad(DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, 
+			Long idMonitor, String nombreAct, String descripcion, int plazasMax) {
+		ActividadesDatos.crearActividad(dateTimeInicio, dateTimeFin, idInst,
+				idMonitor, nombreAct, descripcion, plazasMax);
+		
 	}
 }
