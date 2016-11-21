@@ -10,7 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
 
+import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Actividad;
 import CapaNegocio.dao.ActividadHoras;
 import CapaNegocio.dao.ReservaDao;
@@ -164,64 +167,6 @@ public class ActividadesDatos {
 		}
 	}
 
-	public static void crearActividad(DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, Long idMonitor,
-			String nombreAct, String descripcion, int plazasMax) {
-		CreadorConexionBBDD creador = new CreadorConexionBBDD();
-		Connection con = creador.crearConexion();
-		PreparedStatement ps = null;
-		try {
-			StringBuilder sb = new StringBuilder();
-			sb.append("insert into actividad ");
-			sb.append("(nombre, descripcion) ");
-			sb.append("values (?, ?)");
-			ps = con.prepareStatement(sb.toString());
-			ps.setString(1, nombreAct);
-			ps.setString(2, descripcion);
-			ps.execute();
-			ps.close();
-
-			// quedamos que el id de actividad quedaba null igualmente
-			ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, dateTimeInicio, dateTimeFin, idInst, null, null,
-					null, null);
-			ReservaDatos.insertarReservaAdmin(reserva);
-			Long idReserva = ReservaDatos.obtenerUltimoIDReserva();
-			Long idActividad = obtenerUltimoIDActividad();
-
-			sb = new StringBuilder();
-			sb.append("insert into horas_actividad ");
-			sb.append("(actividad_id, monitor_id, reserva_id, ");
-			sb.append("fecha_actividad_inicio, fecha_actividad_fin, ");
-			sb.append("plazas_totales, plazas_ocupadas) ");
-			sb.append("values (?, ?, ?, ?, ?, ?, ?)");
-			ps = con.prepareStatement(sb.toString());
-			ps.setLong(1, idActividad);
-			ps.setLong(2, idMonitor);
-			ps.setLong(3, idReserva);
-			ps.setTimestamp(4, ManagerFechas.convertirATimestampSql(dateTimeInicio));
-			ps.setTimestamp(5, ManagerFechas.convertirATimestampSql(dateTimeFin));
-			ps.setInt(6, plazasMax);
-			ps.setInt(7, 0);
-			ps.execute();
-
-			con.close();
-
-		} catch (SQLException e) {
-			System.err.println(e.getSQLState() + " " + e.getMessage());
-			e.printStackTrace();
-		} catch (ExcepcionReserva e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				ps.close();
-				con.close();
-			} catch (SQLException e) {
-				System.err.println(e.getSQLState() + " " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-	}
 
 	public static Actividad obtenerActividad(Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -333,6 +278,124 @@ public class ActividadesDatos {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+
+	public static void crearActividad(String nombreAct, String descripcion) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("insert into actividad ");
+			sb.append("(nombre, descripcion) ");
+			sb.append("values (?, ?)");
+			ps = con.prepareStatement(sb.toString());
+			ps.setString(1, nombreAct);
+			ps.setString(2, descripcion);
+			ps.execute();
+			ps.close();
+			con.close();
+
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
+	public static void crearReservaActividad(DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, Long idMonitor,
+			int plazasMax) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		try {
+			// quedamos que el id de actividad quedaba null igualmente
+			ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO, dateTimeInicio, dateTimeFin, idInst, null, null,
+					null, null);
+			ReservaDatos.insertarReservaAdmin(reserva);
+			Long idReserva = ReservaDatos.obtenerUltimoIDReserva();
+			Long idActividad = obtenerUltimoIDActividad();
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("insert into horas_actividad ");
+			sb.append("(actividad_id, monitor_id, reserva_id, ");
+			sb.append("fecha_actividad_inicio, fecha_actividad_fin, ");
+			sb.append("plazas_totales, plazas_ocupadas) ");
+			sb.append("values (?, ?, ?, ?, ?, ?, ?)");
+			ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ps.setLong(2, idMonitor);
+			ps.setLong(3, idReserva);
+			ps.setTimestamp(4, ManagerFechas.convertirATimestampSql(dateTimeInicio));
+			ps.setTimestamp(5, ManagerFechas.convertirATimestampSql(dateTimeFin));
+			ps.setInt(6, plazasMax);
+			ps.setInt(7, 0);
+			ps.execute();
+
+			con.close();
+
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} catch (ExcepcionReserva e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public static void crearReservaActividadSemanal(DiasSemana dia, DateTime inicio, DateTime fin, Long idInst,
+			Long idMonitor, int plazasMax, boolean todoElDia) throws ExcepcionReserva {
+		
+		if (inicio.isAfter(fin.getMillis())) {
+			throw new ExcepcionReserva("La fecha de fin no puede ser antes que la de inicio.");
+		}
+		DateTime inicioPuntual = inicio;
+		
+		while (inicioPuntual.dayOfWeek().get() != dia.ordinal() + 1){
+			inicioPuntual = inicioPuntual.plusDays(1);
+		}
+		
+		int diasEntre = Days.daysBetween(inicioPuntual, fin).getDays();
+		DateTime finPuntual = fin.minusDays(diasEntre);
+		
+		if (todoElDia){
+			inicioPuntual = inicioPuntual.withHourOfDay(0);
+			inicioPuntual = inicioPuntual.withMinuteOfHour(0);
+			inicioPuntual = inicioPuntual.withSecondOfMinute(0);
+			inicioPuntual = inicioPuntual.withMillisOfSecond(0);
+			
+			finPuntual = finPuntual.plusDays(1);
+			finPuntual = finPuntual.withHourOfDay(0);
+			finPuntual = finPuntual.withMinuteOfHour(0);
+			finPuntual = finPuntual.withSecondOfMinute(0);
+			finPuntual = finPuntual.withMillisOfSecond(0);
+		}
+
+		while(diasEntre >= 0){
+			crearReservaActividad(inicioPuntual, finPuntual, idInst, idMonitor, plazasMax);
+			inicioPuntual = inicioPuntual.plusDays(7);
+			finPuntual = finPuntual.plusDays(7);
+			diasEntre = Days.daysBetween(inicioPuntual, fin).getDays();
+		}
+
 	}
 
 }

@@ -93,9 +93,19 @@ public class ManagerAdmin {
 	}
 
 	public static void crearReservaActividad(DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, 
-			Long idMonitor, String nombreAct, String descripcion, int plazasMax) {
-		ActividadesDatos.crearActividad(dateTimeInicio, dateTimeFin, idInst,
-				idMonitor, nombreAct, descripcion, plazasMax);
+			Long idMonitor, int plazasMax) {
+		ActividadesDatos.crearReservaActividad(dateTimeInicio, dateTimeFin, idInst,
+				idMonitor, plazasMax);		
+	}
+	
+	public static void crearReservaActividadSemanal(DiasSemana dia, DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, 
+			Long idMonitor, int plazasMax, boolean todoElDia) throws ExcepcionReserva {
+		ActividadesDatos.crearReservaActividadSemanal(dia, dateTimeInicio, dateTimeFin, idInst,
+				idMonitor, plazasMax, todoElDia);		
+	}
+
+	public static void crearActividad(String nombre, String descripcion) {
+		ActividadesDatos.crearActividad(nombre, descripcion);
 		
 	}
 }
