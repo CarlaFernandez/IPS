@@ -24,7 +24,7 @@ public class VentanaGestionActividades extends JFrame {
 
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
-		panel.setLayout(new GridLayout(0, 1, 0, 0));
+		panel.setLayout(new GridLayout(2, 1, 0, 0));
 
 		JButton btnRealizarReserva = new JButton("Crear nueva actividad");
 		btnRealizarReserva.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -36,6 +36,16 @@ public class VentanaGestionActividades extends JFrame {
 			}
 		});
 		panel.add(btnRealizarReserva);
+
+		JButton btnCancelarActividad = new JButton("Cancelar actividad");
+		btnCancelarActividad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaAdminCancelarActividades ventana = new VentanaAdminCancelarActividades();
+				ventana.show();
+			}
+		});
+		btnCancelarActividad.setFont(new Font("Arial", Font.PLAIN, 14));
+		panel.add(btnCancelarActividad);
 	}
 
 }

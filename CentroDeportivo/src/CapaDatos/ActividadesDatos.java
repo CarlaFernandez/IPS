@@ -113,6 +113,49 @@ public class ActividadesDatos {
 		return actividadesFuturas;
 	}
 
+	public static List<Map<String, Object>> obtenerActividadesFuturasConInscripcionCerrada() {
+		List<Map<String, Object>> actividades = new ArrayList<>();
+		List<Map<String, Object>> actividadesFuturas = new ArrayList<>();
+		List<Map<String, Object>> instancias = null;
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		Map<String, Object> actividad = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = con.prepareStatement("SELECT * FROM ACTIVIDAD");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				actividad = new HashMap<String, Object>();
+				actividad.put("id", rs.getLong("ID"));
+				actividad.put("descripcion", rs.getString("DESCRIPCION"));
+				actividad.put("nombre", rs.getString("NOMBRE"));
+				actividades.add(actividad);
+			}
+			for (Map<String, Object> a : actividades) {
+				instancias = obtenerInstanciasDeActividadesConInscripcionCerrada(
+						(Long) a.get("id"));
+				if (!instancias.isEmpty())
+					actividadesFuturas.add(a);
+			}
+
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		return actividadesFuturas;
+	}
+
 	public static int apuntarseActividad(Long userId,
 			Long idInstanciaActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -501,5 +544,92 @@ public class ActividadesDatos {
 		}
 
 		return actividades;
+	}
+
+	public static List<Map<String, Object>> obtenerInstanciasDeActividadesConInscripcionCerrada(
+			Long idActividad) {
+		List<Map<String, Object>> actividades = new ArrayList<>();
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		Timestamp diaAntes = new Timestamp(
+				DateTime.now().plusDays(1).getMillis());
+		Map<String, Object> actividad = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = con.prepareStatement(
+					"SELECT h.id, h.fecha_actividad_inicio, h.fecha_actividad_fin, "
+							+ " h.plazas_ocupadas, h.plazas_totales, m.nombre, m.apellidos, r.estado, i.codigo"
+							+ " FROM horas_actividad as h, monitor as m, "
+							+ "reserva as r, instalacion as i where "
+							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id and m.id = h.monitor_id and "
+							+ "h.fecha_actividad_inicio >= ?");
+			ps.setLong(1, idActividad);
+			ps.setTimestamp(2, diaAntes);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				actividad = new HashMap<String, Object>();
+				actividad.put("id", rs.getLong("ID"));
+				actividad.put("fecha_actividad_inicio",
+						rs.getTimestamp("fecha_actividad_inicio"));
+				actividad.put("fecha_actividad_fin",
+						rs.getTimestamp("fecha_actividad_fin"));
+				actividad.put("plazas_ocupadas", rs.getInt("plazas_ocupadas"));
+				actividad.put("plazas_totales", rs.getInt("plazas_totales"));
+				actividad.put("nombre", rs.getString("nombre"));
+				actividad.put("apellidos", rs.getString("apellidos"));
+				actividad.put("estado", rs.getString("estado"));
+				actividad.put("codigo", rs.getString("codigo"));
+				actividades.add(actividad);
+			}
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		return actividades;
+	}
+
+	public static void cancelarInstanciaActividad(Long idInstanciaActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Long idReserva = null;
+
+		try {
+			ps = con.prepareStatement(
+					"select horas_actividad.reserva_id from horas_actividad where horas_actividad.id = ?");
+			ps.setLong(1, idInstanciaActividad);
+			rs = ps.executeQuery();
+			rs.next();
+			idReserva = rs.getLong("reserva_id");
+			rs.close();
+			ps.close();
+			ps = con.prepareStatement(
+					"update reserva set estado = 'CANCELADA' where reserva.id = ?");
+			ps.setLong(1, idReserva);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
 	}
 }
