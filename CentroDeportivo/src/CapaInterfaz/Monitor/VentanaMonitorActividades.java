@@ -83,14 +83,13 @@ public class VentanaMonitorActividades extends JFrame {
 	private JButton btnAnadirNuevoSocio;
 	private JButton btnEliminarDeActividad;
 	private JLabel lblActividad;
-	private JPanel pnlAnadirSocio;
 	private JPanel pnlBotonesAcciones;
 	private JPanel pnlBuscarActividad;
 	private JPanel panelPie;
 	private JComboBox<String> cbActividad;
 	private JPanel panelCentro;
 	private JScrollPane spTabla;
-	private JPanel panel;
+	private JPanel pnlCentral;
 	private JScrollPane sclDescripcion;
 	private JTextArea txtAreaDescripcion;
 	private JLabel lblNumUsarios;
@@ -104,7 +103,6 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel pnlBotones;
 	private JTextField txtEliminar;
 	private JTextField txtAnadir;
-	private JLabel lblEliminar;
 	private JLabel lblNewLabel;
 	private JCheckBox chckbxNewCheckBox;
 	private JButton btnConfirmarCambios;
@@ -112,16 +110,19 @@ public class VentanaMonitorActividades extends JFrame {
 	private int asistidos=0;
 	private int sinPlaza=0;
 	private JLabel lblFecha;
+	private JPanel pnlTitulo;
+	private JSpinner spinnerReloj;
+	private JLabel lblReloj;
 	
 	@SuppressWarnings("unchecked")
 	public VentanaMonitorActividades(Long idMonitor) {
 		this.idMonitor = idMonitor;
 		
 		setResizable(false);
-		setBounds(100, 100, 900, 563);
+		setBounds(100, 100, 982, 563);
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		getContentPane().add(getLblTituloMonitor(), BorderLayout.NORTH);
-		getContentPane().add(getPanel(), BorderLayout.CENTER);
+		getContentPane().add(getPnlCentral(), BorderLayout.CENTER);
+		getContentPane().add(getPnlTitulo(), BorderLayout.NORTH);
 	}
 
 	
@@ -153,41 +154,22 @@ public class VentanaMonitorActividades extends JFrame {
 					// TODO Auto-generated method stub
 					revisarNumeroSocios();
 				}
-			});
-			
-//			tablaSocios.addMouseListener(new MouseAdapter() {
-//				@Override
-//				public void mouseClicked(MouseEvent e) {
-//					int clicks = e.getClickCount();
-//					if (clicks == 1) {
-////						if(t.getValueAt(t.getSelectedRow(),0)!=null){//si la fila no esta vacia
-//							//"ID","DNI","NOMBRE","APELLIDOS","DIRECCION","EMAIL","CIUDAD","SOCIO"
-//							Usuario us = new Usuario();
-//							us.setIdUsu((Long) tablaSocios.getValueAt(tablaSocios.getSelectedRow(),0));
-//							us.setNombre((String) tablaSocios.getValueAt(tablaSocios.getSelectedRow(),1));
-//							us.setApellidos((String) tablaSocios.getValueAt(tablaSocios.getSelectedRow(),2));
-//							usuarioSelec = us;
-////						}
-//					}
-//				}
-//			});
-			
-			
+			});			
 		}
 		return tablaSocios;
 	}
 
 	
-	private JPanel getPanel(){
-		if(panel==null){
-			panel = new JPanel();
-			panel.setLayout(new BorderLayout(0, 0));
-			panel.add(getPanelPie(), BorderLayout.SOUTH);
-			panel.add(getPnlBotonesAcciones(), BorderLayout.EAST);
-			panel.add(getPnlBuscarActividad(), BorderLayout.NORTH);
-			panel.add(getPanelCentro(), BorderLayout.CENTER);
+	private JPanel getPnlCentral(){
+		if(pnlCentral==null){
+			pnlCentral = new JPanel();
+			pnlCentral.setLayout(new BorderLayout(0, 0));
+			pnlCentral.add(getPanelPie(), BorderLayout.SOUTH);
+			pnlCentral.add(getPnlBotonesAcciones(), BorderLayout.EAST);
+			pnlCentral.add(getPnlBuscarActividad(), BorderLayout.NORTH);
+			pnlCentral.add(getPanelCentro(), BorderLayout.CENTER);
 		}
-		return panel;
+		return pnlCentral;
 	}
 	
 	
@@ -243,6 +225,50 @@ public class VentanaMonitorActividades extends JFrame {
 			pnlBuscarActividad.add(getLblHora());
 		}
 		return pnlBuscarActividad;
+	}
+	
+	private JSpinner getSpinnerReloj(){
+		if(spinnerReloj==null){
+			spinnerReloj = new JSpinner();
+			spinnerReloj.addChangeListener(new ChangeListener() {
+				@SuppressWarnings("deprecation")
+				public void stateChanged(ChangeEvent arg0) {
+					Calendar dateActual = Calendar.getInstance();
+					dateActual.setTime((Date) spinnerReloj.getValue());
+					dateActual.set(Calendar.MILLISECOND, 0);
+					dateActual.set(Calendar.SECOND, 0);
+					DateTime dateTimeActual = new DateTime(dateActual.getTime());
+					
+					DateTime fecha_entrada_actividad=null;
+					String idAcSelec = (String) cbActividad.getSelectedItem().toString().split("-")[1];
+					for (Actividad actividad : actividadesMonitor) {
+						if(String.valueOf(actividad.getCodigo()).equals(idAcSelec))
+							fecha_entrada_actividad = actividad.getFecha_entrada();
+					}
+
+					Calendar fechaActvidadMenos5 = Calendar.getInstance();
+					dateActual.setTime((Date) fecha_entrada_actividad.toDate());
+					dateActual.set(Calendar.MINUTE, dateActual.getTime().getMinutes()-5);
+					
+					
+					if((fecha_entrada_actividad.compareTo(dateTimeActual)==0 || (fecha_entrada_actividad.compareTo(dateTimeActual)>0)
+							&& fechaActvidadMenos5.compareTo(dateTimeActual)){
+						//getBtnAnadirNuevoSocio().setEnabled(true)
+					}
+					else{
+						//getBtnAnadirNuevoSocio().setEnabled(false);
+						modeloTabla.isCellEditable(row, column)
+					}
+					DateTime fecha1 = new DateTime(inicio);
+					
+				}
+			});
+			spinnerReloj.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+			Calendar date = Calendar.getInstance();
+			date.setTime((Date) spinnerReloj.getValue());
+			date.add(Calendar.DATE, 7);
+		}
+		return spinnerReloj;
 	}
 
 	private JSpinner getSpinnerInicio(){
@@ -322,17 +348,6 @@ public class VentanaMonitorActividades extends JFrame {
 		return pnlBotonesAcciones;
 	}
 	
-	private JPanel getPnlAnadirSocio(){
-		if(pnlAnadirSocio==null){
-			pnlAnadirSocio = new JPanel();
-			pnlAnadirSocio.setLayout(new GridLayout(3, 1, 0, 5));
-			pnlAnadirSocio.add(getLblEliminar());
-			pnlAnadirSocio.add(getTxtEliminar());
-			pnlAnadirSocio.add(getBtnEliminarDeActividad());
-		}
-		return pnlAnadirSocio;
-	}
-	
 	private JLabel getLblActividad(){
 		if(lblActividad==null){
 			lblActividad = new JLabel("       Actividad: ");
@@ -342,7 +357,7 @@ public class VentanaMonitorActividades extends JFrame {
 		return lblActividad;
 	}
 	
-	private JButton getBtnEliminarDeActividad(){
+	/*private JButton getBtnEliminarDeActividad(){
 		if(btnEliminarDeActividad==null){
 			btnEliminarDeActividad = new JButton("Quitar de tabla");
 			btnEliminarDeActividad.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -350,7 +365,7 @@ public class VentanaMonitorActividades extends JFrame {
 				public void actionPerformed(ActionEvent arg0) {
 					try{
 						Long idTxt = Long.parseLong(getTxtEliminar().getText());
-						Long idAcSelec = Long.valueOf((String) getCbActividad().getSelectedItem());
+						Long idAcSelec = Long.valueOf((String) getCbActividad().getSelectedItem().toString().split("-")[1]);
 						UsuarioDatos.usuarioNoPresentadoActividad(idTxt, idAcSelec); 
 						int fila = existeId(idTxt);
 						if(fila==-1)
@@ -369,7 +384,7 @@ public class VentanaMonitorActividades extends JFrame {
 			btnEliminarDeActividad.setEnabled(false);
 		}
 		return btnEliminarDeActividad;
-	}
+	}*/
 	
 	/**
 	 * deuelve la fila en la que esta el id del socio, sino devuelve -1
@@ -472,7 +487,7 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	
 	private void asignarDescripcion(){
-		String idAcSelec = (String) cbActividad.getSelectedItem();
+		String idAcSelec = (String) cbActividad.getSelectedItem().toString().split("-")[1];
 		for (Actividad actividad : actividadesMonitor) {
 			if(String.valueOf(actividad.getCodigo()).equals(idAcSelec)){
 				getTxtAreaDescripcion().setText(actividad.getDescripcion());
@@ -490,7 +505,7 @@ public class VentanaMonitorActividades extends JFrame {
 	 * @return
 	 */
 	private Long valorCbActividad(){
-		String idAcSelec = (String) cbActividad.getSelectedItem();
+		String idAcSelec = (String) cbActividad.getSelectedItem().toString().split("-")[1];
 		Long idAct = null;
 		for (Actividad actividad : actividadesMonitor) {
 			if(String.valueOf(actividad.getCodigo()).equals(idAcSelec)){
@@ -507,6 +522,7 @@ public class VentanaMonitorActividades extends JFrame {
 		modeloTabla.getDataVector().clear();
 		Object[] nuevaFila = new Object[4];
 		Long idActividad = valorCbActividad();
+		System.out.println("id Actividad: "+idActividad);
 		if(idActividad!=null){
 			List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad);
 			if(usuariosAct==null)
@@ -578,7 +594,7 @@ public class VentanaMonitorActividades extends JFrame {
 						getCbActividad().setEnabled(true);
 						for(int i=0;i<actividadesMonitor.size();i++){
 //							System.out.println(actividadesMonitor.get(i).getCodigo().toString());
-							getCbActividad().addItem(actividadesMonitor.get(i).getCodigo().toString());
+							getCbActividad().addItem(actividadesMonitor.get(i).getNombre().toString()+"-"+actividadesMonitor.get(i).getCodigo().toString());
 						}
 						habilitarBotones();
 					}
@@ -591,13 +607,13 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	private void habilitarBotones(){
 		getBtnAnadirNuevoSocio().setEnabled(true);
-		getBtnEliminarDeActividad().setEnabled(true);
+//		getBtnEliminarDeActividad().setEnabled(true);
 		asignarDescripcion();
 		rellenarTabla();
 		revisarNumeroSocios();
 		getBtnConfirmarCambios().setEnabled(true);
 		getTxtAnadir().setEnabled(true);
-		getTxtEliminar().setEnabled(true);
+//		getTxtEliminar().setEnabled(true);
 	}
 	
 	private void vaciar(){
@@ -607,14 +623,14 @@ public class VentanaMonitorActividades extends JFrame {
 		modeloTabla.fireTableDataChanged();
 		getTxtAreaDescripcion().setText("");
 		getBtnAnadirNuevoSocio().setEnabled(false);
-		getBtnEliminarDeActividad().setEnabled(false);
+//		getBtnEliminarDeActividad().setEnabled(false);
 		getCbActividad().setEnabled(false);
 		getCbActividad().removeAllItems();		
 		getLblNumUsarios().setText("Personas en clase:        ");
 		getLblHora().setText("    Hora:");
 		getBtnConfirmarCambios().setEnabled(false);
 		getTxtAnadir().setEnabled(false);
-		getTxtEliminar().setEnabled(false);
+//		getTxtEliminar().setEnabled(false);
 	}
 	private JLabel getLblHora() {
 		if (lblHora == null) {
@@ -626,30 +642,29 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel getPnlEliminarSocio() {
 		if (pnlEliminarSocio == null) {
 			pnlEliminarSocio = new JPanel();
-			pnlEliminarSocio.setLayout(new GridLayout(0, 1, 0, 5));
-			pnlEliminarSocio.add(getLblNewLabel());
-			pnlEliminarSocio.add(getTxtAnadir());
-			pnlEliminarSocio.add(getBtnAnadirNuevoSocio());
+			pnlEliminarSocio.setLayout(new GridLayout(0, 1, 0, 10));
 		}
 		return pnlEliminarSocio;
 	}
 	private JPanel getPnlBotones() {
 		if (pnlBotones == null) {
 			pnlBotones = new JPanel();
-			pnlBotones.setLayout(new GridLayout(0, 1, 0, 0));
+			pnlBotones.setLayout(new GridLayout(0, 1, 0, 20));
+			pnlBotones.add(getLblNewLabel());
+			pnlBotones.add(getTxtAnadir());
+			pnlBotones.add(getBtnAnadirNuevoSocio());
 			pnlBotones.add(getPnlEliminarSocio());
-			pnlBotones.add(getPnlAnadirSocio());
 		}
 		return pnlBotones;
 	}
-	private JTextField getTxtEliminar() {
+	/*private JTextField getTxtEliminar() {
 		if (txtEliminar == null) {
 			txtEliminar = new JTextField();
 			txtEliminar.setFont(new Font("Tahoma", Font.PLAIN, 15));
 			txtEliminar.setColumns(10);
 		}
 		return txtEliminar;
-	}
+	}*/
 	private JTextField getTxtAnadir() {
 		if (txtAnadir == null) {
 			txtAnadir = new JTextField();
@@ -657,12 +672,6 @@ public class VentanaMonitorActividades extends JFrame {
 			txtAnadir.setColumns(10);
 		}
 		return txtAnadir;
-	}
-	private JLabel getLblEliminar() {
-		if (lblEliminar == null) {
-			lblEliminar = new JLabel("ID quitar de tabla:");
-		}
-		return lblEliminar;
 	}
 	private JLabel getLblNewLabel() {
 		if (lblNewLabel == null) {
@@ -721,5 +730,22 @@ public class VentanaMonitorActividades extends JFrame {
 			lblFecha.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		}
 		return lblFecha;
+	}
+	private JPanel getPnlTitulo() {
+		if (pnlTitulo == null) {
+			pnlTitulo = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnlTitulo.getLayout();
+			pnlTitulo.add(getLblTituloMonitor());
+			pnlTitulo.add(getLblReloj());
+			pnlTitulo.add(getSpinnerReloj());
+		}
+		return pnlTitulo;
+	}
+	private JLabel getLblReloj() {
+		if (lblReloj == null) {
+			lblReloj = new JLabel("                             Reloj:");
+			lblReloj.setFont(new Font("Tahoma", Font.BOLD, 15));
+		}
+		return lblReloj;
 	}
 }
