@@ -23,12 +23,12 @@ public class Actividad {
 		this.numeroHoras = numeroHoras;
 		this.monitorID = monitorID;
 		this.cancelada = cancelada;
-		this.fecha_entrada=fecha_actividad;
+		this.fecha_entrada = fecha_actividad;
 	}
 
-	public Actividad(){}
-	
-	
+	public Actividad() {
+	}
+
 	public DateTime getFecha_entrada() {
 		return fecha_entrada;
 	}
@@ -40,51 +40,70 @@ public class Actividad {
 	public Long getCodigo() {
 		return codigo;
 	}
+
 	public void setCodigo(Long codigo) {
 		this.codigo = codigo;
 	}
+
 	public String getNombre() {
 		return nombre;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
 	public String getDescripcion() {
 		return descripcion;
 	}
+
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
 	public int getPlazasTotales() {
 		return plazasTotales;
 	}
+
 	public void setPlazasTotales(int plazasTotales) {
 		this.plazasTotales = plazasTotales;
 	}
+
 	public int getPlazasOcupadas() {
 		return plazasOcupadas;
 	}
+
 	public void setPlazasOcupadas(int plazasOcupadas) {
 		this.plazasOcupadas = plazasOcupadas;
 	}
+
 	public double getNumeroHoras() {
 		return numeroHoras;
 	}
+
 	public void setNumeroHoras(double numeroHoras) {
 		this.numeroHoras = numeroHoras;
 	}
+
 	public Long getMonitorID() {
 		return monitorID;
 	}
+
 	public void setMonitorID(Long monitorID) {
 		this.monitorID = monitorID;
 	}
+
 	public boolean isCancelada() {
 		return cancelada;
 	}
+
 	public void setCancelada(boolean cancelada) {
 		this.cancelada = cancelada;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "ACTIVIDAD\n\nCodigo = " + codigo + ", \nNombre = " + nombre + ", \nDescripcion = " + descripcion;
+	}
+
 }

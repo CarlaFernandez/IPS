@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 
+import CapaDatos.ActividadesDatos;
 import CapaDatos.InstalacionDatos;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
@@ -89,5 +90,22 @@ public class ManagerAdmin {
 	public static void insertarReservaCentroSemanal(DiasSemana dia, DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, boolean todoElDia) throws ExcepcionReserva {
 		ReservaDatos.insertarReservaCentroSemanal(dia, dateTimeInicio, dateTimeFin, idInst, todoElDia);
 
+	}
+
+	public static void crearReservaActividad(DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, 
+			Long idMonitor, int plazasMax) {
+		ActividadesDatos.crearReservaActividad(dateTimeInicio, dateTimeFin, idInst,
+				idMonitor, plazasMax);		
+	}
+	
+	public static void crearReservaActividadSemanal(DiasSemana dia, DateTime dateTimeInicio, DateTime dateTimeFin, Long idInst, 
+			Long idMonitor, int plazasMax, boolean todoElDia) throws ExcepcionReserva {
+		ActividadesDatos.crearReservaActividadSemanal(dia, dateTimeInicio, dateTimeFin, idInst,
+				idMonitor, plazasMax, todoElDia);		
+	}
+
+	public static void crearActividad(String nombre, String descripcion) {
+		ActividadesDatos.crearActividad(nombre, descripcion);
+		
 	}
 }

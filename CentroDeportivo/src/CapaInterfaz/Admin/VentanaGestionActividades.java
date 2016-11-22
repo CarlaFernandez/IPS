@@ -26,13 +26,13 @@ public class VentanaGestionActividades extends JFrame {
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
 
-		JButton btnRealizarReserva = new JButton("Realizar reserva");
+		JButton btnRealizarReserva = new JButton("Crear nueva actividad");
 		btnRealizarReserva.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnRealizarReserva.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				VentanaReservasPagar vrv = new VentanaReservasPagar();
-				vrv.show();
+				VentanaCrearActividad v = new VentanaCrearActividad();
+				v.show();
 			}
 		});
 		panel.add(btnRealizarReserva);

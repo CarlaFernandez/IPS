@@ -246,6 +246,28 @@ public class ReservaDatos {
 		}
 	}
 
+	public static Long obtenerUltimoIDReserva() {
+		// TODO eliminar duplicacion de codigo al obtener nuevos ids
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		long result = 0;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select id from reserva ");
+			sb.append("order by id desc");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			result = rs.getLong("id");
+			con.close();
+			return result;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static ReservaDao getReserva(long idReserva) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();

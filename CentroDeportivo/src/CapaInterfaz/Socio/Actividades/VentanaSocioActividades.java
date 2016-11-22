@@ -1,4 +1,4 @@
-package CapaInterfaz.Socio.Instalaciones;
+package CapaInterfaz.Socio.Actividades;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -14,31 +14,28 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-public class VentanaSocioInstalaciones extends JFrame{
-	public VentanaSocioInstalaciones(Long user) {
+public class VentanaSocioActividades extends JFrame {
+	public VentanaSocioActividades(Long user) {
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		
+
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
-		
-		JButton btnReservas = new JButton("Mis Reservas");
+
+		JButton btnReservas = new JButton("Ver/Cancelar mis Actividades");
 		btnReservas.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnReservas.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				new VentanaSocioVerMisReservas(user).show();
+				new VentanaSocioVerMisActividades(user).show();				
 			}
 		});
-		
-		JButton btnRealizarReserva = new JButton("Realizar reserva");
+
+		JButton btnRealizarReserva = new JButton("");
 		btnRealizarReserva.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				VentanaSocioReservaInstalacion vs = new VentanaSocioReservaInstalacion(user);
-				vs.show();
 			}
 		});
 		btnRealizarReserva.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -46,32 +43,27 @@ public class VentanaSocioInstalaciones extends JFrame{
 		panel.add(btnRealizarReserva);
 		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
-		
-		JButton btnNewButton_1 = new JButton("Reservas De Una Instalacion");
+
+		JButton btnNewButton_1 = new JButton("");
 		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNewButton_1.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				VentanaSocioVerReservasPorInstalacion vsri = new VentanaSocioVerReservasPorInstalacion(user);
-				vsri.show();
+
 			}
 		});
 		btnNewButton_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_1);
-		
-		JButton btnNewButton = new JButton("Cancelar reserva");
+
+		JButton btnNewButton = new JButton("");
 		btnNewButton.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				VentanaSocioCancelarReserva vcrs = new VentanaSocioCancelarReserva(user);
-				vcrs.show();
 			}
 		});
 		btnNewButton.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNewButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton);
-		
-		JLabel lblTituloSocio = new JLabel("Ventana Socios>Instalaciones");
+
+		JLabel lblTituloSocio = new JLabel("Ventana Socios>Actividades");
 		lblTituloSocio.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloSocio.setBorder(new EmptyBorder(20, 0, 20, 0));
 		lblTituloSocio.setFont(new Font("Arial Black", Font.BOLD, 25));
