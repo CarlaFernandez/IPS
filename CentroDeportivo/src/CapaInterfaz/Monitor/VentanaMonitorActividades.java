@@ -233,33 +233,33 @@ public class VentanaMonitorActividades extends JFrame {
 			spinnerReloj.addChangeListener(new ChangeListener() {
 				@SuppressWarnings("deprecation")
 				public void stateChanged(ChangeEvent arg0) {
-					Calendar dateActual = Calendar.getInstance();
-					dateActual.setTime((Date) spinnerReloj.getValue());
-					dateActual.set(Calendar.MILLISECOND, 0);
-					dateActual.set(Calendar.SECOND, 0);
-					DateTime dateTimeActual = new DateTime(dateActual.getTime());
-					
-					DateTime fecha_entrada_actividad=null;
-					String idAcSelec = (String) cbActividad.getSelectedItem().toString().split("-")[1];
-					for (Actividad actividad : actividadesMonitor) {
-						if(String.valueOf(actividad.getCodigo()).equals(idAcSelec))
-							fecha_entrada_actividad = actividad.getFecha_entrada();
-					}
-
-					Calendar fechaActvidadMenos5 = Calendar.getInstance();
-					dateActual.setTime((Date) fecha_entrada_actividad.toDate());
-					dateActual.set(Calendar.MINUTE, dateActual.getTime().getMinutes()-5);
-					
-					
-					if((fecha_entrada_actividad.compareTo(dateTimeActual)==0 || (fecha_entrada_actividad.compareTo(dateTimeActual)>0)
-							&& fechaActvidadMenos5.compareTo(dateTimeActual)){
-						//getBtnAnadirNuevoSocio().setEnabled(true)
-					}
-					else{
-						//getBtnAnadirNuevoSocio().setEnabled(false);
-						modeloTabla.isCellEditable(row, column)
-					}
-					DateTime fecha1 = new DateTime(inicio);
+//					Calendar dateActual = Calendar.getInstance();
+//					dateActual.setTime((Date) spinnerReloj.getValue());
+//					dateActual.set(Calendar.MILLISECOND, 0);
+//					dateActual.set(Calendar.SECOND, 0);
+//					DateTime dateTimeActual = new DateTime(dateActual.getTime());
+//					
+//					DateTime fecha_entrada_actividad=null;
+//					String idAcSelec = (String) cbActividad.getSelectedItem().toString().split("-")[1];
+//					for (Actividad actividad : actividadesMonitor) {
+//						if(String.valueOf(actividad.getCodigo()).equals(idAcSelec))
+//							fecha_entrada_actividad = actividad.getFecha_entrada();
+//					}
+//
+//					Calendar fechaActvidadMenos5 = Calendar.getInstance();
+//					dateActual.setTime((Date) fecha_entrada_actividad.toDate());
+//					dateActual.set(Calendar.MINUTE, dateActual.getTime().getMinutes()-5);
+//					
+//					
+//					if((fecha_entrada_actividad.compareTo(dateTimeActual)==0 || (fecha_entrada_actividad.compareTo(dateTimeActual)>0)
+//							&& fechaActvidadMenos5.compareTo(dateTimeActual)){
+//						//getBtnAnadirNuevoSocio().setEnabled(true)
+//					}
+//					else{
+//						//getBtnAnadirNuevoSocio().setEnabled(false);
+//						modeloTabla.isCellEditable(row, column)
+//					}
+//					DateTime fecha1 = new DateTime(inicio);
 					
 				}
 			});
@@ -505,6 +505,8 @@ public class VentanaMonitorActividades extends JFrame {
 	 * @return
 	 */
 	private Long valorCbActividad(){
+		if(cbActividad.getSelectedItem()==null)
+			return null;
 		String idAcSelec = (String) cbActividad.getSelectedItem().toString().split("-")[1];
 		Long idAct = null;
 		for (Actividad actividad : actividadesMonitor) {

@@ -97,11 +97,12 @@ public class MonitorDatos extends GeneradorIDRandom {
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("select * from actividad "
-					+ "where MONITOR_ID = ? "
-					+ "and fecha_actividad >= ? "
-					+ "and fecha_actividad <= ? "
-					+ "order by fecha_actividad");
+			sb.append("select * from actividad a "
+					+ "INNER JOIN HORAS_ACTIVIDAD ha on ha.ACTIVIDAD_ID = a.ID "
+					+ "where ha.MONITOR_ID = ? "
+					+ "and ha.fecha_actividad_inicio >= ? "
+					+ "and ha.fecha_actividad_inicio <= ? "
+					+ "order by ha.fecha_actividad_inicio");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1,monitorId);
 			ps.setTimestamp(2, new Timestamp(fecha1.getMillis()));
