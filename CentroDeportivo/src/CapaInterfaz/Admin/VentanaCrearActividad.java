@@ -904,7 +904,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.LUNES, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasLunes.getValue(), chckbxTodoElDiaLunes.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del LUNES se han insertado con éxito");
 			}
 			
 			if (chckbxMartes.isSelected()) {
@@ -915,7 +915,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.MARTES, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasMartes.getValue(), chckbxTodoElDiaMartes.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del MARTES se han insertado con éxito");
 			}
 			
 			if (chckbxMiercoles.isSelected()) {
@@ -926,7 +926,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.MIERCOLES, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasMiercoles.getValue(), chckbxTodoElDiaMiercoles.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del MIÉRCOLES se han insertado con éxito");
 			}
 			
 			if (chckbxJueves.isSelected()) {
@@ -937,7 +937,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.JUEVES, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasJueves.getValue(), chckbxTodoElDiaJueves.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del JUEVES se han insertado con éxito");
 			}
 			
 			if (chckbxViernes.isSelected()) {
@@ -948,7 +948,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.VIERNES, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasViernes.getValue(), chckbxTodoElDiaViernes.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del VIERNES se han insertado con éxito");
 			}
 			
 			if (chckbxSabado.isSelected()) {
@@ -959,7 +959,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.SABADO, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasSabado.getValue(), chckbxTodoElDiaSabado.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del SÁBADO se han insertado con éxito");
 			}
 			
 			if (chckbxDomingo.isSelected()) {
@@ -970,7 +970,7 @@ public class VentanaCrearActividad extends JFrame {
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.DOMINGO, dateTimeInicio, dateTimeFin, idInst,
 						idMonitor, (int) spinnerPlazasDomingo.getValue(), chckbxTodoElDiaDomingo.isSelected());
-				JOptionPane.showMessageDialog(this, "Las reserva se han insertado con éxito");
+				JOptionPane.showMessageDialog(this, "Las reservas del DOMINGO se han insertado con éxito");
 			}
 		} catch (ExcepcionReserva e) {
 			JOptionPane.showMessageDialog(this, e.getMessage());

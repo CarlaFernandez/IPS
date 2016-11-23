@@ -807,7 +807,7 @@ public class ActividadesDatos {
 			finPuntual = finPuntual.withMillisOfSecond(0);
 		}
 
-		while (diasEntre >= 0) {
+		while (diasEntre > 0) {
 			crearReservaActividad(inicioPuntual, finPuntual, idInst, idMonitor,
 					plazasMax);
 			inicioPuntual = inicioPuntual.plusDays(7);
