@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-
-import CapaNegocio.managers.ManagerFechas;
-
 public class Contable {
 	private static void cobrarPagosCuota(long idPago) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();

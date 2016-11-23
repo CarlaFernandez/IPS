@@ -9,17 +9,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 public class VentanaGestionInstalaciones extends JFrame {
-	private VentanaGestionInstalaciones ventana;
 	
 	public VentanaGestionInstalaciones() {
-		ventana = this;
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -99,6 +96,7 @@ public class VentanaGestionInstalaciones extends JFrame {
 		
 		JButton btnIndicarUtilizacion = new JButton("Registrar utilizacion de la instalacion");
 		btnIndicarUtilizacion.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				VentanaSocioUtilizandoInstalacion vsui = new VentanaSocioUtilizandoInstalacion();
 				vsui.show();
