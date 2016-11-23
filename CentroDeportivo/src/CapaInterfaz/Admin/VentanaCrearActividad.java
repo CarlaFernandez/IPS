@@ -9,8 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,24 +23,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerModel;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 import org.joda.time.DateTime;
-import org.joda.time.Hours;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import CapaDatos.InstalacionDatos;
 import CapaDatos.MonitorDatos;
-import CapaInterfaz.ModeloConColumnaEditable;
-import CapaInterfaz.Monitor.ModeloNoEditable;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Monitor;
@@ -50,9 +43,8 @@ import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
 import com.toedter.calendar.JDateChooser;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 
+@SuppressWarnings("rawtypes")
 public class VentanaCrearActividad extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton rdbtnPuntual;
@@ -62,10 +54,7 @@ public class VentanaCrearActividad extends JFrame {
 	private JPanel panelMostrarEleccion;
 	private JPanel panelPuntual;
 	private List<Instalacion> instalaciones;
-	private JTable table;
-	private ModeloConColumnaEditable modeloTabla;
 	private List<Monitor> monitores;
-	private int selectedRow = -1;
 	private JSpinner spinnerPlazasPuntual;
 	private JComboBox comboBoxInstalacionPuntual;
 	private JComboBox comboBoxMonitorPuntual;
@@ -127,6 +116,7 @@ public class VentanaCrearActividad extends JFrame {
 	private JCheckBox chckbxTodoElDiaDomingo;
 	private JTextPane txtpnDescripcionPeriodica;
 
+	@SuppressWarnings({ "unchecked" })
 	public VentanaCrearActividad() {
 		setTitle("Admin -> Crear actividades");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -395,7 +385,6 @@ public class VentanaCrearActividad extends JFrame {
 
 		dateInicioPeriodica = new JDateChooser();
 		panelFechas.add(dateInicioPeriodica);
-		BorderLayout bl_dateInicio = (BorderLayout) dateInicioPeriodica.getLayout();
 		dateInicioPeriodica.setDateFormatString("dd/MM/yyyy");
 		dateInicioPeriodica.setMinSelectableDate(new Date(System.currentTimeMillis()));
 		dateInicioPeriodica.setDate(new Date(System.currentTimeMillis()));
@@ -406,7 +395,6 @@ public class VentanaCrearActividad extends JFrame {
 
 		dateFinPeriodica = new JDateChooser();
 		panelFechas.add(dateFinPeriodica);
-		BorderLayout bl_dateFin = (BorderLayout) dateFinPeriodica.getLayout();
 		dateFinPeriodica.setDateFormatString("dd/MM/yyyy");
 		dateFinPeriodica.setMinSelectableDate(new Date(System.currentTimeMillis()));
 		dateFinPeriodica.setDate(new Date(System.currentTimeMillis()));

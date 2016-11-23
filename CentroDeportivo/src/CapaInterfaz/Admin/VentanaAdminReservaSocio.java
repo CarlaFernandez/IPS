@@ -14,7 +14,6 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,8 +25,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.toedter.calendar.JDateChooser;
-
 import CapaNegocio.TipoPago;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Usuario;
@@ -35,6 +32,8 @@ import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerFechas;
 import CapaNegocio.managers.ManagerUsuario;
+
+import com.toedter.calendar.JDateChooser;
 
 public class VentanaAdminReservaSocio extends JFrame {
 	/**
@@ -54,7 +53,7 @@ public class VentanaAdminReservaSocio extends JFrame {
 	private JLabel lblUsuario;
 	private JLabel lblReservaDeSocio;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public VentanaAdminReservaSocio() {
 		setTitle("Admin -> Reserva Socio");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));

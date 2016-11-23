@@ -33,6 +33,7 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
+@SuppressWarnings("rawtypes")
 public class VentanaReservaCentro extends JFrame {
 	/**
 	 * 
@@ -50,6 +51,7 @@ public class VentanaReservaCentro extends JFrame {
 	private JCheckBox chckbxPeridioca;
 	private JComboBox comboBoxDia;
 
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public VentanaReservaCentro() {
 		setTitle("Admin -> Reserva Centro");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));

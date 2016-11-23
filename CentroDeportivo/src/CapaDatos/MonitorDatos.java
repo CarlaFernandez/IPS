@@ -15,7 +15,6 @@ import CapaNegocio.dao.Actividad;
 import CapaNegocio.dao.Curso;
 import CapaNegocio.dao.Monitor;
 import CapaNegocio.dao.Usuario;
-import CapaNegocio.managers.ManagerFechas;
 
 public class MonitorDatos extends GeneradorIDRandom {
 

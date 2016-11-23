@@ -6,11 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import CapaNegocio.DiasSemana;
@@ -767,6 +766,7 @@ public class ActividadesDatos {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void crearReservaActividadSemanal(DiasSemana dia,
 			DateTime inicio, DateTime fin, Long idInst, Long idMonitor,
 			int plazasMax, boolean todoElDia) throws ExcepcionReserva {
@@ -775,9 +775,17 @@ public class ActividadesDatos {
 			throw new ExcepcionReserva(
 					"La fecha de fin no puede ser antes que la de inicio.");
 		}
+
+		else if (inicio.toDateMidnight().equals(fin.toDateMidnight())
+				&& inicio.getDayOfWeek() != dia.ordinal() + 1) {
+			throw new ExcepcionReserva(
+					"La fecha seleccionada no coincide con el día de la semana,"
+							+ " la actividad no se ha creado.");
+		}
+
 		DateTime inicioPuntual = inicio;
 
-		while (inicioPuntual.dayOfWeek().get() != dia.ordinal() + 1) {
+		while (inicioPuntual.getDayOfWeek() != dia.ordinal() + 1) {
 			inicioPuntual = inicioPuntual.plusDays(1);
 		}
 

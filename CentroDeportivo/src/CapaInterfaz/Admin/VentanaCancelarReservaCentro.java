@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +31,6 @@ import javax.swing.event.ChangeListener;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
 import CapaInterfaz.ModeloNoEditable;
-import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.Instalacion;
@@ -38,9 +39,6 @@ import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
-import CapaNegocio.managers.ManagerFechas;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class VentanaCancelarReservaCentro extends JFrame {
 	private static final long serialVersionUID = 1L;
