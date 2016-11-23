@@ -15,10 +15,16 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
+import CapaInterfaz.Socio.Actividades.VentanaSocioActividades;
+import CapaInterfaz.Socio.Actividades.VentanaSocioInscribirseActividades;
 import CapaInterfaz.Socio.Instalaciones.VentanaSocioInstalaciones;
-import CapaInterfaz.Socio.actividades.VentanaSocioInscribirseActividades;
 
 public class VentanaSocio extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public VentanaSocio(Long user) {
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
@@ -40,32 +46,17 @@ public class VentanaSocio extends JFrame {
 				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
 
-		JButton btnNewButton_1 = new JButton("Apuntarse a Actividades");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
+
+		JButton btnActividades = new JButton("Gestion Actividades");
+		btnActividades.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				VentanaSocioInscribirseActividades vaas = new VentanaSocioInscribirseActividades(
-						user);
-				vaas.show();
-				if (vaas.modeloTablaActividades.getRowCount() == 0) {
-					JOptionPane.showMessageDialog(null,
-							"No hay actividades disponibles para apntarse.",
-							"No hay actividades disponibles",
-							JOptionPane.INFORMATION_MESSAGE);
-					vaas.dispose();
-				}
+				new VentanaSocioActividades(user).show();
 			}
 		});
-		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnNewButton_1.setBorder(
+		btnActividades.setFont(new Font("Arial", Font.PLAIN, 14));
+		btnActividades.setBorder(
 				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panel.add(btnNewButton_1);
-
-		JButton btnNewButton = new JButton(" ");
-		btnNewButton.setFont(new Font("Wide Latin", Font.PLAIN, 12));
-		btnNewButton.setBorder(
-				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panel.add(btnNewButton);
+		panel.add(btnActividades);
 
 		JButton btnNewButton_2 = new JButton(" ");
 		btnNewButton_2.setFont(new Font("Wide Latin", Font.PLAIN, 12));
@@ -79,10 +70,4 @@ public class VentanaSocio extends JFrame {
 		lblTituloSocio.setFont(new Font("Arial Black", Font.BOLD, 25));
 		getContentPane().add(lblTituloSocio, BorderLayout.NORTH);
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 }

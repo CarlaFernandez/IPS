@@ -7,14 +7,20 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
 
+import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Actividad;
+import CapaNegocio.dao.ActividadHoras;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
+import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerFechas;
 
@@ -376,9 +382,123 @@ public class ActividadesDatos {
 		}
 	}
 
-	public static void crearActividad(DateTime dateTimeInicio,
-			DateTime dateTimeFin, Long idInst, Long idMonitor, String nombreAct,
-			String descripcion, int plazasMax) {
+	public static Actividad obtenerActividad(Long idActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from actividad where id= ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ResultSet rs = ps.executeQuery();
+			Actividad actividad = new Actividad();
+			while (rs.next()) {
+				actividad.setCodigo(rs.getLong("ID"));
+				actividad.setNombre(rs.getString("NOMBRE"));
+				actividad.setDescripcion(rs.getString("DESCRIPCION"));
+			}
+			con.close();
+
+			return actividad;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static List<ActividadHoras> verMisActividadesPorFecha(Date inicio,
+			Date fin, Long user) {
+		DateTime fecha1 = new DateTime(inicio);
+		DateTime fecha2 = new DateTime(fin);
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from horas_actividad , apuntado_actividad ");
+			sb.append("where id=horas_actividad_id ");
+			sb.append("and fecha_actividad_inicio >= ? ");
+			sb.append("and fecha_actividad_fin <= ? ");
+			sb.append("and usuario_id = ?");
+			sb.append("order by fecha_actividad_inicio");
+
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setTimestamp(1, new Timestamp(fecha1.getMillis()));
+			ps.setTimestamp(2, new Timestamp(fecha2.getMillis()));
+			ps.setLong(3, user);
+			ResultSet rs = ps.executeQuery();
+			List<ActividadHoras> clases = new ArrayList<>();
+			while (rs.next()) {
+				ActividadHoras clase = new ActividadHoras();
+				clase.setId(rs.getLong("ID"));
+				clase.setIdActividad(rs.getLong("actividad_id"));
+				clase.setIdMonitor(rs.getLong("monitor_id"));
+				clase.setIdReserva(rs.getLong("reserva_id"));
+				clase.setFechaInicio(new DateTime(
+						rs.getTimestamp("fecha_actividad_inicio")));
+				clase.setFechaFin(
+						new DateTime(rs.getTimestamp("fecha_actividad_fin")));
+				clase.setPlazasTotales(rs.getInt("plazas_totales"));
+				clase.setPlazasOcupadas(rs.getInt("plazas_ocupadas"));
+				clases.add(clase);
+			}
+			con.close();
+			return clases;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static void cancelarClase(ActividadHoras clase, Long user) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			PreparedStatement ps = con.prepareStatement(
+					"update apuntado_actividad set cancelado=true where horas_actividad_id = ? and usuario_id = ?");
+			ps.setLong(1, clase.getId());
+			ps.setLong(2, user);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static boolean isMiApuntadoActividadCancelada(
+			ActividadHoras actividadHoras, Long user) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from apuntado_actividad ");
+			sb.append("where horas_actividad_id = ?");
+			sb.append("and usuario_id = ?");
+
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, actividadHoras.getId());
+			ps.setLong(2, user);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				if (rs.getBoolean("cancelado"))
+					return true;
+			}
+			con.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static void crearActividad(String nombreAct, String descripcion) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		PreparedStatement ps = null;
@@ -392,7 +512,29 @@ public class ActividadesDatos {
 			ps.setString(2, descripcion);
 			ps.execute();
 			ps.close();
+			con.close();
 
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public static void crearReservaActividad(DateTime dateTimeInicio,
+			DateTime dateTimeFin, Long idInst, Long idMonitor, int plazasMax) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		try {
 			// quedamos que el id de actividad quedaba null igualmente
 			ReservaDao reserva = new ReservaDao(TipoReserva.CENTRO,
 					dateTimeInicio, dateTimeFin, idInst, null, null, null,
@@ -401,7 +543,7 @@ public class ActividadesDatos {
 			Long idReserva = ReservaDatos.obtenerUltimoIDReserva();
 			Long idActividad = obtenerUltimoIDActividad();
 
-			sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 			sb.append("insert into horas_actividad ");
 			sb.append("(actividad_id, monitor_id, reserva_id, ");
 			sb.append("fecha_actividad_inicio, fecha_actividad_fin, ");
@@ -451,10 +593,11 @@ public class ActividadesDatos {
 		try {
 			ps = con.prepareStatement(
 					"SELECT h.id, h.fecha_actividad_inicio, h.fecha_actividad_fin, "
-							+ " h.plazas_ocupadas, h.plazas_totales, m.nombre, m.apellidos, r.estado, i.codigo"
+							+ " h.plazas_ocupadas, h.plazas_totales, m.nombre, m.apellidos, r.estado, i.codigo "
 							+ " FROM horas_actividad as h, monitor as m, "
 							+ "reserva as r, instalacion as i where "
-							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id and m.id = h.monitor_id and h.fecha_actividad_inicio >= ?");
+							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id and r.estado = 'ACTIVA' and "
+							+ " m.id = h.monitor_id and h.fecha_actividad_inicio >= ?");
 			ps.setLong(1, idActividad);
 			ps.setTimestamp(2, ahora);
 			rs = ps.executeQuery();
@@ -508,7 +651,8 @@ public class ActividadesDatos {
 							+ " h.plazas_ocupadas, h.plazas_totales, m.nombre, m.apellidos, r.estado, i.codigo"
 							+ " FROM horas_actividad as h, monitor as m, "
 							+ "reserva as r, instalacion as i where "
-							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id and m.id = h.monitor_id and "
+							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id "
+							+ "and r.estado='ACTIVA' and m.id = h.monitor_id and "
 							+ "h.fecha_actividad_inicio >= ? and h.fecha_actividad_inicio <= ?");
 			ps.setLong(1, idActividad);
 			ps.setTimestamp(2, horaAntes);
@@ -562,7 +706,7 @@ public class ActividadesDatos {
 							+ " h.plazas_ocupadas, h.plazas_totales, m.nombre, m.apellidos, r.estado, i.codigo"
 							+ " FROM horas_actividad as h, monitor as m, "
 							+ "reserva as r, instalacion as i where "
-							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id and m.id = h.monitor_id and "
+							+ "h.actividad_id = ? and r.instalacion_id = i.id and h.reserva_id = r.id and m.id = h.monitor_id and r.estado='ACTIVA' and "
 							+ "h.fecha_actividad_inicio >= ?");
 			ps.setLong(1, idActividad);
 			ps.setTimestamp(2, diaAntes);
@@ -616,7 +760,7 @@ public class ActividadesDatos {
 			rs.close();
 			ps.close();
 			ps = con.prepareStatement(
-					"update reserva set estado = 'CANCELADA' where reserva.id = ?");
+					"update reserva set estado = 'ANULADA' where reserva.id = ?");
 			ps.setLong(1, idReserva);
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -632,4 +776,80 @@ public class ActividadesDatos {
 			}
 		}
 	}
+
+	public static void crearReservaActividadSemanal(DiasSemana dia,
+			DateTime inicio, DateTime fin, Long idInst, Long idMonitor,
+			int plazasMax, boolean todoElDia) throws ExcepcionReserva {
+
+		if (inicio.isAfter(fin.getMillis())) {
+			throw new ExcepcionReserva(
+					"La fecha de fin no puede ser antes que la de inicio.");
+		}
+		DateTime inicioPuntual = inicio;
+
+		while (inicioPuntual.dayOfWeek().get() != dia.ordinal() + 1) {
+			inicioPuntual = inicioPuntual.plusDays(1);
+		}
+
+		int diasEntre = Days.daysBetween(inicioPuntual, fin).getDays();
+		DateTime finPuntual = fin.minusDays(diasEntre);
+
+		if (todoElDia) {
+			inicioPuntual = inicioPuntual.withHourOfDay(0);
+			inicioPuntual = inicioPuntual.withMinuteOfHour(0);
+			inicioPuntual = inicioPuntual.withSecondOfMinute(0);
+			inicioPuntual = inicioPuntual.withMillisOfSecond(0);
+
+			finPuntual = finPuntual.plusDays(1);
+			finPuntual = finPuntual.withHourOfDay(0);
+			finPuntual = finPuntual.withMinuteOfHour(0);
+			finPuntual = finPuntual.withSecondOfMinute(0);
+			finPuntual = finPuntual.withMillisOfSecond(0);
+		}
+
+		while (diasEntre >= 0) {
+			crearReservaActividad(inicioPuntual, finPuntual, idInst, idMonitor,
+					plazasMax);
+			inicioPuntual = inicioPuntual.plusDays(7);
+			finPuntual = finPuntual.plusDays(7);
+			diasEntre = Days.daysBetween(inicioPuntual, fin).getDays();
+		}
+
+	}
+
+	public static void cancelarActividadEntera(Long idInstanciaActividad) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Long idReserva = null;
+
+		try {
+			ps = con.prepareStatement(
+					"select horas_actividad.reserva_id from horas_actividad where horas_actividad.actividad_id = ?");
+			ps.setLong(1, idInstanciaActividad);
+			rs = ps.executeQuery();
+			ps.close();
+			while (rs.next()) {
+				idReserva = rs.getLong("reserva_id");
+				ps = con.prepareStatement(
+						"update reserva set estado = 'ANULADA' where reserva.id = ?");
+				ps.setLong(1, idReserva);
+				ps.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
+
 }

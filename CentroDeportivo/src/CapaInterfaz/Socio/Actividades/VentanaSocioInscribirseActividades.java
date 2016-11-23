@@ -1,4 +1,4 @@
-package CapaInterfaz.Socio.actividades;
+package CapaInterfaz.Socio.Actividades;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -210,6 +210,8 @@ public class VentanaSocioInscribirseActividades extends JFrame {
 				} else {
 					obtenerTodasActividadesFuturas();
 				}
+				tablaActividades.repaint();
+				tablaInstanciasActividades.repaint();
 			}
 		});
 
@@ -277,6 +279,7 @@ public class VentanaSocioInscribirseActividades extends JFrame {
 		descriptions = new HashMap<>();
 		Object[] line = new Object[2];
 		modeloTablaActividades.getDataVector().clear();
+		modeloTablaInstanciasActividad.getDataVector().clear();
 
 		for (Map<String, Object> actividad : actividades) {
 			long id = (long) actividad.get("id");

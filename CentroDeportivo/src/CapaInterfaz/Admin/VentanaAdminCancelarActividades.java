@@ -197,7 +197,7 @@ public class VentanaAdminCancelarActividades extends JFrame {
 		panelFiltro.setLayout(new BorderLayout(0, 0));
 
 		chckbxSoloActiConPlazoAbierto = new JCheckBox(
-				"Solo actividades con plazo de inscripcion cerrado");
+				"Solo actividades con plazo de inscripcion sin abrir");
 		panelFiltro.add(chckbxSoloActiConPlazoAbierto, BorderLayout.EAST);
 		chckbxSoloActiConPlazoAbierto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -232,6 +232,20 @@ public class VentanaAdminCancelarActividades extends JFrame {
 
 		JButton btnCancelarActividad = new JButton(
 				"Cancelar actividad completa");
+		btnCancelarActividad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectedRowActividad == -1) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado ninguna actividad para apuntarse.",
+							"Error: Ninguna Actividad seleccionada",
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					Long idReserva = (Long) tablaActividades
+							.getValueAt(selectedRowActividad, 0);
+					cancelarActividadEntera(idReserva);
+				}
+			}
+		});
 		panelPie.add(btnCancelarActividad);
 		panelPie.add(btnCancelarInstancia);
 	}
@@ -244,8 +258,10 @@ public class VentanaAdminCancelarActividades extends JFrame {
 		List<Map<String, Object>> actividades = listActividades;
 		descriptions = new HashMap<>();
 		Object[] line = new Object[2];
-		modeloTablaActividades.getDataVector().clear();
-
+		for (int i = 0; i < modeloTablaActividades.getRowCount(); i++)
+			modeloTablaActividades.removeRow(0);
+		for (int i = 0; i < modeloTablaInstanciasActividad.getRowCount(); i++)
+			modeloTablaInstanciasActividad.removeRow(0);
 		for (Map<String, Object> actividad : actividades) {
 			long id = (long) actividad.get("id");
 			line[0] = id;
@@ -288,7 +304,15 @@ public class VentanaAdminCancelarActividades extends JFrame {
 
 	private void cancelarInstanciaActividad(Long idInstanciaActividad) {
 		ActividadesDatos.cancelarInstanciaActividad(idInstanciaActividad);
+		obtenerTodasActividadesFuturas();
 		modeloTablaInstanciasActividad.getDataVector().clear();
+		tablaInstanciasActividades.repaint();
+	}
+
+	private void cancelarActividadEntera(Long idActividad) {
+		ActividadesDatos.cancelarActividadEntera(idActividad);
+		modeloTablaInstanciasActividad.getDataVector().clear();
+		obtenerTodasActividadesFuturas();
 		tablaInstanciasActividades.repaint();
 	}
 
