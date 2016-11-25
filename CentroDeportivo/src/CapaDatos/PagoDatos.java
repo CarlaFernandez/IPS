@@ -4,9 +4,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.joda.time.DateTime;
 
 import CapaNegocio.EstadoPago;
 import CapaNegocio.dao.Pago;
+import CapaNegocio.managers.ManagerFechas;
 
 public class PagoDatos {
 	public static Long obtenerNuevoIDPago() {
@@ -60,7 +67,6 @@ public class PagoDatos {
 
 	}
 
-
 	public static Pago obtenerPago(Long idPago) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -103,6 +109,78 @@ public class PagoDatos {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	public static List<Map<String, Object>> obtenerPagosCuentaDeSocio(
+			Long idSocio) {
+		List<Map<String, Object>> pagos = new ArrayList<>();
+		DateTime fechaActual = new DateTime();
+		DateTime mesAnterior = fechaActual.minusMonths(1).withDayOfMonth(20);
+		DateTime mesActual = fechaActual.withDayOfMonth(19);
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			String sql = "select r.usuario_id, p.id, p.concepto, p.fecha, p.importe, "
+					+ "p.estado from pago as p, reserva as r where r.pago_id = p.id "
+					+ "and r.usuario_id = ? and r.hora_inicio >= ? and r.hora_inicio <= ?";
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setLong(1, idSocio);
+			ps.setTimestamp(2,
+					ManagerFechas.convertirATimestampSql(mesAnterior));
+			ps.setTimestamp(3, ManagerFechas.convertirATimestampSql(mesActual));
+			ResultSet rs = ps.executeQuery();
+
+			Map<String, Object> pago = null;
+			while (rs.next()) {
+				pago = new HashMap<>();
+				pago.put("idSocio", rs.getLong("usuario_id"));
+				pago.put("id", rs.getLong("id"));
+				pago.put("concepto", rs.getString("concepto"));
+				pago.put("fecha", rs.getTimestamp("fecha"));
+				pago.put("importe", rs.getDouble("importe"));
+				pago.put("estado", rs.getString("estado"));
+				pagos.add(pago);
+			}
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return pagos;
+	}
+
+	public static Long obtenerIDSocioDePago(Long idPago) {
+		Long idSocio = null;
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		String sql = "select u.id from usuario as u, pago as p, reserva as r "
+				+ "where p.id = ? and r.pago_id = p.id and u.id = r.usuario_id";
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sql);
+			ps.setLong(1, idPago);
+			rs = ps.executeQuery();
+			rs.next();
+			idSocio = rs.getLong("id");
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return idSocio;
 	}
 
 }

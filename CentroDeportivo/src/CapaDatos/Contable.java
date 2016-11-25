@@ -3,42 +3,75 @@ package CapaDatos;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.joda.time.DateTime;
-
-import CapaNegocio.managers.ManagerFechas;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Contable {
-	public static int incrementarCuotaMensual(long idUsuario) {
+	private static void cobrarPagosCuota(long idPago) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
-		DateTime fechaActual = new DateTime();
-		DateTime mesAnterior = fechaActual.minusMonths(1).withDayOfMonth(20);
-		DateTime mesActual = fechaActual.withDayOfMonth(19);
-		StringBuilder sql = new StringBuilder();
-		sql.append(
-				"select u.id, u.dni, u.nombre, u.apellidos, u.cuenta_bancaria from pago, reserva, usuario as u");
-		sql.append(
-				"where pago.id = reserva.pago_id and usuario.id = reserva.usuario_id and usuario.id = ");
-		sql.append(idUsuario);
-		sql.append(
-				" and pago.estado = 'PENDIENTE' and pago.tipo_de_pago = 'CUOTA' ");
-		sql.append(" and reserva.HORA_INICIO >= TO_TIMESTAMP('");
-		sql.append(ManagerFechas.formatearFecha(mesAnterior));
-		sql.append("', 'DD-MM-YYYY HH:MI:SS')");
-		sql.append(" and reseva.hora_inicio <= TO_TIMESTAMP('");
-		sql.append(ManagerFechas.formatearFecha(mesActual));
-		sql.append("', 'DD-MM-YYYY HH:MI:SS')");
-		ResultSet rs = null;
-		int cuotaAniadida = 0;
-		try {
-			PreparedStatement ps = con.prepareStatement(sql.toString());
-			rs = ps.executeQuery();
+		String sql = "update pago set estado = 'COBRADO' where pago.id = ?";
 
-		} catch (Exception e) {
+		PreparedStatement ps;
+		try {
+			ps = con.prepareStatement(sql);
+			ps.setLong(1, idPago);
+			ps.executeUpdate();
+		} catch (SQLException e) {
 			System.err.println(e.getMessage());
-			e.printStackTrace(System.err);
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		return cuotaAniadida;
+
+	}
+
+	public static void incrementarPagos(List<Long> idSocios) {
+		List<Map<String, Object>> pagos = null;
+		List<Long> idPagos = new ArrayList<>();
+		for (long id : idSocios) {
+			pagos = PagoDatos.obtenerPagosCuentaDeSocio(id);
+			for (Map<String, Object> pago : pagos) {
+				idPagos.add((Long) pago.get("id"));
+			}
+		}
+		for (long id : idPagos) {
+			if (comprobarPagoPendiente(id))
+				cobrarPagosCuota(id);
+		}
+	}
+
+	private static boolean comprobarPagoPendiente(Long idPago) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		String sql = "select estado from pago where id = ?";
+		String estado = null;
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = con.prepareStatement(sql);
+			ps.setLong(1, idPago);
+			rs = ps.executeQuery();
+			rs.next();
+			estado = rs.getString("estado");
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return estado.equals("PENDIENTE") ? true : false;
 	}
 }

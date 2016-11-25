@@ -2,14 +2,11 @@ package CapaInterfaz.Admin;
 
 import java.awt.Color;
 import java.awt.Component;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.joda.time.DateTime;
-
-import CapaNegocio.dao.TipoReserva;
-
-public class TableCellRendererPasarPagos extends DefaultTableCellRenderer {
+public class TableCellRendererPasarPagosPagos extends DefaultTableCellRenderer {
 
 	/**
 	 * 
@@ -25,11 +22,11 @@ public class TableCellRendererPasarPagos extends DefaultTableCellRenderer {
 		componente.setBackground(Color.white);
 		// if (table.getModel().getValueAt(row, col) == null)
 		// return componente;
-		if (table.getModel().getValueAt(row, 0).equals(false)) {
-			componente.setBackground(new Color(255, 255, 255));
+		if (table.getModel().getValueAt(row, 5).equals("PENDIENTE")) {
+			componente.setBackground(new Color(255, 67, 67));
 		}
-		if (table.getModel().getValueAt(row, 0).equals(true)) {
-			componente.setBackground(new Color(178, 195, 243));
+		if (table.getModel().getValueAt(row, 5).equals("COBRADO")) {
+			componente.setBackground(new Color(73, 255, 67));
 		}
 		return componente;
 	}

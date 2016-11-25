@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,10 +40,8 @@ import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerUsuario;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.GridLayout;
 
+@SuppressWarnings("rawtypes")
 public class VentanaAdminVerReservas extends JFrame {
 
 	/**
@@ -49,12 +50,10 @@ public class VentanaAdminVerReservas extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private List<Instalacion> instalaciones;
 	private List<Usuario> usuarios;
-	private JTable t;
 	private DefaultTableModel tm;
 	JSpinner spinnerInicio;
 	ReservaDao tablaReservas[][];
 	private JComboBox comboBoxInstalaaciones;
-	private Long user;
 
 	@SuppressWarnings("unchecked")
 	public VentanaAdminVerReservas() {
@@ -278,6 +277,7 @@ public class VentanaAdminVerReservas extends JFrame {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void verDetalles(JTable t) {
 		ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
 		if (reserva != null)

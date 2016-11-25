@@ -3,6 +3,8 @@ package CapaInterfaz.Socio;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -10,17 +12,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 import CapaInterfaz.Socio.Actividades.VentanaSocioActividades;
-import CapaInterfaz.Socio.Instalaciones.VentanaApuntarseActividad;
+import CapaInterfaz.Socio.Actividades.VentanaSocioInscribirseActividades;
 import CapaInterfaz.Socio.Instalaciones.VentanaSocioInstalaciones;
 
-import javax.swing.border.BevelBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 public class VentanaSocio extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public VentanaSocio(Long user) {
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
@@ -38,25 +42,10 @@ public class VentanaSocio extends JFrame {
 				new VentanaSocioInstalaciones(user).show();
 			}
 		});
-		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnReservas.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
 
-		JButton btnNewButton_1 = new JButton("Apuntarse a Actividades");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
-			public void actionPerformed(ActionEvent arg0) {
-				VentanaApuntarseActividad vaas = new VentanaApuntarseActividad(user);
-				vaas.show();
-				if (vaas.modeloTabla.getRowCount() == 0) {
-					JOptionPane.showMessageDialog(null, "No hay actividades disponibles para apntarse.",
-							"No hay actividades disponibles", JOptionPane.INFORMATION_MESSAGE);
-					vaas.dispose();
-				}
-			}
-		});
-		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnNewButton_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panel.add(btnNewButton_1);
 
 		JButton btnActividades = new JButton("Gestion Actividades");
 		btnActividades.addActionListener(new ActionListener() {
@@ -65,12 +54,14 @@ public class VentanaSocio extends JFrame {
 			}
 		});
 		btnActividades.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnActividades.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnActividades.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnActividades);
 
 		JButton btnNewButton_2 = new JButton(" ");
 		btnNewButton_2.setFont(new Font("Wide Latin", Font.PLAIN, 12));
-		btnNewButton_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnNewButton_2.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_2);
 
 		JLabel lblTituloSocio = new JLabel("Ventana Socios");
@@ -79,10 +70,4 @@ public class VentanaSocio extends JFrame {
 		lblTituloSocio.setFont(new Font("Arial Black", Font.BOLD, 25));
 		getContentPane().add(lblTituloSocio, BorderLayout.NORTH);
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 }

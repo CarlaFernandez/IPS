@@ -30,11 +30,11 @@ public class TableCellRendererColorEstadoClaseActividad extends DefaultTableCell
 			return componente;
 		}
 		// // naranja clase cancelada
-		if (splits[1].equals(" Clase cancelada")) {
+		if (splits[1].equals(" Inscripcion cancelada")) {
 			componente.setBackground(new Color(255, 185, 0));
 		}
 		// // rojo clase cancelada
-		if (splits[1].equals(" Actividad cancelada")) {
+		if (splits[1].equals(" Clase/Hora cancelada")) {
 			componente.setBackground(new Color(255, 185, 185));
 		}
 

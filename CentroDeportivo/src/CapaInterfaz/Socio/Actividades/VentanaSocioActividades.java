@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -29,19 +30,31 @@ public class VentanaSocioActividades extends JFrame {
 		btnReservas.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				new VentanaSocioVerMisActividades(user).show();				
+				new VentanaSocioVerMisActividades(user).show();
 			}
 		});
 
-		JButton btnRealizarReserva = new JButton("");
+		JButton btnRealizarReserva = new JButton("Inscribirse a actividades");
 		btnRealizarReserva.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				VentanaSocioInscribirseActividades vaas = new VentanaSocioInscribirseActividades(
+						user);
+				vaas.show();
+				if (vaas.modeloTablaActividades.getRowCount() == 0) {
+					JOptionPane.showMessageDialog(null,
+							"No hay actividades disponibles para apntarse.",
+							"No hay actividades disponibles",
+							JOptionPane.INFORMATION_MESSAGE);
+					vaas.dispose();
+				}
 			}
 		});
 		btnRealizarReserva.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnRealizarReserva.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnRealizarReserva.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnRealizarReserva);
-		btnReservas.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnReservas.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnReservas);
 
 		JButton btnNewButton_1 = new JButton("");
@@ -51,7 +64,8 @@ public class VentanaSocioActividades extends JFrame {
 
 			}
 		});
-		btnNewButton_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnNewButton_1.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton_1);
 
 		JButton btnNewButton = new JButton("");
@@ -60,7 +74,8 @@ public class VentanaSocioActividades extends JFrame {
 			}
 		});
 		btnNewButton.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnNewButton.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnNewButton.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnNewButton);
 
 		JLabel lblTituloSocio = new JLabel("Ventana Socios>Actividades");

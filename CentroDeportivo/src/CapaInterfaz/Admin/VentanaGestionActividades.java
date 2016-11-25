@@ -8,11 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
 
 public class VentanaGestionActividades extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -24,7 +20,7 @@ public class VentanaGestionActividades extends JFrame {
 
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
-		panel.setLayout(new GridLayout(0, 1, 0, 0));
+		panel.setLayout(new GridLayout(2, 1, 0, 0));
 
 		JButton btnRealizarReserva = new JButton("Crear nueva actividad");
 		btnRealizarReserva.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -36,6 +32,16 @@ public class VentanaGestionActividades extends JFrame {
 			}
 		});
 		panel.add(btnRealizarReserva);
+
+		JButton btnCancelarActividad = new JButton("Cancelar actividad");
+		btnCancelarActividad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaAdminCancelarActividades ventana = new VentanaAdminCancelarActividades();
+				ventana.show();
+			}
+		});
+		btnCancelarActividad.setFont(new Font("Arial", Font.PLAIN, 14));
+		panel.add(btnCancelarActividad);
 	}
 
 }
