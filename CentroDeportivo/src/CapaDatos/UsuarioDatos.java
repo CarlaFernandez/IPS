@@ -379,16 +379,20 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			System.err.println("no existe usuario con id: "+idUsu);
 		}
 	}
-	public static boolean getAsistenciaSocioActividad(Long idUsu, Long idActividad){
+	public static boolean getAsistenciaSocioActividad(Long idUsu, Long idActividad, Long idMonitor, DateTime fecha_inicio){
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Select asistido from APUNTADO_ACTIVIDAD "
-					+ "where ACTIVIDAD_ID = ? and USUARIO_ID = ?");
+			sb.append("Select asistido from APUNTADO_ACTIVIDAD aa "
+					+ "inner join HORAS_ACTIVIDAD ha "
+					+ "on ha.ID = aa.HORAS_ACTIVIDAD_ID "
+					+ "where ha.ACTIVIDAD_ID = ? and ha.MONITOR_ID=? and ha.FECHA_ACTIVIDAD_INICIO=? and aa.USUARIO_ID = ?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idActividad);
-			ps.setLong(2, idUsu);
+			ps.setLong(2, idMonitor);
+			ps.setTimestamp(3, new Timestamp(fecha_inicio.getMillis()));
+			ps.setLong(4, idUsu);
 			ResultSet rs = ps.executeQuery();
 			boolean asist = false;
 			int contador = 0;
@@ -422,27 +426,61 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		}
 	}
 	
-	public static void guardarCambiosActividad(Long idActividad, Object[][] cambios, int numFilas){
+	public static void guardarCambiosActividad(Long idActividad, Long idMonitor, DateTime fecha_inicio, Object[][] cambios, int numFilas){
+//		Long idUsu, Long idActividad, boolean asistido;
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			Long id_ha = getIdHorasActividad(idActividad, idMonitor, fecha_inicio);
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE apuntado_actividad "
+					+ "set asistido = ? "
+					+ "where usuario_id=? and horas_actividad_id=?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+					
+			for(int i=0;i<numFilas;i++){
+				ps.setBoolean(1, (Boolean) cambios[i][1]);
+				ps.setLong(2, (Long) cambios[i][0]);
+				ps.setLong(3, id_ha);
+				ps.execute();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Error en guardar cambios");
+		}
+		
+	}
+	
+	
+	
+	public static Long getIdHorasActividad(Long idActividad, Long idMonitor, DateTime fecha_inicio){
 //		Long idUsu, Long idActividad, boolean asistido;
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE apuntado_actividad "
-					+ "set asistido = ? "
-					+ "where usuario_id=? and actividad_id=?");
+			sb.append("select ID from horas_actividad "
+					+ "where actividad_id=? and monitor_id=? and fecha_actividad_inicio=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			for(int i=0;i<numFilas;i++){
-				ps.setBoolean(1, (Boolean) cambios[i][1]);
-				ps.setLong(2, (Long) cambios[i][0]);
-				ps.setLong(3, idActividad);
-				ps.execute();
+			ps.setLong(1, idActividad);
+			ps.setLong(2, idMonitor);
+			ps.setTimestamp(3, new Timestamp(fecha_inicio.getMillis()));
+			ResultSet rs = ps.executeQuery();
+			Long id = null;
+			while (rs.next()) {
+				id = rs.getLong("ID");
 			}
+			con.close();
+			return id;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			System.err.println("Error en guardar cambios");
+			return null;
 		}
 		
 	}
+	
+	
 	
 	public static List<Usuario> bajasSociosEnActividad(Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();

@@ -7,15 +7,21 @@ import javax.swing.table.*;
  *
  */
 public class ModeloNoEditable extends DefaultTableModel {
+	public boolean editable;
 
 	public ModeloNoEditable(Object[] columnNames, int rowCount) {
 		super(columnNames, rowCount);
+		editable=false;
    }
 	@Override
 	public boolean isCellEditable(int row, int column) {
-		if(column==3)
-			return true;
-        return false;
+		if(editable==false)
+			return false;
+		else{
+			if(column==3)
+				return true;
+	        return false;
+		}
     }
 	 
 	@Override
