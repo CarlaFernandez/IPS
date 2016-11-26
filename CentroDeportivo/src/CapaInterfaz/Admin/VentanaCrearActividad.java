@@ -511,6 +511,14 @@ public class VentanaCrearActividad extends JFrame {
 					chckbxViernes.setSelected(true);
 					chckbxSabado.setSelected(true);
 					chckbxDomingo.setSelected(true);
+					
+					chckbxMartes.setEnabled(false);
+					chckbxMiercoles.setEnabled(false);
+					chckbxJueves.setEnabled(false);
+					chckbxViernes.setEnabled(false);
+					chckbxSabado.setEnabled(false);
+					chckbxDomingo.setEnabled(false);
+					
 					valoresLunesEnTodos();
 					setEstadoComponentesNoLunes(false);
 				} else {
@@ -521,6 +529,14 @@ public class VentanaCrearActividad extends JFrame {
 					chckbxViernes.setSelected(false);
 					chckbxSabado.setSelected(false);
 					chckbxDomingo.setSelected(false);
+					
+					chckbxMartes.setEnabled(true);
+					chckbxMiercoles.setEnabled(true);
+					chckbxJueves.setEnabled(true);
+					chckbxViernes.setEnabled(true);
+					chckbxSabado.setEnabled(true);
+					chckbxDomingo.setEnabled(true);
+					
 					setEstadoComponentesNoLunes(true);
 				}
 			}
@@ -537,45 +553,36 @@ public class VentanaCrearActividad extends JFrame {
 					spinnersInicioComoLunes();
 			}
 		});
-
-		spinnerInicioLunes = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioLunes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioLunes.setBounds(245, 38, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioLunes);
 
-		spinnerInicioMartes = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
+		spinnerInicioMartes = new JSpinner((new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioMartes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioMartes.setBounds(245, 61, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioMartes);
 
-		spinnerInicioMiercoles = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
+		spinnerInicioMiercoles = new JSpinner((new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioMiercoles.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioMiercoles.setBounds(245, 87, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioMiercoles);
 
-		spinnerInicioJueves = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
+		spinnerInicioJueves = new JSpinner((new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioJueves.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioJueves.setBounds(245, 113, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioJueves);
 
-		spinnerInicioViernes = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
+		spinnerInicioViernes = new JSpinner((new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioViernes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioViernes.setBounds(245, 139, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioViernes);
 
-		spinnerInicioSabado = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
+		spinnerInicioSabado = new JSpinner((new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioSabado.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioSabado.setBounds(245, 165, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioSabado);
 
-		spinnerInicioDomingo = new JSpinner(
-				(new SpinnerNumberModel(15, 0, 23, 1)));
+		spinnerInicioDomingo = new JSpinner((new SpinnerNumberModel(15, 0, 23, 1)));
 		spinnerInicioDomingo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerInicioDomingo.setBounds(245, 191, 75, 20);
 		panelDiasPeriodica.add(spinnerInicioDomingo);
@@ -588,44 +595,36 @@ public class VentanaCrearActividad extends JFrame {
 					spinnersDuracionComoLunes();
 			}
 		});
-		spinnerDuracionLunes = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionLunes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionLunes.setBounds(356, 36, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionLunes);
 
-		spinnerDuracionMartes = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionMartes = new JSpinner(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionMartes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionMartes.setBounds(356, 59, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionMartes);
 
-		spinnerDuracionMiercoles = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionMiercoles = new JSpinner(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionMiercoles.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionMiercoles.setBounds(356, 85, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionMiercoles);
 
-		spinnerDuracionJueves = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionJueves = new JSpinner(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionJueves.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionJueves.setBounds(356, 111, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionJueves);
 
-		spinnerDuracionViernes = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionViernes = new JSpinner(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionViernes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionViernes.setBounds(356, 137, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionViernes);
 
-		spinnerDuracionSabado = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionSabado = new JSpinner(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionSabado.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionSabado.setBounds(356, 163, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionSabado);
 
-		spinnerDuracionDomingo = new JSpinner(
-				new SpinnerNumberModel(1, 1, 23, 1));
+		spinnerDuracionDomingo = new JSpinner(new SpinnerNumberModel(1, 1, 23, 1));
 		spinnerDuracionDomingo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		spinnerDuracionDomingo.setBounds(356, 189, 32, 20);
 		panelDiasPeriodica.add(spinnerDuracionDomingo);
@@ -690,9 +689,7 @@ public class VentanaCrearActividad extends JFrame {
 		comboBoxInstalacionMiercoles = new JComboBox(nombresInstalaciones);
 		comboBoxInstalacionMiercoles.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		comboBoxInstalacionMiercoles.setBounds(619, 85, 93, 20);
-		comboBoxInstalacionMiercoles
-				.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		comboBoxInstalacionMiercoles.setBounds(561, 85, 93, 20);
+		comboBoxInstalacionMiercoles.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelDiasPeriodica.add(comboBoxInstalacionMiercoles);
 
 		comboBoxInstalacionJueves = new JComboBox(nombresInstalaciones);
@@ -727,7 +724,6 @@ public class VentanaCrearActividad extends JFrame {
 		spinnerPlazasLunes.setBounds(734, 33, 83, 20);
 		spinnerPlazasLunes.setModel(new SpinnerNumberModel(new Integer(0),
 				new Integer(0), null, new Integer(1)));
-		spinnerPlazasLunes.setBounds(687, 36, 83, 20);
 		panelDiasPeriodica.add(spinnerPlazasLunes);
 
 		spinnerPlazasMartes = new JSpinner(new SpinnerNumberModel(
@@ -778,18 +774,15 @@ public class VentanaCrearActividad extends JFrame {
 		panelDiasPeriodica.add(txtNombreActividadPeriodica);
 		txtNombreActividadPeriodica.setColumns(10);
 
-		JLabel lblDescripcionActividadPeriodica = new JLabel(
-				"Descripci\u00F3n actividad:");
-		lblDescripcionActividadPeriodica
-				.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		JLabel lblDescripcionActividadPeriodica = new JLabel("Descripci\u00F3n actividad:");
+		lblDescripcionActividadPeriodica.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblDescripcionActividadPeriodica.setBounds(63, 276, 164, 23);
 		panelDiasPeriodica.add(lblDescripcionActividadPeriodica);
 
 		txtpnDescripcionPeriodica = new JTextPane();
 		txtpnDescripcionPeriodica.setBorder(new LineBorder(Color.BLACK));
 		txtpnDescripcionPeriodica.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtpnDescripcionPeriodica
-				.setText("Introduzca aqu\u00ED la descripci\u00F3n");
+		txtpnDescripcionPeriodica.setText("Introduzca aqu\u00ED la descripci\u00F3n");
 		txtpnDescripcionPeriodica.setBounds(237, 274, 178, 75);
 		panelDiasPeriodica.add(txtpnDescripcionPeriodica);
 
@@ -946,20 +939,14 @@ public class VentanaCrearActividad extends JFrame {
 			fechaFin = fechaInicio;
 		}
 
-		DateTimeFormatter formatter = DateTimeFormat
-				.forPattern("dd/MM/yyyy HH:mm:ss");
-		DateTime dateTimeInicio = formatter
-				.parseDateTime(fechaInicio + " " + horaInicioString);
-		DateTime dateTimeFin = formatter
-				.parseDateTime(fechaFin + " " + horaFinString);
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicioString);
+		DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFinString);
 
 		try {
-			ManagerAdmin.crearActividad(txtNombreActividadPuntual.getText(),
-					txtpnDescripcionPuntual.getText());
-			ManagerAdmin.crearReservaActividad(dateTimeInicio, dateTimeFin,
-					idInst, idMonitor, (int) spinnerPlazasPuntual.getValue());
-			JOptionPane.showMessageDialog(this,
-					"La reserva se ha insertado con éxito");
+			ManagerAdmin.crearActividad(txtNombreActividadPuntual.getText(),txtpnDescripcionPuntual.getText());
+			ManagerAdmin.crearReservaActividad(dateTimeInicio, dateTimeFin,	idInst, idMonitor, (int) spinnerPlazasPuntual.getValue());
+			JOptionPane.showMessageDialog(this,	"La reserva se ha insertado con éxito");
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
 		}
@@ -971,36 +958,23 @@ public class VentanaCrearActividad extends JFrame {
 				txtpnDescripcionPeriodica.getText());
 		try {
 			if (chckbxLunes.isSelected()) {
-				Long idInst = instalaciones
-						.get(comboBoxInstalacionLunes.getSelectedIndex())
-						.getIdInst();
-				Long idMonitor = monitores
-						.get(comboBoxMonitorLunes.getSelectedIndex())
-						.getIdMonitor();
-				DateTime dateTimeInicio = crearDateTimePeriodica(
-						spinnerInicioLunes, spinnerDuracionLunes)[0];
-				DateTime dateTimeFin = crearDateTimePeriodica(
-						spinnerInicioLunes, spinnerDuracionLunes)[1];
+				Long idInst = instalaciones.get(comboBoxInstalacionLunes.getSelectedIndex()).getIdInst();
+				Long idMonitor = monitores.get(comboBoxMonitorLunes.getSelectedIndex()).getIdMonitor();
+				DateTime dateTimeInicio = crearDateTimePeriodica(spinnerInicioLunes, spinnerDuracionLunes)[0];
+				DateTime dateTimeFin = crearDateTimePeriodica(spinnerInicioLunes, spinnerDuracionLunes)[1];
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.LUNES,
 						dateTimeInicio, dateTimeFin, idInst, idMonitor,
 						(int) spinnerPlazasLunes.getValue(),
 						chckbxTodoElDiaLunes.isSelected());
-				JOptionPane.showMessageDialog(this,
-						"Las reservas del LUNES se han insertado con éxito");
+				JOptionPane.showMessageDialog(this,"Las reservas del LUNES se han insertado con éxito");
 			}
 
 			if (chckbxMartes.isSelected()) {
-				Long idInst = instalaciones
-						.get(comboBoxInstalacionMartes.getSelectedIndex())
-						.getIdInst();
-				Long idMonitor = monitores
-						.get(comboBoxMonitorMartes.getSelectedIndex())
-						.getIdMonitor();
-				DateTime dateTimeInicio = crearDateTimePeriodica(
-						spinnerInicioMartes, spinnerDuracionMartes)[0];
-				DateTime dateTimeFin = crearDateTimePeriodica(
-						spinnerInicioMartes, spinnerDuracionMartes)[1];
+				Long idInst = instalaciones.get(comboBoxInstalacionMartes.getSelectedIndex()).getIdInst();
+				Long idMonitor = monitores.get(comboBoxMonitorMartes.getSelectedIndex()).getIdMonitor();
+				DateTime dateTimeInicio = crearDateTimePeriodica(spinnerInicioMartes, spinnerDuracionMartes)[0];
+				DateTime dateTimeFin = crearDateTimePeriodica(spinnerInicioMartes, spinnerDuracionMartes)[1];
 
 				ManagerAdmin.crearReservaActividadSemanal(DiasSemana.MARTES,
 						dateTimeInicio, dateTimeFin, idInst, idMonitor,
