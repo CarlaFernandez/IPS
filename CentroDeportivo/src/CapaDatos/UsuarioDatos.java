@@ -381,13 +381,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			System.err.println("no existe usuario con id: " + idUsu);
 		}
 	}
-<<<<<<< HEAD
 	public static boolean getAsistenciaSocioActividad(Long idUsu, Long idActividad, Long idMonitor, DateTime fecha_inicio){
-=======
-
-	public static boolean getAsistenciaSocioActividad(Long idUsu,
-			Long idActividad) {
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -433,34 +427,20 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			System.err.println("no existe usuario con id: " + idUsu);
 		}
 	}
-<<<<<<< HEAD
+
 	
 	public static void guardarCambiosActividad(Long idActividad, Long idMonitor, DateTime fecha_inicio, Object[][] cambios, int numFilas){
 //		Long idUsu, Long idActividad, boolean asistido;
-=======
-
-	public static void guardarCambiosActividad(Long idActividad,
-			Object[][] cambios, int numFilas) {
-		// Long idUsu, Long idActividad, boolean asistido;
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			Long id_ha = getIdHorasActividad(idActividad, idMonitor, fecha_inicio);
 			StringBuilder sb = new StringBuilder();
-<<<<<<< HEAD
 			sb.append("UPDATE apuntado_actividad "
 					+ "set asistido = ? "
 					+ "where usuario_id=? and horas_actividad_id=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-					
-			for(int i=0;i<numFilas;i++){
-=======
-			sb.append("UPDATE apuntado_actividad " + "set asistido = ? "
-					+ "where usuario_id=? and actividad_id=?");
-			PreparedStatement ps = con.prepareStatement(sb.toString());
 			for (int i = 0; i < numFilas; i++) {
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 				ps.setBoolean(1, (Boolean) cambios[i][1]);
 				ps.setLong(2, (Long) cambios[i][0]);
 				ps.setLong(3, id_ha);
@@ -501,13 +481,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		}
 
 	}
-<<<<<<< HEAD
-	
-	
-	
-=======
 
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 	public static List<Usuario> bajasSociosEnActividad(Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();

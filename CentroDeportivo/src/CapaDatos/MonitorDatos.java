@@ -96,7 +96,6 @@ public class MonitorDatos extends GeneradorIDRandom {
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-<<<<<<< HEAD
 			sb.append("select * from actividad a "
 					+ "INNER JOIN HORAS_ACTIVIDAD ha on ha.ACTIVIDAD_ID = a.ID "
 					+ "INNER JOIN RESERVA r on r.ID = ha.RESERVA_ID "
@@ -104,11 +103,6 @@ public class MonitorDatos extends GeneradorIDRandom {
 					+ "and ha.fecha_actividad_inicio >= ? "
 					+ "and ha.fecha_actividad_inicio <= ? "
 					+ "order by ha.fecha_actividad_inicio");
-=======
-			sb.append("select * from actividad " + "where MONITOR_ID = ? "
-					+ "and fecha_actividad >= ? " + "and fecha_actividad <= ? "
-					+ "order by fecha_actividad");
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, monitorId);
 			ps.setTimestamp(2, new Timestamp(fecha1.getMillis()));
@@ -122,21 +116,11 @@ public class MonitorDatos extends GeneradorIDRandom {
 				actividad.setDescripcion(rs.getString("DESCRIPCION"));
 				actividad.setPlazasTotales(rs.getInt("PLAZAS_TOTALES"));
 				actividad.setPlazasOcupadas(rs.getInt("PLAZAS_OCUPADAS"));
-<<<<<<< HEAD
 				if(rs.getString("ESTADO").equals("ACTIVA"))
 					actividad.setCancelada(false);
 				else 
 					actividad.setCancelada(true);
 				actividad.setFecha_entrada(new DateTime(rs.getTimestamp("FECHA_ACTIVIDAD_INICIO")));
-				
-=======
-				actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
-				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
-				actividad.setCancelada(rs.getBoolean("CANCELADA"));
-				actividad.setFecha_entrada(new DateTime(rs
-						.getTimestamp("FECHA_ACTIVIDAD")));
-
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 				actividades.add(actividad);
 			}
 			con.close();
@@ -302,15 +286,9 @@ public class MonitorDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-<<<<<<< HEAD
 	
 	
 	public static List<Usuario> usuariosActividad(Long idMonitor, Long idActividad, DateTime fecha_inicio) {
-=======
-
-	public static List<Usuario> usuariosActividad(Long idMonitor,
-			Long idActividad) {
->>>>>>> 39b58528211aea08a83bbf86dfabec3d45fa6fd7
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -334,10 +312,10 @@ public class MonitorDatos extends GeneradorIDRandom {
 				usuario.setNombre(rs.getString("NOMBRE"));
 				usuario.setApellidos(rs.getString("APELLIDOS"));
 				usuario.setDNI(rs.getString("DNI"));
-				usuario.setDireccion(rs.getString("DIRECCION"));
-				usuario.setEmail(rs.getString("EMAIL"));
-				usuario.setCiudad(rs.getString("CIUDAD"));
-				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
+//				usuario.setDireccion(rs.getString("DIRECCION"));
+//				usuario.setEmail(rs.getString("EMAIL"));
+//				usuario.setCiudad(rs.getString("CIUDAD"));
+//				usuario.setCuentaBancaria(rs.getString("CUENTA_BANCARIA"));
 				usuario.setSocio(rs.getBoolean("SOCIO"));
 				if (rs.getDate("FECHA_BAJA") != null) {
 					usuario.setBaja(rs.getDate("FECHA_BAJA"));

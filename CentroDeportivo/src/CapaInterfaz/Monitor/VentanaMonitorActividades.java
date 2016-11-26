@@ -175,13 +175,19 @@ public class VentanaMonitorActividades extends JFrame {
 			getCbActividad().setEnabled(false);
 			cbActividad.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent arg0) {
-//					getBtnConfirmarCambios();
-					actividadActual = actividadesMonitor.get(0);
 					try{
 						actividadActual = actividadesMonitor.get(cbActividad.getSelectedIndex());
 					}catch(Exception e){
 						actividadActual=null;
 						System.out.println("ERROR EN CB ACTIVIDAD");
+					}
+					if(actividadActual==null || is5min()==false){
+						getBtnConfirmarCambios().setEnabled(false);
+						getBtnAnadirNuevoSocio().setEnabled(false);
+					}
+					else{
+						getBtnConfirmarCambios().setEnabled(true);
+						getBtnAnadirNuevoSocio().setEnabled(true);
 					}
 					asignarDescripcion();
 					rellenarTabla();
@@ -217,47 +223,15 @@ public class VentanaMonitorActividades extends JFrame {
 			spinnerReloj.addChangeListener(new ChangeListener() {
 				@SuppressWarnings("deprecation")
 				public void stateChanged(ChangeEvent arg0) {
-					Calendar calendarReloj = Calendar.getInstance();
-					calendarReloj.setTime((Date) spinnerReloj.getValue());
-					calendarReloj.set(Calendar.MILLISECOND, 0);
-					calendarReloj.set(Calendar.SECOND, 0);
-					DateTime dateTimeReloj = new DateTime(calendarReloj.getTime());
-					System.out.println("DateTime reloj: "+dateTimeReloj.toString());
-
-					DateTime fecha_entrada_actividad = actividadActual.getFecha_entrada();
-					
-					Calendar calendarFechaAct = Calendar.getInstance();
-					calendarFechaAct.setTime((Date) fecha_entrada_actividad.toDate());
-					calendarFechaAct.set(Calendar.MILLISECOND, 0);
-					calendarFechaAct.set(Calendar.SECOND, 0);
-					DateTime dateTimeInicio = new DateTime(calendarFechaAct.getTime());
-					
-					System.out.println("DateTime reloj: "+dateTimeReloj.toString()+"     dateTimeInicio:"+dateTimeInicio);
-					
-					
-					if(dateTimeReloj.getYear()==dateTimeInicio.getYear() && 
-							dateTimeReloj.getDayOfMonth()==dateTimeInicio.getDayOfMonth() &&  
-							dateTimeReloj.getMonthOfYear()==dateTimeInicio.getMonthOfYear()){
-						int minutosReloj = dateTimeReloj.getMinuteOfHour();
-						int horaReloj = dateTimeReloj.getHourOfDay();
-						int horaActividad = dateTimeInicio.getHourOfDay();
-						int minutosActividad = dateTimeInicio.getMinuteOfHour();
-						System.out.println("hora reloj: "+horaReloj+":"+minutosReloj+"     hora actividad: "+horaActividad+":"+minutosActividad);
-						if( horaActividad-1==horaReloj && (minutosReloj>=55 && minutosReloj<=59)){
-							modeloTabla.editable=true;
-							getBtnConfirmarCambios().setEnabled(true);
-							getBtnAnadirNuevoSocio().setEnabled(true);
-//							modeloTabla.fireTableDataChanged();
-							System.out.println(modeloTabla.editable);
-						}
+					if(is5min()==true){
+						modeloTabla.editable=true;
+						getBtnConfirmarCambios().setEnabled(true);
+						getBtnAnadirNuevoSocio().setEnabled(true);
 					}
 					else{
 						modeloTabla.editable=false;
 						getBtnConfirmarCambios().setEnabled(false);
 						getBtnAnadirNuevoSocio().setEnabled(false);
-//						modeloTabla.fireTableDataChanged();
-						System.out.println(modeloTabla.editable);
-						System.out.println("FECHA ACTIVIDAD SUPERIOR A RELOJ");
 					}
 				}
 			});
@@ -268,6 +242,41 @@ public class VentanaMonitorActividades extends JFrame {
 		}
 		return spinnerReloj;
 	}
+	
+	private boolean is5min(){
+		Calendar calendarReloj = Calendar.getInstance();
+		calendarReloj.setTime((Date) spinnerReloj.getValue());
+		calendarReloj.set(Calendar.MILLISECOND, 0);
+		calendarReloj.set(Calendar.SECOND, 0);
+		DateTime dateTimeReloj = new DateTime(calendarReloj.getTime());
+		System.out.println("DateTime reloj: "+dateTimeReloj.toString());
+
+		DateTime fecha_entrada_actividad = actividadActual.getFecha_entrada();
+		
+		Calendar calendarFechaAct = Calendar.getInstance();
+		calendarFechaAct.setTime((Date) fecha_entrada_actividad.toDate());
+		calendarFechaAct.set(Calendar.MILLISECOND, 0);
+		calendarFechaAct.set(Calendar.SECOND, 0);
+		DateTime dateTimeInicio = new DateTime(calendarFechaAct.getTime());
+		
+		System.out.println("DateTime reloj: "+dateTimeReloj.toString()+"     dateTimeInicio:"+dateTimeInicio);
+		
+		
+		if(dateTimeReloj.getYear()==dateTimeInicio.getYear() && 
+				dateTimeReloj.getDayOfMonth()==dateTimeInicio.getDayOfMonth() &&  
+				dateTimeReloj.getMonthOfYear()==dateTimeInicio.getMonthOfYear()){
+			int minutosReloj = dateTimeReloj.getMinuteOfHour();
+			int horaReloj = dateTimeReloj.getHourOfDay();
+			int horaActividad = dateTimeInicio.getHourOfDay();
+			int minutosActividad = dateTimeInicio.getMinuteOfHour();
+			System.out.println("hora reloj: "+horaReloj+":"+minutosReloj+"     hora actividad: "+horaActividad+":"+minutosActividad);
+			if( horaActividad-1==horaReloj && (minutosReloj>=55 && minutosReloj<=59)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 
 	private JSpinner getSpinnerInicio(){
 		if(spinnerInicio==null){
@@ -412,18 +421,6 @@ public class VentanaMonitorActividades extends JFrame {
 		}
 		return lblTituloMonitor;
 	}
-		
-	
-
-//	@SuppressWarnings("deprecation")
-//	private void verDetalles(JTable t) {
-//
-//		boolean mia = modeloTabla.getValueAt(t.getSelectedRow(), t.getSelectedColumn()).equals("Mi reserva");
-//		if (t.getSelectedRow() != -1 && tablaReservas[t.getSelectedColumn()][t.getSelectedRow()] != null && mia) {
-//			ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
-//			new VentanaDetallesReserva(reserva.getIdRes()).show();
-//		}
-//	}
 
 	private JScrollPane getSclDescripcion() {
 		if (sclDescripcion == null) {
@@ -469,7 +466,7 @@ public class VentanaMonitorActividades extends JFrame {
 		Long idActividad = actividadActual.getCodigo();
 		if(idActividad!=null){
 			List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad, actividadActual.getFecha_entrada());
-			if(usuariosAct==null)
+			if(usuariosAct==null || usuariosAct.size()==0)
 				JOptionPane.showMessageDialog(null, "La actividad no tiene asignado ningun usuario");
 			else{
 				for(int i=0;i< usuariosAct.size();i++){
@@ -483,7 +480,6 @@ public class VentanaMonitorActividades extends JFrame {
 						modeloTabla.addRow(nuevaFila);
 //					}
 				}
-				modeloTabla.fireTableDataChanged();
 				revisarNumeroSocios();
 			}
 			modeloTabla.fireTableDataChanged();
@@ -553,12 +549,9 @@ public class VentanaMonitorActividades extends JFrame {
 	}
 	
 	private void habilitarBotones(){
-//		getBtnAnadirNuevoSocio().setEnabled(true);
 		asignarDescripcion();
-		rellenarTabla();
+//		rellenarTabla();
 		revisarNumeroSocios();
-//		getBtnConfirmarCambios().setEnabled(true);
-//		getTxtAnadir().setEnabled(true);
 	}
 	
 	private void vaciar(){
