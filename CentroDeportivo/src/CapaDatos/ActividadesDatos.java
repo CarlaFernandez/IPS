@@ -847,5 +847,36 @@ public class ActividadesDatos {
 			}
 		}
 	}
+	
+	public static List<Long> obtenerSociosApuntadosInstancia(Long idInstanciaActividad){
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Long> users = new ArrayList<>();
+
+		try {
+			ps = con.prepareStatement(
+					"select usuario_id from apuntado_actividad where apuntado_actividad.horas_actividad_id = ?");
+			ps.setLong(1, idInstanciaActividad);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				users.add((long) rs.getInt("usuario_id"));
+			}
+			return users;
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return users;
+	}
 
 }

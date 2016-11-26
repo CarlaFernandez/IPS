@@ -397,6 +397,7 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			ps.setLong(4, idUsu);
 			ResultSet rs = ps.executeQuery();
 			boolean asist = false;
+			@SuppressWarnings("unused")
 			int contador = 0;
 			while (rs.next()) {
 				asist = rs.getBoolean("ASISTIDO");

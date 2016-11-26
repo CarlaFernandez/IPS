@@ -36,6 +36,7 @@ public class VentanaSocioActividades extends JFrame {
 
 		JButton btnRealizarReserva = new JButton("Inscribirse a actividades");
 		btnRealizarReserva.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				VentanaSocioInscribirseActividades vaas = new VentanaSocioInscribirseActividades(
 						user);

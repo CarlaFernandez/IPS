@@ -48,6 +48,7 @@ public class VentanaSocioCancelarReserva extends JFrame {
 	private JButton btnBuscar;
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
+	@SuppressWarnings("unused")
 	private int selectedRow = -1;
 	private long user;
 
@@ -191,6 +192,7 @@ public class VentanaSocioCancelarReserva extends JFrame {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private Long obtenerIDInstalacion() {
 		return instalaciones.get(comboBoxInstalaciones.getSelectedIndex())
 				.getIdInst();

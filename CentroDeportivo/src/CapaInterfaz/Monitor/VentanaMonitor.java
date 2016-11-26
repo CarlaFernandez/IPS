@@ -33,7 +33,6 @@ public class VentanaMonitor extends JFrame{
 		btnFaltaSocio.setEnabled(false);
 		btnFaltaSocio.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnFaltaSocio.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 //				VentanaSocioInstalacionReservasFecha vsir = new VentanaSocioInstalacionReservasFecha(user);
 //				vsir.show();
@@ -42,6 +41,7 @@ public class VentanaMonitor extends JFrame{
 		
 		JButton btnGestionarActividades = new JButton("Gestionar actividades");
 		btnGestionarActividades.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				VentanaMonitorActividades vs = new VentanaMonitorActividades(idMonitor);
 				vs.show();
@@ -57,7 +57,6 @@ public class VentanaMonitor extends JFrame{
 		btnNuevoSocioPlazaAusente.setEnabled(false);
 		btnNuevoSocioPlazaAusente.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnNuevoSocioPlazaAusente.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 //				VentanaSocioReservasPorInstalacion vsri = new VentanaSocioReservasPorInstalacion(user);
 //				vsri.show();

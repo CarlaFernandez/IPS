@@ -33,7 +33,7 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings(value = { "rawtypes", "deprecation", "unchecked" })
 public class VentanaReservaCentro extends JFrame {
 	/**
 	 * 
@@ -51,7 +51,7 @@ public class VentanaReservaCentro extends JFrame {
 	private JCheckBox chckbxPeridioca;
 	private JComboBox comboBoxDia;
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
+	@SuppressWarnings({})
 	public VentanaReservaCentro() {
 		setTitle("Admin -> Reserva Centro");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -59,10 +59,12 @@ public class VentanaReservaCentro extends JFrame {
 		setBounds(100, 100, 786, 525);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				Double.MIN_VALUE };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		getContentPane().setLayout(gridBagLayout);
 
 		JLabel lblRealizarReservaDe = new JLabel("Realizar reserva de centro");
@@ -135,8 +137,10 @@ public class VentanaReservaCentro extends JFrame {
 					lblHoraInicio.setEnabled(false);
 					lblHoraFin.setEnabled(false);
 				} else {
-					horaInicio = new Date(System.currentTimeMillis()).getHours();
-					horaFin = new Date(System.currentTimeMillis()).getHours() + 1;
+					horaInicio = new Date(System.currentTimeMillis())
+							.getHours();
+					horaFin = new Date(System.currentTimeMillis()).getHours()
+							+ 1;
 					spinnerInicio.setValue(horaInicio);
 					spinnerFin.setValue(horaFin);
 					spinnerInicio.setEnabled(true);
@@ -270,7 +274,8 @@ public class VentanaReservaCentro extends JFrame {
 		horaInicio += ":00:00";
 		String horaFin = String.valueOf(spinnerFin.getValue());
 		horaFin += ":00:00";
-		Long idInst = instalaciones.get(comboBoxInstalaciones.getSelectedIndex()).getIdInst();
+		Long idInst = instalaciones
+				.get(comboBoxInstalaciones.getSelectedIndex()).getIdInst();
 
 		DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 		String fechaInicio = fmt.format(dateInicio.getDate());
@@ -281,20 +286,24 @@ public class VentanaReservaCentro extends JFrame {
 		// para una reserva no periodica
 		// si es de todo el día o la reserva es por ej. de 23 a 1...
 		if (!chckbxPeridioca.isSelected()) {
-			if (chckbxTodoElDia.isSelected() || (int) spinnerFin.getValue() < (int) spinnerInicio.getValue()) {
+			if (chckbxTodoElDia.isSelected() || (int) spinnerFin
+					.getValue() < (int) spinnerInicio.getValue()) {
 				todoElDia = true;
-				DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
-				DateTime dateTimeInicio = new DateTime(formatter.parseDateTime(fechaInicio).getMillis());
+				DateTimeFormatter formatter = DateTimeFormat
+						.forPattern("dd/MM/yyyy");
+				DateTime dateTimeInicio = new DateTime(
+						formatter.parseDateTime(fechaInicio).getMillis());
 				DateTime dtPlusOne = dateTimeInicio.plusDays(1);
 				fechaFin = fmt.format(new Date(dtPlusOne.getMillis()));
 
 			} else {
 				fechaFin = fechaInicio;
 			}
-		} 
+		}
 		// para reserva periodica
 		else {
-			if (chckbxTodoElDia.isSelected() || (int) spinnerFin.getValue() < (int) spinnerInicio.getValue()) {
+			if (chckbxTodoElDia.isSelected() || (int) spinnerFin
+					.getValue() < (int) spinnerInicio.getValue()) {
 				todoElDia = true;
 			}
 
@@ -302,18 +311,24 @@ public class VentanaReservaCentro extends JFrame {
 
 		}
 
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
-		DateTime dateTimeInicio = formatter.parseDateTime(fechaInicio + " " + horaInicio);
-		DateTime dateTimeFin = formatter.parseDateTime(fechaFin + " " + horaFin);
+		DateTimeFormatter formatter = DateTimeFormat
+				.forPattern("dd/MM/yyyy HH:mm:ss");
+		DateTime dateTimeInicio = formatter
+				.parseDateTime(fechaInicio + " " + horaInicio);
+		DateTime dateTimeFin = formatter
+				.parseDateTime(fechaFin + " " + horaFin);
 
 		try {
 			if (chckbxPeridioca.isSelected()) {
-				ManagerAdmin.insertarReservaCentroSemanal((DiasSemana) comboBoxDia.getSelectedItem(), dateTimeInicio,
-						dateTimeFin, idInst, todoElDia);
+				ManagerAdmin.insertarReservaCentroSemanal(
+						(DiasSemana) comboBoxDia.getSelectedItem(),
+						dateTimeInicio, dateTimeFin, idInst, todoElDia);
 			} else {
-				ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin, idInst, null, null);
+				ManagerAdmin.crearReservaCentro(dateTimeInicio, dateTimeFin,
+						idInst, null, null);
 			}
-			JOptionPane.showMessageDialog(this, "La reserva se ha insertado con éxito");
+			JOptionPane.showMessageDialog(this,
+					"La reserva se ha insertado con éxito");
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "El formato es incorrecto");
 		} catch (ExcepcionReserva e) {

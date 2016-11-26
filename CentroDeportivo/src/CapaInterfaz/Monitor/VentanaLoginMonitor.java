@@ -9,9 +9,6 @@ import javax.swing.JTextField;
 
 import CapaDatos.MonitorDatos;
 import CapaNegocio.dao.Monitor;
-import CapaNegocio.dao.Usuario;
-import CapaNegocio.managers.ManagerUsuario;
-
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;

@@ -9,6 +9,11 @@ import javax.swing.table.*;
 public class ModeloNoEditable extends DefaultTableModel {
 	public boolean editable;
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public ModeloNoEditable(Object[] columnNames, int rowCount) {
 		super(columnNames, rowCount);
 		editable=false;

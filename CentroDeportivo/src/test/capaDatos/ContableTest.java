@@ -1,11 +1,5 @@
 package test.capaDatos;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-import CapaDatos.Contable;
-
 public class ContableTest {
 
 	/*@Test

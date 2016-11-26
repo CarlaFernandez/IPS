@@ -12,6 +12,7 @@ import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
 
+@SuppressWarnings(value = { "unused" })
 public class ReservaDatosTest {
 
 	private ReservaDao reserva;

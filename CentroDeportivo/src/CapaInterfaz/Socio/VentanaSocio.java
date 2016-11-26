@@ -9,14 +9,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 import CapaInterfaz.Socio.Actividades.VentanaSocioActividades;
-import CapaInterfaz.Socio.Actividades.VentanaSocioInscribirseActividades;
 import CapaInterfaz.Socio.Instalaciones.VentanaSocioInstalaciones;
 
 public class VentanaSocio extends JFrame {
@@ -49,6 +47,7 @@ public class VentanaSocio extends JFrame {
 
 		JButton btnActividades = new JButton("Gestion Actividades");
 		btnActividades.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				new VentanaSocioActividades(user).show();
 			}

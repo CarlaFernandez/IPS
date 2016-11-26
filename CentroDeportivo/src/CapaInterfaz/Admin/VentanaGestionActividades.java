@@ -35,6 +35,7 @@ public class VentanaGestionActividades extends JFrame {
 
 		JButton btnCancelarActividad = new JButton("Cancelar actividad");
 		btnCancelarActividad.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				VentanaAdminCancelarActividades ventana = new VentanaAdminCancelarActividades();
 				ventana.show();

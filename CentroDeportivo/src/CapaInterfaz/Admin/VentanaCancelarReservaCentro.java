@@ -48,6 +48,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 	private JButton btnBuscar;
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
+	@SuppressWarnings("unused")
 	private int selectedRow = -1;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -158,7 +159,6 @@ public class VentanaCancelarReservaCentro extends JFrame {
 
 		JButton button = new JButton("Cancelar Reserva");
 		button.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				int fila = table.getSelectedRow();
 				int botonDialogo = JOptionPane.YES_NO_OPTION;

@@ -9,6 +9,11 @@ import javax.swing.table.TableCellRenderer;
 
 public class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CheckBoxRenderer() {
 		setHorizontalAlignment(JLabel.CENTER);
 	}

@@ -41,7 +41,7 @@ import CapaNegocio.dao.Usuario;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerUsuario;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings(value = { "rawtypes" })
 public class VentanaAdminVerReservas extends JFrame {
 
 	/**
@@ -53,6 +53,7 @@ public class VentanaAdminVerReservas extends JFrame {
 	private DefaultTableModel tm;
 	JSpinner spinnerInicio;
 	ReservaDao tablaReservas[][];
+
 	private JComboBox comboBoxInstalaaciones;
 
 	@SuppressWarnings("unchecked")
@@ -91,9 +92,11 @@ public class VentanaAdminVerReservas extends JFrame {
 
 		// Titulos para la cabecera superior. El primero es vacio,
 		// puesto que corresponde
-		tm.setColumnIdentifiers(new String[] { "", DiasSemana.values()[0].name(), DiasSemana.values()[1].name(),
-				DiasSemana.values()[2].name(), DiasSemana.values()[3].name(), DiasSemana.values()[4].name(),
-				DiasSemana.values()[5].name(), DiasSemana.values()[6].name() });
+		tm.setColumnIdentifiers(new String[] { "",
+				DiasSemana.values()[0].name(), DiasSemana.values()[1].name(),
+				DiasSemana.values()[2].name(), DiasSemana.values()[3].name(),
+				DiasSemana.values()[4].name(), DiasSemana.values()[5].name(),
+				DiasSemana.values()[6].name() });
 
 		// Valores para la primera columna, que es la cabecera lateral.
 		for (int i = 0; i < tm.getRowCount(); i++)
@@ -109,11 +112,14 @@ public class VentanaAdminVerReservas extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+			public void changeSelection(int rowIndex, int columnIndex,
+					boolean toggle, boolean extend) {
 				if (columnIndex == 0)
-					super.changeSelection(rowIndex, columnIndex + 1, toggle, extend);
+					super.changeSelection(rowIndex, columnIndex + 1, toggle,
+							extend);
 				else
-					super.changeSelection(rowIndex, columnIndex, toggle, extend);
+					super.changeSelection(rowIndex, columnIndex, toggle,
+							extend);
 			}
 		};
 		t.addMouseListener(new MouseAdapter() {
@@ -128,7 +134,8 @@ public class VentanaAdminVerReservas extends JFrame {
 
 		// Se pone a la primera columna el render del JTableHeader
 		// superior.
-		t.getColumnModel().getColumn(0).setCellRenderer(t.getTableHeader().getDefaultRenderer());
+		t.getColumnModel().getColumn(0)
+				.setCellRenderer(t.getTableHeader().getDefaultRenderer());
 		t.setDefaultRenderer(Object.class, new TableCellRendererColorAdmin());
 		spTabla.setViewportView(t);
 
@@ -143,7 +150,8 @@ public class VentanaAdminVerReservas extends JFrame {
 		panelDiaSemana.add(lblSemanaDelDia);
 
 		spinnerInicio = new JSpinner();
-		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		spinnerInicio.setModel(new SpinnerDateModel(new Date(), null, null,
+				Calendar.DAY_OF_YEAR));
 		Calendar date = Calendar.getInstance();
 		date.setTime((Date) spinnerInicio.getValue());
 		date.add(Calendar.DATE, 7);
@@ -157,14 +165,19 @@ public class VentanaAdminVerReservas extends JFrame {
 		ahora.set(Calendar.SECOND, 0);
 		ahora.set(Calendar.MINUTE, 0);
 		ahora.set(Calendar.HOUR, 0);
-		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name();
-		JLabel lblDiaSemana = new JLabel(DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1].name());
+		DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek() - 1]
+				.name();
+		JLabel lblDiaSemana = new JLabel(
+				DiasSemana.values()[new DateTime(ahora.getTime()).getDayOfWeek()
+						- 1].name());
 		panelDiaSemana.add(lblDiaSemana);
 
 		spinnerInicio.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				lblDiaSemana.setText(DiasSemana
-						.values()[new DateTime(((Date) spinnerInicio.getValue()).getTime()).getDayOfWeek() - 1].name());
+				lblDiaSemana.setText(DiasSemana.values()[new DateTime(
+						((Date) spinnerInicio.getValue()).getTime())
+								.getDayOfWeek()
+						- 1].name());
 			}
 		});
 
@@ -202,19 +215,22 @@ public class VentanaAdminVerReservas extends JFrame {
 
 		JLabel lblCentro = new JLabel("Centro");
 		lblCentro.setOpaque(true);
-		lblCentro.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		lblCentro.setBorder(
+				new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		lblCentro.setBackground(new Color(255, 185, 185));
 		panelPie.add(lblCentro);
 
 		JLabel lblLibres = new JLabel("Libre");
-		lblLibres.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		lblLibres.setBorder(
+				new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		lblLibres.setOpaque(true);
 		lblLibres.setBackground(Color.WHITE);
 		panelPie.add(lblLibres);
 
 		JLabel lblSocio = new JLabel("Socio");
 		lblSocio.setOpaque(true);
-		lblSocio.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		lblSocio.setBorder(
+				new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		lblSocio.setBackground(new Color(185, 255, 185));
 		panelPie.add(lblSocio);
 
@@ -230,12 +246,14 @@ public class VentanaAdminVerReservas extends JFrame {
 	}
 
 	public void obtenerReservasPorInstalacion() {
-		Long instalacion = instalaciones.get(comboBoxInstalaaciones.getSelectedIndex()).getIdInst();
+		Long instalacion = instalaciones
+				.get(comboBoxInstalaaciones.getSelectedIndex()).getIdInst();
 		Date valorSpin = (Date) spinnerInicio.getValue();
 
 		Calendar dateInicio = Calendar.getInstance();
 		dateInicio.setTime((Date) spinnerInicio.getValue());
-		dateInicio.add(Calendar.DATE, -new DateTime(valorSpin.getTime()).getDayOfWeek());
+		dateInicio.add(Calendar.DATE,
+				-new DateTime(valorSpin.getTime()).getDayOfWeek());
 		dateInicio.set(Calendar.MILLISECOND, 0);
 		dateInicio.set(Calendar.SECOND, 0);
 		dateInicio.set(Calendar.MINUTE, 0);
@@ -249,8 +267,9 @@ public class VentanaAdminVerReservas extends JFrame {
 		System.out.println(dateInicio.getTime());
 		System.out.println(dateF.getTime());
 
-		List<ReservaDao> reservas = ManagerAdmin.verReservasPorFechaEInstalacion(dateInicio.getTime(), fin,
-				instalacion);
+		List<ReservaDao> reservas = ManagerAdmin
+				.verReservasPorFechaEInstalacion(dateInicio.getTime(), fin,
+						instalacion);
 
 		for (int i = 0; i < tm.getRowCount(); i++) {
 			for (int j = 0; j < tm.getColumnCount() - 1; j++) {
@@ -262,14 +281,17 @@ public class VentanaAdminVerReservas extends JFrame {
 		for (int i = 0; i < reservas.size(); i++) {
 			int dia = reservas.get(i).getInicio().getDayOfWeek();
 			int hora = reservas.get(i).getInicio().getHourOfDay();
-			int nhoras = Hours.hoursBetween(reservas.get(i).getInicio(), reservas.get(i).getFin()).getHours();
+			int nhoras = Hours.hoursBetween(reservas.get(i).getInicio(),
+					reservas.get(i).getFin()).getHours();
 			// System.out.println("nhoras" + nhoras);
 			for (int j = 0; j < nhoras; j++) {
-				if (reservas.get(i).getTipoRes().equals(TipoReserva.CENTRO.name())) {
+				if (reservas.get(i).getTipoRes()
+						.equals(TipoReserva.CENTRO.name())) {
 					tm.setValueAt(TipoReserva.CENTRO.name(), hora + j, dia);
 					tablaReservas[dia][hora + j] = reservas.get(i);
 				}
-				if (reservas.get(i).getTipoRes().equals(TipoReserva.SOCIO.name())) {
+				if (reservas.get(i).getTipoRes()
+						.equals(TipoReserva.SOCIO.name())) {
 					tm.setValueAt(TipoReserva.SOCIO.name(), hora + j, dia);
 					tablaReservas[dia][hora + j] = reservas.get(i);
 				}
@@ -279,7 +301,8 @@ public class VentanaAdminVerReservas extends JFrame {
 
 	@SuppressWarnings("deprecation")
 	private void verDetalles(JTable t) {
-		ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
+		ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t
+				.getSelectedRow()];
 		if (reserva != null)
 			new VentanaDetallesReserva(reserva.getIdRes()).show();
 	}

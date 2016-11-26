@@ -15,7 +15,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 public class VentanaGestionInstalaciones extends JFrame {
-	
+	@SuppressWarnings("unused")
+	private VentanaGestionInstalaciones ventana;
+
 	public VentanaGestionInstalaciones() {
 		setResizable(false);
 		setBounds(100, 100, 786, 525);
@@ -43,36 +45,43 @@ public class VentanaGestionInstalaciones extends JFrame {
 			}
 		});
 		btnVer.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnVer.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnVer.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnVer);
-		btnPagar.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnPagar.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnPagar);
 
 		JButton btnReservaCentro = new JButton("Realizar reserva de centro");
 		btnReservaCentro.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnReservaCentro.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnReservaCentro.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		btnReservaCentro.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-//				int respuesta = JOptionPane.showOptionDialog(ventana, "¿Quiere realizar una reserva periódica?",
-//						"Reserva periódica", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null,
-//						null);
-//				if (respuesta == JOptionPane.YES_OPTION){
-//					VentanaReservaCentroPeriodica v = new VentanaReservaCentroPeriodica();
-//					v.show();
-//				}
-//				else if (respuesta == JOptionPane.NO_OPTION){
-					VentanaReservaCentro vrc = new VentanaReservaCentro();
-					vrc.show();
-//				}
-				
+				// int respuesta = JOptionPane.showOptionDialog(ventana,
+				// "¿Quiere realizar una reserva periódica?",
+				// "Reserva periódica", JOptionPane.YES_NO_CANCEL_OPTION,
+				// JOptionPane.QUESTION_MESSAGE, null, null,
+				// null);
+				// if (respuesta == JOptionPane.YES_OPTION){
+				// VentanaReservaCentroPeriodica v = new
+				// VentanaReservaCentroPeriodica();
+				// v.show();
+				// }
+				// else if (respuesta == JOptionPane.NO_OPTION){
+				VentanaReservaCentro vrc = new VentanaReservaCentro();
+				vrc.show();
+				// }
+
 			}
 		});
 		panel.add(btnReservaCentro);
 
 		JButton btnReservaSocio = new JButton("Realizar reserva de socio");
 		btnReservaSocio.setFont(new Font("Arial", Font.PLAIN, 14));
-		btnReservaSocio.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnReservaSocio.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		btnReservaSocio.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
@@ -91,10 +100,12 @@ public class VentanaGestionInstalaciones extends JFrame {
 				vcrc.show();
 			}
 		});
-		btnCancelarCentro.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		btnCancelarCentro.setBorder(
+				new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.add(btnCancelarCentro);
-		
-		JButton btnIndicarUtilizacion = new JButton("Registrar utilizacion de la instalacion");
+
+		JButton btnIndicarUtilizacion = new JButton(
+				"Registrar utilizacion de la instalacion");
 		btnIndicarUtilizacion.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
@@ -104,8 +115,6 @@ public class VentanaGestionInstalaciones extends JFrame {
 		});
 		btnIndicarUtilizacion.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.add(btnIndicarUtilizacion);
-		
-
 
 		JLabel lblTituloAdmin = new JLabel("Gestión de instalaciones");
 		lblTituloAdmin.setHorizontalAlignment(SwingConstants.CENTER);
