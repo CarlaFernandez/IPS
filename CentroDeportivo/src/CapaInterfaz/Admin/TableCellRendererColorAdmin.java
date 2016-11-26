@@ -5,8 +5,6 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.joda.time.DateTime;
-
 import CapaNegocio.dao.TipoReserva;
 
 public class TableCellRendererColorAdmin extends DefaultTableCellRenderer{

@@ -1,10 +1,8 @@
 package CapaNegocio.managers;
 
-import java.awt.TrayIcon.MessageType;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;

@@ -4,3 +4,14 @@ MensajeAUsuario-Usuario=12350-Fecha=Sat Nov 12 20:50:03 CET 2016-Mensaje=asdasd
 MensajeAUsuario-Usuario=12350-Fecha=Sat Nov 12 20:58:43 CET 2016-Mensaje=asdasd
 MensajeAUsuario-Usuario=12345-Fecha=Sat Nov 12 21:02:12 CET 2016-Mensaje=Su reserva de la instalacion Tenis1 para la fecha 2016-11-18 19:0:0 ha sido cancelada, disculpe las molestias.
 MensajeAUsuario-Usuario=12345-Fecha=Sun Nov 20 22:48:54 CET 2016-Mensaje=Su clase de la actividad spinning para la fecha 2016-11-19T12:00:00.000+01:00 ha sido cancelada de acuerdo a su petición.
+MensajeAUsuario-Usuario=12350 Se ha inscrito correctamente en la actividad: null 2016-11-26 22:00:00.0 Baloncesto2
+MensajeAUsuario-Usuario=12351 Se ha cancelado la clase de actividad: Partido de baloncesto 2016-11-26 22:00:00.0 Baloncesto2
+MensajeAUsuario-Usuario=12350 Se ha cancelado la clase de actividad: Partido de baloncesto 2016-11-26 22:00:00.0 Baloncesto2
+MensajeAUsuario-Usuario=12349 Se ha inscrito correctamente en la actividad: Partido 2016-11-26 15:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12349 Se ha inscrito correctamente en la actividad: Partido 2016-11-27 08:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12347 Se ha inscrito correctamente en la actividad: Partido 2016-11-26 15:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12347 Se ha inscrito correctamente en la actividad: Partido 2016-11-27 08:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12349 Se ha cancelado la clase de actividad: Partido 2016-11-26 15:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12347 Se ha cancelado la clase de actividad: Partido 2016-11-26 15:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12349 Se ha cancelado la clase de actividad: Partido 2016-11-27 08:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12347 Se ha cancelado la clase de actividad: Partido 2016-11-27 08:00:00.0 Tenis3

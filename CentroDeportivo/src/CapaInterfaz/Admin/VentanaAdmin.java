@@ -39,6 +39,7 @@ public class VentanaAdmin extends JFrame {
 		JButton btnGestionActividades = new JButton("Gestión de actividades");
 		btnGestionActividades.setFont(new Font("Arial", Font.PLAIN, 14));
 		btnGestionActividades.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				VentanaGestionActividades v = new VentanaGestionActividades();
 				v.show();

@@ -34,6 +34,7 @@ import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.managers.ManagerAdmin;
 
+@SuppressWarnings(value = { "unused","rawtypes" })
 public class VentanaReservaCentroPeriodica extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton rdbtnSemanal;
@@ -51,6 +52,7 @@ public class VentanaReservaCentroPeriodica extends JFrame {
 	private JComboBox comboBoxInstalacion;
 	private JSpinner spinnerHora;
 
+	@SuppressWarnings("unchecked")
 	public VentanaReservaCentroPeriodica() {
 		setTitle("Admin -> Reserva Centro Periódica");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));

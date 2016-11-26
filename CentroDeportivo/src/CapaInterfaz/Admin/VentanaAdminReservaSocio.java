@@ -14,7 +14,6 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -54,7 +53,7 @@ public class VentanaAdminReservaSocio extends JFrame {
 	private JLabel lblUsuario;
 	private JLabel lblReservaDeSocio;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public VentanaAdminReservaSocio() {
 		setTitle("Admin -> Reserva Socio");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));

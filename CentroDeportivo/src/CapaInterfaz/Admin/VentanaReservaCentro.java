@@ -33,6 +33,7 @@ import CapaNegocio.dao.Instalacion;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 
+@SuppressWarnings(value = { "rawtypes","deprecation","unchecked" })
 public class VentanaReservaCentro extends JFrame {
 	/**
 	 * 

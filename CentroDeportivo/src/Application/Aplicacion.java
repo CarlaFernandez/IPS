@@ -1,6 +1,5 @@
 package Application;
 
-import CapaDatos.UsuarioDatos;
 import CapaInterfaz.VentanaInicial;
 
 /**

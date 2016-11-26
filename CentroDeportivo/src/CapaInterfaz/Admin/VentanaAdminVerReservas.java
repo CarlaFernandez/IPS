@@ -41,6 +41,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.GridLayout;
 
+@SuppressWarnings(value={"rawtypes","unused"})
 public class VentanaAdminVerReservas extends JFrame {
 
 	/**
@@ -53,6 +54,7 @@ public class VentanaAdminVerReservas extends JFrame {
 	private DefaultTableModel tm;
 	JSpinner spinnerInicio;
 	ReservaDao tablaReservas[][];
+	
 	private JComboBox comboBoxInstalaaciones;
 	private Long user;
 
@@ -278,6 +280,7 @@ public class VentanaAdminVerReservas extends JFrame {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void verDetalles(JTable t) {
 		ReservaDao reserva = tablaReservas[t.getSelectedColumn()][t.getSelectedRow()];
 		if (reserva != null)

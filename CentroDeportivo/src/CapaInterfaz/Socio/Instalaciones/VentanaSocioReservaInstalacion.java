@@ -52,6 +52,7 @@ public class VentanaSocioReservaInstalacion extends JDialog {
 	private List<Usuario> usuarios;
 	private JLabel lblReservaDeSocio;
 	private Long user;
+	@SuppressWarnings("unused")
 	private boolean bajaEsteMes;
 	private boolean bajaProximoMes;
 

@@ -29,7 +29,6 @@ import javax.swing.event.ChangeListener;
 import CapaDatos.PagoDatos;
 import CapaDatos.ReservaDatos;
 import CapaInterfaz.ModeloNoEditable;
-import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.EstadoReserva;
 import CapaNegocio.dao.Instalacion;
@@ -38,9 +37,9 @@ import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
-import CapaNegocio.managers.ManagerFechas;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 
 public class VentanaCancelarReservaCentro extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -50,6 +49,7 @@ public class VentanaCancelarReservaCentro extends JFrame {
 	private JButton btnBuscar;
 	private List<Instalacion> instalaciones;
 	private JComboBox<String> comboBoxInstalaciones;
+	@SuppressWarnings("unused")
 	private int selectedRow = -1;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -160,7 +160,6 @@ public class VentanaCancelarReservaCentro extends JFrame {
 
 		JButton button = new JButton("Cancelar Reserva");
 		button.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				int fila = table.getSelectedRow();
 				int botonDialogo = JOptionPane.YES_NO_OPTION;

@@ -9,8 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,24 +23,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 import org.joda.time.DateTime;
-import org.joda.time.Hours;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import CapaDatos.InstalacionDatos;
 import CapaDatos.MonitorDatos;
 import CapaInterfaz.ModeloConColumnaEditable;
-import CapaInterfaz.Monitor.ModeloNoEditable;
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Monitor;
@@ -53,6 +46,7 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
+@SuppressWarnings(value = { "unused", "rawtypes" })
 public class VentanaCrearActividad extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton rdbtnPuntual;
@@ -127,6 +121,7 @@ public class VentanaCrearActividad extends JFrame {
 	private JCheckBox chckbxTodoElDiaDomingo;
 	private JTextPane txtpnDescripcionPeriodica;
 
+	@SuppressWarnings("unchecked")
 	public VentanaCrearActividad() {
 		setTitle("Admin -> Crear actividades");
 		getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));

@@ -106,6 +106,7 @@ public class VentanaInicial extends JFrame{
 				
 				JButton btnNewButton = new JButton("");
 				btnNewButton.addActionListener(new ActionListener() {
+					@SuppressWarnings("deprecation")
 					public void actionPerformed(ActionEvent e) {
 						new VentanaLoginMonitor().show();
 					}

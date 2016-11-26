@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -33,15 +31,12 @@ import CapaDatos.UsuarioDatos;
 import CapaInterfaz.ModeloConColumnaEditable;
 import CapaInterfaz.ModeloNoEditable;
 import CapaNegocio.dao.Instalacion;
-import CapaNegocio.dao.Pago;
 import CapaNegocio.dao.Usuario;
 import CapaNegocio.managers.ManagerAdmin;
-import java.awt.Component;
-import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
 import java.awt.GridLayout;
 import javax.swing.border.TitledBorder;
 
+@SuppressWarnings(value = { "unused" })
 public class VentanaContablePasarPagos extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JTable table;
@@ -95,6 +90,7 @@ public class VentanaContablePasarPagos extends JFrame {
 			 * @Override public Class getColumnClass(int column) { return
 			 * getValueAt(0, column).getClass(); }
 			 */
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Class getColumnClass(int column) {
 				if (column == 0)
@@ -209,6 +205,7 @@ public class VentanaContablePasarPagos extends JFrame {
 							"Los pagos se han enviado correctamente", "Exito",
 							JOptionPane.INFORMATION_MESSAGE);
 					getPagosSocio((Long) table.getValueAt(selectedRow, 1));
+					
 				}
 				return;
 			}

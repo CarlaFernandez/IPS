@@ -28,18 +28,11 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import org.joda.time.DateTime;
-
 import CapaDatos.ActividadesDatos;
-import CapaInterfaz.ModeloConColumnaEditable;
 import CapaInterfaz.ModeloNoEditable;
-import CapaInterfaz.Admin.TableCellRendererPasarPagosPagos;
-import CapaInterfaz.Admin.TableCellRendererPasarPagosSocios;
-import CapaInterfaz.Socio.TablaConPrimeraColumnaCheckBox;
-import CapaNegocio.dao.Actividad;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.managers.ManagerAdmin;
-import CapaNegocio.managers.ManagerFechas;
+import salida.Salida;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
@@ -47,12 +40,14 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
+@SuppressWarnings("unused")
 public class VentanaSocioInscribirseActividades extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JTable tablaActividades;
 	public ModeloNoEditable modeloTablaActividades;
 	private ModeloNoEditable modeloTablaInstanciasActividad;
 	private List<Instalacion> instalaciones;
+	
 	private JComboBox<String> comboBoxInstalaciones;
 	JTextArea textAreaDescripcion;
 	JCheckBox chckbxSoloActiConPlazoAbierto;
@@ -149,9 +144,7 @@ public class VentanaSocioInscribirseActividades extends JFrame {
 		panelGridArriba.add(panelInstanciasActividad,
 				gbc_panelInstanciasActividad);
 		panelInstanciasActividad.setBorder(
-				new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-						"Instancias de actividades", TitledBorder.LEADING,
-						TitledBorder.TOP, null, new Color(0, 0, 0)));
+				new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Clases de actividades", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelInstanciasActividad.setLayout(
 				new BoxLayout(panelInstanciasActividad, BoxLayout.X_AXIS));
 
@@ -237,12 +230,9 @@ public class VentanaSocioInscribirseActividades extends JFrame {
 						JOptionPane.showMessageDialog(null,
 								"Se ha inscrito con exito", "Exito",
 								JOptionPane.INFORMATION_MESSAGE);
-						if (!chckbxSoloActiConPlazoAbierto.isSelected())
-							obtenerTodasActividadesFuturas();
-						else
-							obtenerSoloActividadesConPlazoAbierto();
-						modeloTablaInstanciasActividad.getDataVector().clear();
-						tablaInstanciasActividades.repaint();
+						enviarConfirmacionInscripcion();
+						obtenerTodasInstanciasFuturas((long) modeloTablaActividades
+							.getValueAt(selectedRowActividad, 0));
 						break;
 					case ActividadesDatos.PLAZO_INSCIPCION_NO_ABIERO:
 						JOptionPane.showMessageDialog(null,
@@ -264,6 +254,14 @@ public class VentanaSocioInscribirseActividades extends JFrame {
 								"Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
+			}
+
+			private void enviarConfirmacionInscripcion() {
+				Map<String, Object> actividad = new HashMap<>();
+				actividad.put("nombre", modeloTablaActividades.getValueAt(selectedRowActividad, 1));
+				actividad.put("fecha", modeloTablaInstanciasActividad.getValueAt(selectedRowInstancia, 1));
+				actividad.put("instalacion", modeloTablaInstanciasActividad.getValueAt(selectedRowInstancia, 6));
+				new Salida().socioInscritoCorrectamente(actividad, user);
 			}
 
 		});

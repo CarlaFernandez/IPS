@@ -6,15 +6,14 @@ import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-
-import org.joda.time.DateTime;
-
-import CapaNegocio.EstadoReserva;
 
 public class ChkCellRenderer extends JCheckBox implements TableCellRenderer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JComponent component = new JCheckBox();
 	
 

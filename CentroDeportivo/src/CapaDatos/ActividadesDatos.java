@@ -13,14 +13,11 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Hours;
-
 import CapaNegocio.DiasSemana;
 import CapaNegocio.dao.Actividad;
 import CapaNegocio.dao.ActividadHoras;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.TipoReserva;
-import CapaNegocio.dao.Usuario;
 import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerFechas;
 
@@ -209,7 +206,7 @@ public class ActividadesDatos {
 		try {
 			ps = con.prepareStatement("SELECT r.estado "
 					+ " FROM horas_actividad as h, reserva as r "
-					+ "where h.id = ? and r.id = h.reseva_id");
+					+ "where h.id = ? and r.id = h.reserva_id");
 			ps.setLong(1, idInstanciaActividad);
 			rs = ps.executeQuery();
 			rs.next();
@@ -850,6 +847,37 @@ public class ActividadesDatos {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static List<Long> obtenerSociosApuntadosInstancia(Long idInstanciaActividad){
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Long> users = new ArrayList<>();
+
+		try {
+			ps = con.prepareStatement(
+					"select usuario_id from apuntado_actividad where apuntado_actividad.horas_actividad_id = ?");
+			ps.setLong(1, idInstanciaActividad);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				users.add((long) rs.getInt("usuario_id"));
+			}
+			return users;
+		} catch (SQLException e) {
+			System.err.println(e.getSQLState() + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				ps.close();
+				con.close();
+			} catch (SQLException e) {
+				System.err.println(e.getSQLState() + " " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return users;
 	}
 
 }

@@ -257,6 +257,7 @@ public class VentanaSocioUtilizandoInstalacion extends JFrame {
 					if (pago.getTipo().equals(TipoPago.EFECTIVO.name()))
 						pagoEfectivo = true;
 					DateTime hEntrada = reserva.getHoraEntrada();
+					@SuppressWarnings("unused")
 					DateTime hSalida = reserva.getHoraSalida();
 					if (hEntrada != null && pagoPendiente && pagoEfectivo) {
 						ManagerAdmin.crearPagoEfectivo(reserva.getIdRes());

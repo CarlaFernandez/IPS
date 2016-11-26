@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,20 +26,11 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import org.joda.time.DateTime;
-
 import CapaDatos.ActividadesDatos;
-import CapaInterfaz.ModeloConColumnaEditable;
 import CapaInterfaz.ModeloNoEditable;
-import CapaInterfaz.Admin.TableCellRendererPasarPagosPagos;
-import CapaInterfaz.Admin.TableCellRendererPasarPagosSocios;
-import CapaInterfaz.Socio.TablaConPrimeraColumnaCheckBox;
-import CapaNegocio.dao.Actividad;
-import CapaNegocio.dao.Instalacion;
 import CapaNegocio.managers.ManagerAdmin;
-import CapaNegocio.managers.ManagerFechas;
+import salida.Salida;
 
-import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -52,17 +41,14 @@ public class VentanaAdminCancelarActividades extends JFrame {
 	private JTable tablaActividades;
 	public ModeloNoEditable modeloTablaActividades;
 	private ModeloNoEditable modeloTablaInstanciasActividad;
-	private List<Instalacion> instalaciones;
-	private JComboBox<String> comboBoxInstalaciones;
 	JTextArea textAreaDescripcion;
-	JCheckBox chckbxSoloActiConPlazoAbierto;
 	private int selectedRowActividad = -1;
 	private int selectedRowInstancia = -1;
 	private JTable tablaInstanciasActividades;
 	private HashMap<Long, String> descriptions;
 
 	public VentanaAdminCancelarActividades() {
-		instalaciones = ManagerAdmin.verInstalaciones();
+		ManagerAdmin.verInstalaciones();
 		setResizable(false);
 		setBounds(100, 100, 1050, 525);
 		JLabel lblCancelarActividad = new JLabel("Cancelar actividad");
@@ -121,11 +107,12 @@ public class VentanaAdminCancelarActividades extends JFrame {
 				selectedRowActividad = tablaActividades.getSelectedRow();
 				long idActividad = (long) tablaActividades
 						.getValueAt(selectedRowActividad, 0);
-				if (chckbxSoloActiConPlazoAbierto.isSelected()) {
-					obtenerSoloInstanciasConPlazoCerrado(idActividad);
-				} else {
-					obtenerTodasInstanciasFuturas(idActividad);
-				}
+				/*
+				 * if (chckbxSoloActiConPlazoAbierto.isSelected()) {
+				 * obtenerSoloInstanciasConPlazoCerrado(idActividad); } else {
+				 */
+				obtenerTodasInstanciasFuturas(idActividad);
+				// }
 				actualizarDescipcion(idActividad);
 			}
 		});
@@ -196,19 +183,6 @@ public class VentanaAdminCancelarActividades extends JFrame {
 		panelCabecera.add(panelFiltro, BorderLayout.WEST);
 		panelFiltro.setLayout(new BorderLayout(0, 0));
 
-		chckbxSoloActiConPlazoAbierto = new JCheckBox(
-				"Solo actividades con plazo de inscripcion sin abrir");
-		panelFiltro.add(chckbxSoloActiConPlazoAbierto, BorderLayout.EAST);
-		chckbxSoloActiConPlazoAbierto.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (((AbstractButton) e.getSource()).isSelected()) {
-					obtenerSoloActividadesConPlazoCerrado();
-				} else {
-					obtenerTodasActividadesFuturas();
-				}
-			}
-		});
-
 		JPanel panelPie = new JPanel();
 		panel.add(panelPie, BorderLayout.SOUTH);
 		panelPie.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -224,6 +198,7 @@ public class VentanaAdminCancelarActividades extends JFrame {
 				else {
 					long idInstanciaActividad = (long) tablaInstanciasActividades
 							.getValueAt(selectedRowInstancia, 0);
+					mensajesASociosCancelacionInstancia(idInstanciaActividad);
 					cancelarInstanciaActividad(idInstanciaActividad);
 				}
 			}
@@ -240,9 +215,11 @@ public class VentanaAdminCancelarActividades extends JFrame {
 							"Error: Ninguna Actividad seleccionada",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
-					Long idReserva = (Long) tablaActividades
+					Long idActividad = (Long) tablaActividades
 							.getValueAt(selectedRowActividad, 0);
-					cancelarActividadEntera(idReserva);
+					mensajeASociosCancelacionActividad(idActividad);
+					cancelarActividadEntera(idActividad);
+					obtenerTodasActividadesFuturas();
 				}
 			}
 		});
@@ -271,11 +248,13 @@ public class VentanaAdminCancelarActividades extends JFrame {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void obtenerSoloActividadesConPlazoCerrado() {
 		obtenerActividades(ActividadesDatos
 				.obtenerActividadesFuturasConInscripcionCerrada());
 	}
 
+	@SuppressWarnings("unused")
 	private void obtenerSoloActividadesConPlazoAbierto() {
 		obtenerActividades(ActividadesDatos
 				.obtenerActividadesFuturasConInscripcionAbierta());
@@ -290,12 +269,14 @@ public class VentanaAdminCancelarActividades extends JFrame {
 				.obtenerInstanciasDeActividadesFuturas(idActividad));
 	}
 
+	@SuppressWarnings("unused")
 	private void obtenerSoloInstanciasConPlazoAbierto(long idActividad) {
 		obtenerInstanciasDeActividades(ActividadesDatos
 				.obtenerInstanciasDeActividadesConInscripcionAbierta(
 						idActividad));
 	}
 
+	@SuppressWarnings("unused")
 	private void obtenerSoloInstanciasConPlazoCerrado(long idActividad) {
 		obtenerInstanciasDeActividades(ActividadesDatos
 				.obtenerInstanciasDeActividadesConInscripcionCerrada(
@@ -334,6 +315,36 @@ public class VentanaAdminCancelarActividades extends JFrame {
 			line[6] = actividad.get("codigo");
 			line[7] = actividad.get("estado");
 			modeloTablaInstanciasActividad.addRow(line);
+		}
+	}
+
+	private void mensajesASociosCancelacionInstancia(
+			long idInstanciaActividad) {
+		Map<String, Object> instancia = new HashMap<>();
+		instancia.put("nombre",
+				modeloTablaActividades.getValueAt(selectedRowActividad, 1));
+		instancia.put("fecha", modeloTablaInstanciasActividad
+				.getValueAt(selectedRowInstancia, 1));
+		instancia.put("instalacion", modeloTablaInstanciasActividad
+				.getValueAt(selectedRowInstancia, 6));
+		List<Long> users = ActividadesDatos
+				.obtenerSociosApuntadosInstancia(idInstanciaActividad);
+		new Salida().instanciaActividadCancelada(instancia, users);
+	}
+
+	private void mensajeASociosCancelacionActividad(Long idActividad) {
+		List<Map<String, Object>> instancias = ActividadesDatos
+				.obtenerInstanciasDeActividadesFuturas(idActividad);
+		Map<String, Object> instancia = new HashMap<>();
+		Salida salida = new Salida();
+		for (Map<String, Object> i : instancias) {
+			List<Long> users = ActividadesDatos
+					.obtenerSociosApuntadosInstancia((Long) i.get("id"));
+			instancia = new HashMap<>();
+			instancia.put("nombre", modeloTablaActividades.getValueAt(selectedRowActividad, 1));
+			instancia.put("fecha", i.get("fecha_actividad_inicio"));
+			instancia.put("instalacion", i.get("codigo"));
+			salida.instanciaActividadCancelada(instancia, users);
 		}
 	}
 }

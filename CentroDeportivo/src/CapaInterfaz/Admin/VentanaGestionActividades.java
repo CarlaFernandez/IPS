@@ -8,11 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
 
 public class VentanaGestionActividades extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -39,6 +35,7 @@ public class VentanaGestionActividades extends JFrame {
 
 		JButton btnCancelarActividad = new JButton("Cancelar actividad");
 		btnCancelarActividad.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				VentanaAdminCancelarActividades ventana = new VentanaAdminCancelarActividades();
 				ventana.show();

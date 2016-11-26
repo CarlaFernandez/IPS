@@ -710,6 +710,7 @@ public class ReservaDatos {
 
 	}
 
+	@SuppressWarnings("unused")
 	public void registrarEntradaSocio(Long idReserva, Timestamp hora) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -732,6 +733,7 @@ public class ReservaDatos {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void registrarSalidaSocio(Long idReserva, Timestamp hora) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();

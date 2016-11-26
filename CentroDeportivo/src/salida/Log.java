@@ -38,6 +38,7 @@ public class Log {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private String leerFichero() {
 		File archivo = null;
 		FileReader fr = null;
