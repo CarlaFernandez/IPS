@@ -25,8 +25,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.toedter.calendar.JDateChooser;
-
 import CapaNegocio.TipoPago;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.Usuario;
@@ -34,6 +32,8 @@ import CapaNegocio.excepciones.ExcepcionReserva;
 import CapaNegocio.managers.ManagerAdmin;
 import CapaNegocio.managers.ManagerFechas;
 import CapaNegocio.managers.ManagerUsuario;
+
+import com.toedter.calendar.JDateChooser;
 
 public class VentanaAdminReservaSocio extends JFrame {
 	/**

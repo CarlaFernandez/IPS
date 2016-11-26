@@ -55,7 +55,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 		}
 
 	}
-	
+
 	public static List<Actividad> obtenerActividades(Long monitorId) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -63,11 +63,11 @@ public class MonitorDatos extends GeneradorIDRandom {
 			StringBuilder sb = new StringBuilder();
 			sb.append("select * from actividad where MONITOR_ID=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setLong(1,monitorId);
+			ps.setLong(1, monitorId);
 			ResultSet rs = ps.executeQuery();
 			List<Actividad> actividades = new ArrayList<>();
 			while (rs.next()) {
-				Actividad actividad = new Actividad();				
+				Actividad actividad = new Actividad();
 				actividad.setCodigo(rs.getLong("ID"));
 				actividad.setNombre(rs.getString("NOMBRE"));
 				actividad.setDescripcion(rs.getString("DESCRIPCION"));
@@ -76,7 +76,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 				actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
 				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
 				actividad.setCancelada(rs.getBoolean("CANCELADA"));
-				
+
 				actividades.add(actividad);
 			}
 			con.close();
@@ -87,28 +87,26 @@ public class MonitorDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
-	
-	public static List<Actividad> obtenerActividadesEntreFechas(Long monitorId, Date inicio, Date fin) {
+
+	public static List<Actividad> obtenerActividadesEntreFechas(Long monitorId,
+			Date inicio, Date fin) {
 		DateTime fecha1 = new DateTime(inicio);
 		DateTime fecha2 = new DateTime(fin);
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("select * from actividad "
-					+ "where MONITOR_ID = ? "
-					+ "and fecha_actividad >= ? "
-					+ "and fecha_actividad <= ? "
+			sb.append("select * from actividad " + "where MONITOR_ID = ? "
+					+ "and fecha_actividad >= ? " + "and fecha_actividad <= ? "
 					+ "order by fecha_actividad");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setLong(1,monitorId);
+			ps.setLong(1, monitorId);
 			ps.setTimestamp(2, new Timestamp(fecha1.getMillis()));
 			ps.setTimestamp(3, new Timestamp(fecha2.getMillis()));
 			ResultSet rs = ps.executeQuery();
 			List<Actividad> actividades = new ArrayList<>();
- 			while (rs.next()) {
-				Actividad actividad = new Actividad();				
+			while (rs.next()) {
+				Actividad actividad = new Actividad();
 				actividad.setCodigo(rs.getLong("ID"));
 				actividad.setNombre(rs.getString("NOMBRE"));
 				actividad.setDescripcion(rs.getString("DESCRIPCION"));
@@ -117,8 +115,9 @@ public class MonitorDatos extends GeneradorIDRandom {
 				actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
 				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
 				actividad.setCancelada(rs.getBoolean("CANCELADA"));
-				actividad.setFecha_entrada(new DateTime(rs.getTimestamp("FECHA_ACTIVIDAD")));
-				
+				actividad.setFecha_entrada(new DateTime(rs
+						.getTimestamp("FECHA_ACTIVIDAD")));
+
 				actividades.add(actividad);
 			}
 			con.close();
@@ -129,8 +128,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
-	
+
 	public static List<Curso> obtenerCursos(Long monitorId) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -142,7 +140,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 			ResultSet rs = ps.executeQuery();
 			List<Curso> cursos = new ArrayList<>();
 			while (rs.next()) {
-				Curso curso = new Curso();				
+				Curso curso = new Curso();
 				curso.setID(rs.getLong("ID"));
 				curso.setNombre(rs.getString("NOMBRE"));
 				curso.setDescripcion(rs.getString("DESCRIPCION"));
@@ -164,69 +162,70 @@ public class MonitorDatos extends GeneradorIDRandom {
 		}
 	}
 
-//	public static int obtenerNumeroUsuariosActividad(Long IdActividad) {
-//		
-//	}
+	// public static int obtenerNumeroUsuariosActividad(Long IdActividad) {
+	//
+	// }
 
 	/**
 	 * 
 	 * @param idMonitor
 	 * @param idUsuario
 	 * @return Lista con las actividades del monitor en las que esta el usuario
-	 * 			null en caso de que no este en ninguna
+	 *         null en caso de que no este en ninguna
 	 */
-//	public static List<Actividad> usuarioEstaEnMisActividades(Long idMonitor, Long idUsuario) {
-//		CreadorConexionBBDD creador = new CreadorConexionBBDD();
-//		Connection con = creador.crearConexion();
-//		try {
-//			StringBuilder sb = new StringBuilder();
-//			sb.append("select * "
-//					+ "from actividad a "
-//					+ "INNER JOIN APUNTADOS_ACTIVIDAD ap ON a.codigo=ap.ACTIVIDAD_ID "
-//					+ "where a.MONITOR_ID=? and ap.USUARIO_ID=?");
-//			PreparedStatement ps = con.prepareStatement(sb.toString());
-//			ps.setLong(1, idMonitor);
-//			ps.setLong(1, idUsuario);
-//			ResultSet rs = ps.executeQuery();
-//			List<Actividad> actividades = new ArrayList<>();
-//			while (rs.next()) {
-//				Actividad actividad = new Actividad();				
-//				actividad.setCodigo(rs.getLong("CODIGO"));
-//				actividad.setNombre(rs.getString("NOMBRE"));
-//				actividad.setDescripcion(rs.getString("DESCRIPCION"));
-//				actividad.setPlazasTotales(rs.getInt("PLAZAS_TOTALES"));
-//				actividad.setPlazasOcupadas(rs.getInt("PLAZAS_OCUPADAS"));
-//				actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
-//				actividad.setMonitorID(rs.getLong("MONITOR_ID"));
-//				actividad.setCancelada(rs.getBoolean("CANCELADA"));
-//				
-//				actividades.add(actividad);
-//			}
-//			con.close();
-//			return actividades;
-//
-//		} catch (SQLException e) {
-//			System.err.println(e.getMessage());
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
-//	
-//	
+	// public static List<Actividad> usuarioEstaEnMisActividades(Long idMonitor,
+	// Long idUsuario) {
+	// CreadorConexionBBDD creador = new CreadorConexionBBDD();
+	// Connection con = creador.crearConexion();
+	// try {
+	// StringBuilder sb = new StringBuilder();
+	// sb.append("select * "
+	// + "from actividad a "
+	// + "INNER JOIN APUNTADOS_ACTIVIDAD ap ON a.codigo=ap.ACTIVIDAD_ID "
+	// + "where a.MONITOR_ID=? and ap.USUARIO_ID=?");
+	// PreparedStatement ps = con.prepareStatement(sb.toString());
+	// ps.setLong(1, idMonitor);
+	// ps.setLong(1, idUsuario);
+	// ResultSet rs = ps.executeQuery();
+	// List<Actividad> actividades = new ArrayList<>();
+	// while (rs.next()) {
+	// Actividad actividad = new Actividad();
+	// actividad.setCodigo(rs.getLong("CODIGO"));
+	// actividad.setNombre(rs.getString("NOMBRE"));
+	// actividad.setDescripcion(rs.getString("DESCRIPCION"));
+	// actividad.setPlazasTotales(rs.getInt("PLAZAS_TOTALES"));
+	// actividad.setPlazasOcupadas(rs.getInt("PLAZAS_OCUPADAS"));
+	// actividad.setNumeroHoras(rs.getDouble("NUMERO_HORAS"));
+	// actividad.setMonitorID(rs.getLong("MONITOR_ID"));
+	// actividad.setCancelada(rs.getBoolean("CANCELADA"));
+	//
+	// actividades.add(actividad);
+	// }
+	// con.close();
+	// return actividades;
+	//
+	// } catch (SQLException e) {
+	// System.err.println(e.getMessage());
+	// e.printStackTrace();
+	// return null;
+	// }
+	// }
+	//
+	//
 	/**
 	 * 
 	 * @param idMonitor
 	 * @param idUsuario
-	 * @return Lista con las cursos del monitor en las que esta el usuario
-	 * 			null en caso de que no este en ninguna
+	 * @return Lista con las cursos del monitor en las que esta el usuario null
+	 *         en caso de que no este en ninguna
 	 */
-	public static List<Curso> usuarioEstaEnMisCursos(Long idMonitor, Long idUsuario) {
+	public static List<Curso> usuarioEstaEnMisCursos(Long idMonitor,
+			Long idUsuario) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append("select * "
-					+ "from Curso c "
+			sb.append("select * " + "from Curso c "
 					+ "INNER JOIN APUNTADOS_CURSO ac ON c.ID=ac.CURSO_ID "
 					+ "where c.MONITOR_ID=? and ac.USUARIO_ID=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
@@ -235,7 +234,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 			ResultSet rs = ps.executeQuery();
 			List<Curso> cursos = new ArrayList<>();
 			while (rs.next()) {
-				Curso curso = new Curso();				
+				Curso curso = new Curso();
 				curso.setID(rs.getLong("ID"));
 				curso.setNombre(rs.getString("NOMBRE"));
 				curso.setDescripcion(rs.getString("DESCRIPCION"));
@@ -257,8 +256,6 @@ public class MonitorDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
-	
 
 	public static List<Monitor> obtenerMonitores() {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -286,9 +283,9 @@ public class MonitorDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
-	
-	public static List<Usuario> usuariosActividad(Long idMonitor, Long idActividad) {
+
+	public static List<Usuario> usuariosActividad(Long idMonitor,
+			Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
@@ -336,7 +333,6 @@ public class MonitorDatos extends GeneradorIDRandom {
 		}
 	}
 
-	
 	public static Monitor getMonitor(Long idMonitor) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -361,7 +357,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
-	
+
 	public static int maxPlazasActividad(Long idMonitor, Long idActividad) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
@@ -375,7 +371,7 @@ public class MonitorDatos extends GeneradorIDRandom {
 			ResultSet rs = ps.executeQuery();
 			int max = -1;
 			while (rs.next()) {
-				max=rs.getInt("PLAZAS_TOTALES");
+				max = rs.getInt("PLAZAS_TOTALES");
 			}
 			con.close();
 

@@ -304,10 +304,10 @@ public class VentanaSocioVerMisActividades extends JFrame {
 						.obtenerActividad(clases.get(i).getIdActividad());
 				String cadena = actividad.getNombre();
 				if (!reserva.getEstado().equals(EstadoReserva.ACTIVA.name()))
-					cadena += " -- Actividad cancelada";
+					cadena += " -- Clase/Hora cancelada";
 				else if (ActividadesDatos
 						.isMiApuntadoActividadCancelada(clases.get(i), user))
-					cadena += " -- Clase cancelada";
+					cadena += " -- Inscripcion cancelada";
 				tm.setValueAt(cadena, hora + j, dia);
 				tablaReservas[dia][hora + j] = clases.get(i);
 			}

@@ -1,15 +1,20 @@
 package CapaInterfaz.Admin;
 
 import javax.swing.JFrame;
+
 import java.awt.BorderLayout;
+
 import javax.swing.JPanel;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+
 import java.awt.Font;
+
 import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;

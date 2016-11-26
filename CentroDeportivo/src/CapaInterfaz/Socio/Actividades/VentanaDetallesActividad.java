@@ -39,10 +39,10 @@ public class VentanaDetallesActividad extends JFrame {
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new GridLayout(1, 2, 0, 0));
 
-		JTextPane textPaneUser = new JTextPane();
-		textPaneUser.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		textPaneUser.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panel.add(textPaneUser);
+		JTextPane textPaneClase = new JTextPane();
+		textPaneClase.setFont(new Font("Times New Roman", Font.BOLD, 16));
+		textPaneClase.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel.add(textPaneClase);
 
 		JTextPane textPaneInstalacion = new JTextPane();
 		textPaneInstalacion.setFont(new Font("Times New Roman", Font.BOLD, 16));
@@ -55,12 +55,11 @@ public class VentanaDetallesActividad extends JFrame {
 		panel.add(textPaneActividad);
 
 		ReservaDao reserva = ReservaDatos.obtenerReservaPorId(clase.getIdReserva());
-		Usuario usuario = UsuarioDatos.ObtenerUsuario(reserva.getIdUsu());
-		textPaneUser.setText(usuario.toString());
 		Instalacion instalacion = InstalacionDatos.ObtenerInstalacion(reserva.getIdInst());
 		textPaneInstalacion.setText(instalacion.toString());
 		Actividad actividad = ActividadesDatos.obtenerActividad(clase.getIdActividad());
 		textPaneActividad.setText(actividad.toString());
+		textPaneClase.setText(clase.toString());
 		
 	}
 
