@@ -193,6 +193,12 @@ public class VentanaContablePasarPagos extends JFrame {
 		btnPasarPagosA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int botonDialogo = JOptionPane.YES_NO_OPTION;
+				if (getNumeroSeleccionados() == 0) {
+					JOptionPane.showMessageDialog(null,
+							"No ha seleccionado a nngun socio", "Error",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				botonDialogo = JOptionPane.showConfirmDialog(null,
 						"Está seguro de enviar los pagos de "
 								+ getNumeroSeleccionados()
@@ -205,7 +211,7 @@ public class VentanaContablePasarPagos extends JFrame {
 							"Los pagos se han enviado correctamente", "Exito",
 							JOptionPane.INFORMATION_MESSAGE);
 					getPagosSocio((Long) table.getValueAt(selectedRow, 1));
-					
+
 				}
 				return;
 			}

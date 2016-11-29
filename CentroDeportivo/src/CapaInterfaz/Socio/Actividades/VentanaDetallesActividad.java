@@ -15,12 +15,10 @@ import javax.swing.border.EmptyBorder;
 import CapaDatos.ActividadesDatos;
 import CapaDatos.InstalacionDatos;
 import CapaDatos.ReservaDatos;
-import CapaDatos.UsuarioDatos;
 import CapaNegocio.dao.Actividad;
 import CapaNegocio.dao.ActividadHoras;
 import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.ReservaDao;
-import CapaNegocio.dao.Usuario;
 
 public class VentanaDetallesActividad extends JFrame {
 
@@ -41,26 +39,32 @@ public class VentanaDetallesActividad extends JFrame {
 
 		JTextPane textPaneClase = new JTextPane();
 		textPaneClase.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		textPaneClase.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		textPaneClase.setBorder(
+				new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.add(textPaneClase);
 
 		JTextPane textPaneInstalacion = new JTextPane();
 		textPaneInstalacion.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		textPaneInstalacion.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		textPaneInstalacion.setBorder(
+				new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.add(textPaneInstalacion);
-		
+
 		JTextPane textPaneActividad = new JTextPane();
 		textPaneActividad.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		textPaneActividad.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		textPaneActividad.setBorder(
+				new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.add(textPaneActividad);
 
-		ReservaDao reserva = ReservaDatos.obtenerReservaPorId(clase.getIdReserva());
-		Instalacion instalacion = InstalacionDatos.ObtenerInstalacion(reserva.getIdInst());
+		ReservaDao reserva = ReservaDatos
+				.obtenerReservaPorId(clase.getIdReserva());
+		Instalacion instalacion = InstalacionDatos
+				.ObtenerInstalacion(reserva.getIdInst());
 		textPaneInstalacion.setText(instalacion.toString());
-		Actividad actividad = ActividadesDatos.obtenerActividad(clase.getIdActividad());
+		Actividad actividad = ActividadesDatos
+				.obtenerActividad(clase.getIdActividad());
 		textPaneActividad.setText(actividad.toString());
 		textPaneClase.setText(clase.toString());
-		
+
 	}
 
 	/**

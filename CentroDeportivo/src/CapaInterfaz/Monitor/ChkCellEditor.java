@@ -33,10 +33,6 @@ public class ChkCellEditor extends DefaultCellEditor implements TableCellRendere
 	@Override
 	public boolean stopCellEditing(){
 		value = ((Boolean)getCellEditorValue()).booleanValue();
-//		if(value==true)
-//			((JCheckBox) component).setBackground(Color.GREEN);
-//		else
-//			((JCheckBox) component).setBackground(Color.RED);
 		((JCheckBox)component).setSelected(value);
 		return super.stopCellEditing();
 	}
@@ -53,7 +49,7 @@ public class ChkCellEditor extends DefaultCellEditor implements TableCellRendere
 	}
 	
 	/**
-	 * segun el valor de la celda seleccion/deselecion el JCheckBox
+	 * segun el valor de la celda seleccion/deseleccion el JCheckBox
 	 */
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
