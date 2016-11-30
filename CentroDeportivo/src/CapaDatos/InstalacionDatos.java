@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +110,37 @@ public class InstalacionDatos {
 			sb.append("select * from instalacion where id=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idInst);
+			ResultSet rs = ps.executeQuery();
+			Instalacion instalacion = new Instalacion();
+			while (rs.next()) {
+				instalacion.setIdInst(rs.getLong("ID"));
+				instalacion.setCodigo(rs.getString("CODIGO"));
+				instalacion.setDescripcion(rs.getString("DESCRIPCION"));
+				instalacion.setPrecioHora(rs.getLong("PRECIO_INSTALACION"));
+				instalacion.setDisponible(rs.getBoolean("DISPONIBLE"));
+			}
+			con.close();
+
+			return instalacion;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Instalacion getInstalacion(Long idActividad, Long idMonitor, DateTime fecha_inicio) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from instalacion where id="
+					+ "(select INSTALACION_ID from reserva where reserva.ID="
+					+ "(select RESERVA_ID from HORAS_ACTIVIDAD ha where ha.MONITOR_ID=? and ha.ACTIVIDAD_ID=? and ha.FECHA_ACTIVIDAD_INICIO=?))");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idMonitor);
+			ps.setLong(2, idActividad);
+			ps.setTimestamp(3, new Timestamp(fecha_inicio.getMillis()));
 			ResultSet rs = ps.executeQuery();
 			Instalacion instalacion = new Instalacion();
 			while (rs.next()) {

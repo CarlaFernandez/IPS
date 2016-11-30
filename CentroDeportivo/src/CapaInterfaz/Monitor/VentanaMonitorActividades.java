@@ -23,6 +23,7 @@ import javax.swing.table.TableColumn;
 
 import org.joda.time.DateTime;
 
+import CapaDatos.InstalacionDatos;
 import CapaDatos.MonitorDatos;
 import CapaDatos.UsuarioDatos;
 
@@ -30,6 +31,7 @@ import CapaDatos.MonitorDatos;
 import CapaDatos.UsuarioDatos;
 import CapaInterfaz.VentanaDetallesReserva;
 import CapaNegocio.dao.Actividad;
+import CapaNegocio.dao.Instalacion;
 import CapaNegocio.dao.ReservaDao;
 import CapaNegocio.dao.Usuario;
 
@@ -56,6 +58,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 
 
@@ -86,7 +89,6 @@ public class VentanaMonitorActividades extends JFrame {
 	private JSpinner spinnerFin;
 	private JSpinner spinnerInicio;
 	private JButton btnBuscar;
-	private JPanel pnlEliminarSocio;
 	private JPanel pnlBotones;
 	private JTextField txtAnadir;
 	private JLabel lblNewLabel;
@@ -100,6 +102,8 @@ public class VentanaMonitorActividades extends JFrame {
 	private JLabel lblReloj;
 	private Actividad actividadActual;
 	private JLabel lblFecha;
+	private JScrollPane sclInstalacion;
+	private JTextArea txtInstalacion;
 
 	public VentanaMonitorActividades(Long idMonitor) {
 		this.idMonitor = idMonitor;
@@ -373,8 +377,9 @@ public class VentanaMonitorActividades extends JFrame {
 	private JPanel getPnlBotonesAcciones() {
 		if (pnlBotonesAcciones == null) {
 			pnlBotonesAcciones = new JPanel();
-			pnlBotonesAcciones.setLayout(new GridLayout(2, 1, 50, 20));
+			pnlBotonesAcciones.setLayout(new GridLayout(3, 1, 50, 5));
 			pnlBotonesAcciones.add(getSclDescripcion());
+			pnlBotonesAcciones.add(getSclInstalacion());
 			pnlBotonesAcciones.add(getPnlBotones());
 		}
 		return pnlBotonesAcciones;
@@ -498,8 +503,20 @@ public class VentanaMonitorActividades extends JFrame {
 	private void asignarDescripcion(){
 		if(actividadActual==null)
 			getTxtAreaDescripcion().setText("");
-		else
+		else{
 			getTxtAreaDescripcion().setText(actividadActual.getDescripcion());
+			asignarInstalacion();
+		}
+	}
+	
+	private void asignarInstalacion(){
+		if(actividadActual==null)
+			getTxtInstalacion().setText("");
+		else{
+			Instalacion instalacionActual = InstalacionDatos.getInstalacion(actividadActual.getCodigo(), idMonitor, actividadActual.getFecha_entrada()); 
+			getTxtInstalacion().setText(instalacionActual.getCodigo());
+		
+		}
 	}
 
 	
@@ -557,7 +574,7 @@ public class VentanaMonitorActividades extends JFrame {
 		if(idMonitor!=null && actividadActual!=null)
 			maximo = actividadActual.getPlazasTotales();
 		String s = "Personas en clase: "+getPersonasEnActividad()+"/"+maximo+"        ";
-		String s2 = "Sin plaza: "+sinPlaza+"        ";
+		String s2 = "No asistidos: "+sinPlaza+"        ";
 		getLblNumUsarios().setText(s);
 		getLblPersonasSinPlaza().setText(s2);
 	}
@@ -629,16 +646,6 @@ public class VentanaMonitorActividades extends JFrame {
 
 	}
 
-	
-
-	private JPanel getPnlEliminarSocio() {
-		if (pnlEliminarSocio == null) {
-			pnlEliminarSocio = new JPanel();
-			pnlEliminarSocio.setLayout(new GridLayout(0, 1, 0, 10));
-		}
-		return pnlEliminarSocio;
-	}
-
 	private JPanel getPnlBotones() {
 		if (pnlBotones == null) {
 			pnlBotones = new JPanel();
@@ -646,7 +653,6 @@ public class VentanaMonitorActividades extends JFrame {
 			pnlBotones.add(getLblNewLabel());
 			pnlBotones.add(getTxtAnadir());
 			pnlBotones.add(getBtnAnadirNuevoSocio());
-			pnlBotones.add(getPnlEliminarSocio());
 		}
 		return pnlBotones;
 	}
@@ -708,7 +714,7 @@ public class VentanaMonitorActividades extends JFrame {
 
 	private JLabel getLblPersonasSinPlaza() {
 		if (lblPersonasSinPlaza == null) {
-			lblPersonasSinPlaza = new JLabel("Sin plaza:        ");
+			lblPersonasSinPlaza = new JLabel("No asistidos:        ");
 			lblPersonasSinPlaza.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		}
 		return lblPersonasSinPlaza;
@@ -735,5 +741,22 @@ public class VentanaMonitorActividades extends JFrame {
 			lblFecha.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		}
 		return lblFecha;
+	}
+	private JScrollPane getSclInstalacion() {
+		if (sclInstalacion == null) {
+			sclInstalacion = new JScrollPane();
+			sclInstalacion.setBackground(Color.WHITE);
+			sclInstalacion.setBorder(new TitledBorder(null, "Instalacion", TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
+			sclInstalacion.setViewportView(getTxtInstalacion());
+		}
+		return sclInstalacion;
+	}
+	private JTextArea getTxtInstalacion() {
+		if (txtInstalacion == null) {
+			txtInstalacion = new JTextArea();
+			txtInstalacion.setWrapStyleWord(true);
+			txtInstalacion.setLineWrap(true);
+		}
+		return txtInstalacion;
 	}
 }
