@@ -15,4 +15,5 @@ MensajeAUsuario-Usuario=12349 Se ha cancelado la clase de actividad: Partido 201
 MensajeAUsuario-Usuario=12347 Se ha cancelado la clase de actividad: Partido 2016-11-26 15:00:00.0 Tenis3
 MensajeAUsuario-Usuario=12349 Se ha cancelado la clase de actividad: Partido 2016-11-27 08:00:00.0 Tenis3
 MensajeAUsuario-Usuario=12347 Se ha cancelado la clase de actividad: Partido 2016-11-27 08:00:00.0 Tenis3
-MensajeAUsuario-Usuario=12345-Fecha=Wed Nov 23 12:51:29 CET 2016-Mensaje=Su clase de la actividad Tenis para la fecha 2016-11-23T15:00:00.000+01:00 ha sido cancelada de acuerdo a su petición.
+MensajeAUsuario-Usuario=12345-Fecha=Wed Nov 23 12:51:29 CET 2016-Mensaje=Su clase de la actividad Tenis para la fecha 2016-11-23T15:00:00.000+01:00 ha sido cancelada de acuerdo a su petición.MensajeAUsuario-Usuario=12345 Se ha inscrito correctamente en la actividad: Clase avanzada de tenis 2016-11-30 10:00:00.0 Tenis3
+MensajeAUsuario-Usuario=12346 Se ha inscrito correctamente en la actividad: Clase avanzada de tenis 2016-11-30 10:00:00.0 Tenis3
