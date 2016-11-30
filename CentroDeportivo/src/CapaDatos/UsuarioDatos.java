@@ -174,6 +174,31 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
+	
+	
+	public static boolean existeUsuario(Long idUsuario) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select * from usuario ");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Long idLista = rs.getLong("ID");
+				if(idLista.equals(idUsuario))
+					return true;
+			}
+			con.close();
+
+			return false;
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 
 	public static Usuario ObtenerUsuario(Long idUsu) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
@@ -329,17 +354,20 @@ public class UsuarioDatos extends GeneradorIDRandom {
 			return null;
 		}
 	}
+	
 
-	public static int anadirUsuarioActividad(Long idActividad, Long idUsuario) {
+	public static int estaUsuarioActividad(Long idActividad, Long idUsuario, DateTime fecha_inicio) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Select * from APUNTADO_ACTIVIDAD "
-					+ "where ACTIVIDAD_ID = ? and USUARIO_ID = ?");
+					+ "where USUARIO_ID =? and "
+					+ "HORAS_ACTIVIDAD_ID = (select id from HORAS_ACTIVIDAD where ACTIVIDAD_ID = ? and FECHA_ACTIVIDAD_INICIO = ?) ");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
-			ps.setLong(1, idActividad);
-			ps.setLong(2, idUsuario);
+			ps.setLong(1, idUsuario);
+			ps.setLong(2, idActividad);
+			ps.setTimestamp(3, new Timestamp(fecha_inicio.getMillis()));
 			ResultSet rs = ps.executeQuery();
 			int contador = -1;
 			while (rs.next()) {
@@ -364,23 +392,49 @@ public class UsuarioDatos extends GeneradorIDRandom {
 		}
 	}
 
-	public static void insertSocioActividad(Long idUsu, Long idActividad) {
+	public static void insertSocioActividad(Long idUsu, Long idActividad, Long idMonitor, DateTime fecha_inicio) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
+			Long id_ha = insertSocioActividad(idMonitor, idActividad, fecha_inicio);
+			if(id_ha == null)
+				throw new SQLException("id horas actividad asociado no existe");
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into APUNTADO_ACTIVIDAD ");
-			sb.append("(USUARIO_ID, ACTIVIDAD_ID, ASISTIDO) ");
-			sb.append("values (?,?,?)");
+			sb.append("(USUARIO_ID, CANCELADO, ASISTIDO, HORAS_ACTIVIDAD_ID) ");
+			sb.append("values (?,?,?,?)");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idUsu);
-			ps.setLong(2, idActividad);
-			ps.setBoolean(3, false);
+			ps.setBoolean(2, false);
+			ps.setBoolean(3, true);
+			ps.setLong(4, id_ha);
 			ps.execute();
 		} catch (SQLException e) {
 			System.err.println("no existe usuario con id: " + idUsu);
 		}
 	}
+	
+	public static Long insertSocioActividad(Long iMonitor, Long idActividad, DateTime fecha_inicio) {
+		CreadorConexionBBDD creador = new CreadorConexionBBDD();
+		Connection con = creador.crearConexion();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("select id from HORAS_ACTIVIDAD where ACTIVIDAD_ID = ? and MONITOR_ID=? and FECHA_ACTIVIDAD_INICIO = ?");
+			PreparedStatement ps = con.prepareStatement(sb.toString());
+			ps.setLong(1, idActividad);
+			ps.setLong(2, iMonitor);
+			ps.setTimestamp(3, new Timestamp(fecha_inicio.getMillis()));
+			ResultSet rs = ps.executeQuery();
+			Long id_ha=null;
+			while (rs.next()) {
+				id_ha = rs.getLong("id");
+			}
+			return id_ha;
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+	
 	public static boolean getAsistenciaSocioActividad(Long idUsu, Long idActividad, Long idMonitor, DateTime fecha_inicio){
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();

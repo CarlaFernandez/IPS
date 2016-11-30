@@ -397,23 +397,26 @@ public class VentanaMonitorActividades extends JFrame {
 			btnAnadirNuevoSocio.setFont(new Font("Tahoma", Font.PLAIN, 16));
 			btnAnadirNuevoSocio.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					int maximo = MonitorDatos.maxPlazasActividad(idMonitor,
-							valorCbActividad());
+					int maximo = MonitorDatos.maxPlazasActividad(idMonitor,	valorCbActividad(), actividadActual.getFecha_entrada());
 					try {
-						Long idTxt = Long.parseLong(getTxtAnadir().getText());
-						if (getPersonasEnActividad() >= maximo)
+						Long idNuevoUsuario = Long.parseLong(getTxtAnadir().getText());
+						
+						if (getPersonasEnActividad()+1 >= maximo)
 							JOptionPane.showMessageDialog(null,
 									"La actividad tiene el máximo de usuario posible");
 						else {
-							int existe = UsuarioDatos.anadirUsuarioActividad(
-									valorCbActividad(), idTxt);
+							if(UsuarioDatos.existeUsuario(idNuevoUsuario)==false)
+								throw new Exception();
+							int existe = UsuarioDatos.estaUsuarioActividad(valorCbActividad(), idNuevoUsuario, actividadActual.getFecha_entrada());
 
 							// SI NO EXISTE == -1
 							if (existe == -1) {
 								// contador a -1 significa que el socio no estaba en la actividad, hay que insertarlo
 								// con asistido=false
-								UsuarioDatos.insertSocioActividad(idTxt, valorCbActividad());
+								UsuarioDatos.insertSocioActividad(idNuevoUsuario, actividadActual.getCodigo(), idMonitor, actividadActual.getFecha_entrada());
 								rellenarTabla();
+									
+								
 							} else {// SI EXISTE >0
 									// esta en la actividad y a true, no hace nada
 
@@ -493,7 +496,10 @@ public class VentanaMonitorActividades extends JFrame {
 	
 	
 	private void asignarDescripcion(){
-		getTxtAreaDescripcion().setText(actividadActual.getDescripcion());
+		if(actividadActual==null)
+			getTxtAreaDescripcion().setText("");
+		else
+			getTxtAreaDescripcion().setText(actividadActual.getDescripcion());
 	}
 
 	
@@ -513,26 +519,27 @@ public class VentanaMonitorActividades extends JFrame {
 		// "ID","NOMBRE","APELLIDOS","EN CLASE",""
 		modeloTabla.getDataVector().clear();
 		Object[] nuevaFila = new Object[4];
-
-		Long idActividad = actividadActual.getCodigo();
-		if(idActividad!=null){
-			List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad, actividadActual.getFecha_entrada());
-			if(usuariosAct==null || usuariosAct.size()==0)
-				JOptionPane.showMessageDialog(null, "La actividad no tiene asignado ningun usuario");
-			else{
-				for(int i=0;i< usuariosAct.size();i++){
-//					if(usuariosAct.get(i).getBaja()==null){
-						nuevaFila[0] =usuariosAct.get(i).getIdUsu();
-						nuevaFila[1] =usuariosAct.get(i).getNombre();			
-						nuevaFila[2] =usuariosAct.get(i).getApellidos();
-						//Long idUsu, Long idActividad, Long idMonitor, DateTime fecha_inicio
-						Boolean asis = UsuarioDatos.getAsistenciaSocioActividad(usuariosAct.get(i).getIdUsu(), idActividad, idMonitor, actividadActual.getFecha_entrada());
-						nuevaFila[3]= asis;
-						modeloTabla.addRow(nuevaFila);
+		if(actividadActual!=null){
+			Long idActividad = actividadActual.getCodigo();
+			if(idActividad!=null){
+				List<Usuario> usuariosAct = MonitorDatos.usuariosActividad(idMonitor, idActividad, actividadActual.getFecha_entrada());
+				if(usuariosAct==null || usuariosAct.size()==0)
+					JOptionPane.showMessageDialog(null, "La actividad no tiene asignado ningun usuario");
+				else{
+					for(int i=0;i< usuariosAct.size();i++){
+	//					if(usuariosAct.get(i).getBaja()==null){
+							nuevaFila[0] =usuariosAct.get(i).getIdUsu();
+							nuevaFila[1] =usuariosAct.get(i).getNombre();			
+							nuevaFila[2] =usuariosAct.get(i).getApellidos();
+							//Long idUsu, Long idActividad, Long idMonitor, DateTime fecha_inicio
+							Boolean asis = UsuarioDatos.getAsistenciaSocioActividad(usuariosAct.get(i).getIdUsu(), idActividad, idMonitor, actividadActual.getFecha_entrada());
+							nuevaFila[3]= asis;
+							modeloTabla.addRow(nuevaFila);
+					}
+					revisarNumeroSocios();
 				}
-				revisarNumeroSocios();
+				modeloTabla.fireTableDataChanged();
 			}
-			modeloTabla.fireTableDataChanged();
 		}
 	}
 

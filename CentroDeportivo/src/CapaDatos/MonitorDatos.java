@@ -361,16 +361,17 @@ public class MonitorDatos extends GeneradorIDRandom {
 		}
 	}
 
-	public static int maxPlazasActividad(Long idMonitor, Long idActividad) {
+	public static int maxPlazasActividad(Long idMonitor, Long idActividad, DateTime fecha_inicio) {
 		CreadorConexionBBDD creador = new CreadorConexionBBDD();
 		Connection con = creador.crearConexion();
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append("select PLAZAS_TOTALES from "
-					+ "actividad where id= ? and monitor_id=?");
+					+ "HORAS_ACTIVIDAD where actividad_id= ? and monitor_id=? and FECHA_ACTIVIDAD_INICIO=?");
 			PreparedStatement ps = con.prepareStatement(sb.toString());
 			ps.setLong(1, idActividad);
 			ps.setLong(2, idMonitor);
+			ps.setTimestamp(3, new Timestamp(fecha_inicio.getMillis()));
 			ResultSet rs = ps.executeQuery();
 			int max = -1;
 			while (rs.next()) {
